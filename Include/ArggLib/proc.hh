@@ -66,23 +66,31 @@ public:
 
 };
 template<typename T1, typename T2>
-auto make_outterLamda( T1& t_,  T2& n_) {
-	
-  return [t_,n_](auto&& next_, auto&&... in)  mutable {
-    return  t_(make_innerLamda(next_, n_), in...);
-  };
- 
+outterLamda<T1, T2> make_outterLamda(const T1& t_, const T2& n_) {
+	return outterLamda<T1, T2>(t_, n_);
 }
 
 
 
 
-
 template<typename T1, typename T2>
-auto make_innerLamda(T1& next_, T2& n_) {
-  return [n_,next_](auto&&... in) mutable {
-    return n_(next_, in...);
-  };
+class innerLamda {
+public:
+	innerLamda(T1& next_, T2& n_) : next(next_), n(n_) {
+
+	}
+
+	typename std::remove_reference<T1>::type& next;
+	typename std::remove_reference<T2>::type& n;
+	template<typename... ARGS>
+	auto operator()(ARGS&&... in) ->decltype (n(next, in...)) {
+		return n(next, in...);
+	}
+
+};
+template<typename T1, typename T2>
+innerLamda<T1, T2> make_innerLamda(T1& next_, T2& n_) {
+	return innerLamda<T1, T2>(next_, n_);
 }
 
 
@@ -145,21 +153,13 @@ public:
 
 
 	template <typename NEXT>
-	auto operator >> (const NEXT& n){
+	auto operator >> (const NEXT& n)-> decltype(make_proImple(make_outterLamda(m_pro, n))) {
 
 		return make_proImple(make_outterLamda(m_pro, n));
 	}
-
-  template <typename NEXT>
-  auto operator >> ( NEXT&& n) {
-
-    return make_proImple(make_outterLamda(m_pro, n));
-  }
 	template <typename NEXT>
-	auto operator >> (NEXT& n) {
-    
-    
-//    return t(make_innerLamda(next, n), in...);
+	auto operator >> (NEXT& n)-> decltype(make_proImple(make_outterLamda(m_pro, n))) {
+
 		return make_proImple(make_outterLamda(m_pro, n));
 	}
 
