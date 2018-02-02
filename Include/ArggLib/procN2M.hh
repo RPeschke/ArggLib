@@ -34,22 +34,22 @@ DEFINE_PROC1(end_p, next_, e) {
 using procCollection = std::vector<std::unique_ptr<ProcessorBase>>;
 void run(procCollection& processors) {
 
-	//param() | proc() >> for_loop(processors) >> init_p();
+	param() | proc() >> for_loop(processors) >> init_p();
 
-  //param() | proc() >> while_true() >> for_loop(processors) >>stop();// >> processEvent_p();
+	param() | proc() >> while_true() >> for_loop(processors) >> processEvent_p();
 
-	//param() | proc() >> for_loop(processors) >> end_p();
+	param() | proc() >> for_loop(processors) >> end_p();
 }
 
 void run(procCollection& processors, int max_nr) {
 
-	//param() | proc() >> for_loop(processors) >> init_p();
+	param() | proc() >> for_loop(processors) >> init_p();
 
 
 
-  param() << max_nr | proc() >> for_loop();// >> for_loop(processors) >> processEvent_p2();
+  param() << max_nr | proc() >> for_loop() >> for_loop(processors) >> processEvent_p2();
 
-  //param() | proc() >> for_loop(processors) >> end_p();
+  param() | proc() >> for_loop(processors) >> end_p();
 }
 template<typename T>
 class ref_storage {
