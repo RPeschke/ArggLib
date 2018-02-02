@@ -3,13 +3,17 @@
 #include "proc.hh"
 #include <vector>
 #include <type_traits>
-#include "TGraph.h"
-#include "TGraph2D.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "TRandom.h"
+
+
 #include <fstream>
 #include "procMultiThreading.hh"
+#include "has_member_helper.hh"
+
+
+
+
+
+CREATE_TEST_FOR_MEMBER(has_begin, begin());
 
 
 template <typename T>
@@ -34,18 +38,18 @@ class for_loop_imple_0 {
 
 public:
 	template <typename NEXT_T, typename T>
-	procReturn operator()(NEXT_T&& next, T t) {
+  __ENABLE_IF_ARITHMETIC(T, procReturn)
+      operator()(NEXT_T&& next, T t) {
 		for (typename std::remove_all_extents<T>::type i = 0; i < t;++i) {
 			if (next(i) == stop_) {
 				return stop_;
 			}
 		}
-
 		return success;
 	}
 
 	template <typename NEXT_T, typename T>
-	procReturn operator()(NEXT_T&& next, const std::vector<T>& vec) {
+	__ENABLE_IF(has_begin<T>(), procReturn) operator()(NEXT_T&& next,  T& vec) {
 		for (auto& e : vec) {
 			if (next(e) == stop_) {
 				return stop_;
@@ -99,8 +103,8 @@ class for_loop_imple_1 {
 	using param_t = typename std::remove_all_extents<END_T>::type;
 public:
 	const param_t m_end;
-	for_loop_imple_1<END_T>(const END_T& end__) :m_end(end__) {}
-	for_loop_imple_1<END_T>(END_T&& end__) : m_end(std::move(end__)) {}
+	for_loop_imple_1<END_T>(const param_t& end__) :m_end(end__) {}
+	for_loop_imple_1<END_T>(param_t&& end__) : m_end(std::move(end__)) {}
 	template <typename NEXT_T , typename... ARGS>
 	procReturn operator()(NEXT_T&& next, ARGS&&... args) {
 		for ( param_t i = 0; i < m_end;++i) {
@@ -117,8 +121,35 @@ public:
 
 
 template <typename T>
-for_loop_imple_1<typename std::remove_all_extents<T>::type> for_loop(T&& t) {
-	return for_loop_imple_1<typename std::remove_all_extents<T>::type>(std::forward<T>(t));
+__ENABLE_IF_ARITHMETIC(T, for_loop_imple_1<T>) for_loop(T&& t) {
+	return for_loop_imple_1<T>(std::forward<T>(t));
+}
+
+
+
+template<typename VEC_T>
+class for_loop_imple_1_vec_lv {
+  
+public:
+  VEC_T m_vec;
+  for_loop_imple_1_vec_lv<VEC_T>(const VEC_T& vec__) : m_vec(vec__) {}
+  template <typename NEXT_T, typename... ARGS>
+  procReturn operator()(NEXT_T&& next, ARGS&&... args) {
+    for (auto &i :m_vec) {
+      if (next(std::forward<ARGS>(args)..., i) == stop_) {
+        return stop_;
+      }
+    }
+
+    return success;
+  }
+};
+
+template <typename T>
+
+__ENABLE_IF(has_begin<T>(), for_loop_imple_1_vec_lv<T>)
+  for_loop(T& t) {
+  return for_loop_imple_1_vec_lv<T>(t);
 }
 
 template<typename T>
@@ -189,7 +220,7 @@ public:
 	template <typename NEXT_T, typename... ARGS>
 	procReturn operator()(NEXT_T&& next, ARGS&&... args) {
 		for (auto& e : m_vec) {
-			auto ret = next( e, args...);
+			auto ret = next(args..., e);
 			if (ret != success) {
 				return ret;
 			}
@@ -251,19 +282,6 @@ void ___Fill(std::vector<T>* vec,ARGS&&... args) {
 	vec->emplace_back( std::forward<ARGS>(args)...);
 }
 
-void ___reset(TGraph2D* g) {
-	g->Set(0);
-	g->Clear();
-}
-
-void ___reset(TH1D* h) {
-	h->Reset();
-}
-
-
-void ___reset(TH2D* h) {
-	h->Reset();
-}
 
 
 
@@ -274,39 +292,9 @@ void ___Fill(T* g, ARGS&&... args);
 template<typename T>
 void ___reset(T* h);
 
-template<typename... ARGS>
-void ___Fill(TGraph* g, ARGS&&... args) {
-	g->SetPoint(g->GetN(), std::forward<ARGS>(args)...);
-}
+void ___reset(std::ostream*);
 
-template<>
-void ___Fill<TH1D,double&>(TH1D* g, double& x) {
-	g->Fill(x);
-}
-
-template<>
-void ___Fill<TH1D, double&, double&>(TH1D* g, double& x, double& w) {
-  g->Fill(x,w);
-}
-template<>
-void ___Fill<TH2D, double&, double&>(TH2D* g, double& x, double& y) {
-  g->Fill(x, y);
-}
-
-template<>
-void ___Fill<TH2D, double&, double&, double&>(TH2D* g, double& x, double& y, double& w) {
-  g->Fill(x, y,w);
-}
-
-
-template< typename... ARGS>
-void ___Fill(TGraph2D* g, ARGS&&... args) {
-	g->SetPoint(g->GetN(), std::forward<ARGS>(args)...);
-}
-
-void ___reset(std::ofstream*);
-
-template<typename... ARGS> void ___Fill(std::ofstream* out, ARGS&&... args);
+template<typename... ARGS> void ___Fill(std::ostream* out, ARGS&&... args);
 template<typename T>
 class push_impl {
 	T* m_graph;
@@ -545,24 +533,7 @@ THFill_impl<T> THFill(T& histo__) {
 }
 
 
-class add_random {
-	static unsigned getSeed() {
-		static unsigned m_seed = 0;
-		return ++m_seed;
-	}
-public:
-	TRandom m_rand;
-	double m_start = 0, m_end = 1;
-	add_random(double start_ = 0, double end__ = 1) : m_rand(add_random::getSeed()), m_start(start_), m_end(end__) {}
-	add_random() : m_rand(add_random::getSeed()) {}
 
-
-	template <typename NEXT_T, typename... ARGS>
-	procReturn operator()(NEXT_T&& next, ARGS&&... args) {
-		return next(std::forward<ARGS>(args)..., (m_end - m_start)*m_rand.Rndm() + m_start);
-	}
-
-};
 template<typename T>
 void print__(std::ostream& out, T&& t) {
 	out << t << std::endl;
@@ -608,13 +579,13 @@ DEFINE_PROC_V(while_true, nextP, input_) {
 
 
 
-void ___reset(std::ofstream*) {}
+void ___reset(std::ostream*) {}
 
-template<typename... ARGS> void ___Fill(std::ofstream* out, ARGS&&... args) { print__(*out,args...); }
+template<typename... ARGS> void ___Fill(std::ostream* out, ARGS&&... args) { print__(*out,args...); }
 
 void ___reset(std::shared_ptr<std::ofstream>*) {}
 
-template<typename... ARGS> void ___Fill(std::shared_ptr<std::ofstream>* out, ARGS&&... args) { print__(*out->get(), args...); }
+template<typename... ARGS> void ___Fill(std::shared_ptr<std::ostream>* out, ARGS&&... args) { print__(*out->get(), args...); }
 
 
 #endif // proc_tools_h__
