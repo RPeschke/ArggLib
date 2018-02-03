@@ -3,8 +3,8 @@
 
 #include <type_traits>
 #include <utility>
-#include "param.hh"
-#include "procReturn.hh"
+#include "ArggLib/param.hh"
+#include "ArggLib/procReturn.hh"
 
 namespace ArggLib {
 
@@ -44,6 +44,10 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 auto name()  ->decltype (proc() >> name ## imple()) {return proc() >> name ## imple();}\
 template < typename NEXT_T,typename... BLOCKS_T>\
    procReturn name ## imple::operator()( NEXT_T&& nextProcessorName,BLOCKS_T&&... inputNameV) const 
+
+
+
+
 
 
 
@@ -144,7 +148,11 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 		template<typename... Param>
 		auto operator()(Param&&... p)->decltype(m_pro(stop(), std::forward<Param>(p)...)) {
-			return m_pro(stop(), std::forward<Param>(p)...);
+			ArggLib_impl::unfold_Start(m_pro);
+			auto ret =  m_pro(stop(), std::forward<Param>(p)...);
+			ArggLib_impl::unfold_end(m_pro);
+
+			return ret;
 		}
 
 

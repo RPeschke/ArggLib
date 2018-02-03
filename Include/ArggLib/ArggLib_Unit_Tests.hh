@@ -7,6 +7,7 @@
 #include <functional>
 #include <vector>
 #include "ArggLib/PRECOMPILER_HELPER.hh"
+#include "reverse.hh"
 
 #define  ARGGLIB__DEFINE_TEST(x) void x();  __add_to_tests<> __MAKE_UNIQUE_PRECOMPILER_NAME__(dummy){ []() { x(); } }; void x() 
 
@@ -21,7 +22,7 @@ namespace ArggLib {
 			get_fun().push_back(std::move(f));
 		}
 		static void run_tests() {
-			for (auto& e : get_fun()) {
+			for (auto& e : ArggLib::reverse(get_fun())) {
 				e();
 			}
 
@@ -35,6 +36,19 @@ namespace ArggLib {
 
 	inline	void run_tests() {
 		__add_to_tests<>::run_tests();
+	}
+
+	template <typename T1, typename T2>
+	void __Test(std::string TestName, T1&& t1, T2&& t2) {
+
+		if (t1 != t2) {
+			cout << "test '" << TestName << "' failed\n";
+			cout << "Variable: \n" << t1 << "\n Unequal \n " << t2 << endl;
+		}
+		else {
+			cout << "test '" << TestName << "' successful\n";
+		}
+
 	}
 }
 

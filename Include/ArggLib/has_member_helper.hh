@@ -20,10 +20,12 @@ auto name##impl(T& t) -> decltype(_____try_and_set_return_type<std::true_type>(t
 template <typename T> \
 auto name##impl(T&& t) -> decltype(_____try_and_set_return_type<std::true_type>(t.member)); \
 template <typename T> \
-auto name() ->decltype(name##impl(____get_T<T>()))
+auto name() ->decltype(name##impl(____get_T<T>()));  \
+template <typename T> \
+auto name(T&&) ->decltype(name##impl(____get_T<T>()))
 
 #define __ENABLE_IF(hasMember,type_) typename std::enable_if< std::is_same<decltype(hasMember), std::true_type>::value, type_>::type
-
+#define __ENABLE_IF_NOT(hasMember,type_) typename std::enable_if< std::is_same<decltype(hasMember), std::false_type >::value, type_>::type
 
 #define __ENABLE_IF_ARITHMETIC(Template_ARG,return_type) typename std::enable_if<std::is_arithmetic<typename std::remove_all_extents<Template_ARG>::type >::value ,	return_type>::type 
 
