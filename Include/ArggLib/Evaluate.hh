@@ -1,3 +1,4 @@
+#include "constexpr_if.hh"
 #ifndef ArggLibEvaluate_h__
 #define ArggLibEvaluate_h__
 
@@ -17,6 +18,14 @@ namespace ArggLib {
 
 
 
+ template <typename F, typename... T>
+ auto __try_to_evaluate_impl(F&& f, T&&... args) -> decltype(std::is_same<decltype(f(args...)), void>::type{});
+ template <typename... T>
+ std::false_type __try_to_evaluate(T...);
+ template <typename F, typename... T>
+ auto __try_to_evaluate(F&& f, T&&... args) ->decltype(_____try_and_set_return_type<std::true_type>(__try_to_evaluate_impl(f, args...)));
+
+
 
  template<typename FUN, typename NEXT, typename... ARGS>
  procReturn do_ignore_imput_and_ignore_return(FUN&& f, NEXT&& n, ARGS&&... args){
@@ -31,7 +40,7 @@ namespace ArggLib {
  }
 
  template<typename FUN, typename NEXT, typename... ARGS>
- auto do_process_imput_and_ignore_return(FUN&& f, NEXT&& n, ARGS&&... args) -> decltype(f(args...),____get_T<procReturn>()) {
+ auto do_process_imput_and_ignore_return(FUN&& f, NEXT&& n, ARGS&&... args) -> decltype(_____try_and_set_return_type<procReturn>(__try_to_evaluate_impl(f, args...))) {
 	 f(args...);
 	 return n(std::forward<ARGS>(args)...);
  }
@@ -77,6 +86,8 @@ namespace ArggLib {
 		template <typename NEXT_T, typename... ARGS>
 		//__ENABLE_IF(is_evalable_and_returns<T, ____get_T<ARGS>()...>(), procReturn) 
 			auto operator()(NEXT_T&& next, ARGS&&... args) {
+
+			
 
 				return do_process_imput_and_return(m_fun, next, args...);
 			//return next(std::forward<ARGS>(args)..., m_fun(args...));
