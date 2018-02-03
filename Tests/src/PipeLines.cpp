@@ -171,14 +171,16 @@ ARGGLIB__DEFINE_TEST(processor_test7) {
 	cout << "==================\n" << "param() | proc() >> OnStart([] { cout << \"1\\n\"; }) >> OnEnd([] { cout << \"2\\n\"; }) >> OnStart([] {cout << \"3\\n\"; }) >> OnEnd([] {cout << \"4\\n\"; }) >> Evaluate([] { cout << \"eval\\n\"; return 1; });\n\n";
 	param() | proc() >> OnStart([] { cout << "1\n"; }) >> OnEnd([] { cout << "2\n"; }) >> OnStart([] {cout << "3\n"; }) >> OnEnd([] {cout << "4\n"; }) >> Evaluate([] { cout << "eval\n"; return 1; });
 	
-	param() | proc() 
-		>> for_loop(10) 
-		>> OnStart([] { cout << "1\n"; }) 
-		>> OnEnd([] { cout << "2\n"; }) 
-		>> OnStart([] {cout << "3\n"; }) 
-		>> OnEnd([] {cout << "4\n"; }) 
-//		>>drop<0>()
-		>> Evaluate([]() { cout << "eval\n";  });
+	param() | proc()
+		>> for_loop(10)
+		>> OnStart([] { cout << "1\n"; })
+		>> OnEnd([] { cout << "2\n"; })
+		>> OnStart([] {cout << "3\n"; })
+		>> OnEnd([] {cout << "4\n"; })
+		//		>>drop<0>()
+		>> Evaluate([](auto i) { cout << "eval\n";  return i*i; })
+		>> display();
+	
 
 	cout << "==================\n\n";
 
@@ -187,51 +189,3 @@ ARGGLIB__DEFINE_TEST(processor_test7) {
 
 
 
-ARGGLIB__DEFINE_TEST(processor_test8) {
-	cout << "==================\n" << "_constexpr_if;\n\n";
-	decltype(test2(), ____get_T<int>()) i;
-	
-	auto f = []() {};
-//	auto  o=  test_123(f, 1);
-//	std::is_same<decltype(f(1)), void>::type x;
-
-
-
-
-
-
-	__CONSTEXPR_IF(decltype(is_evalable_and_returns_impl(f, 1, 2))) {
-
-		f(1, 2);
-		cout << "true: is_evalable_and_returns_impl(f,1,2)\n";
-	
-	}__CONSTEXPR_ELSE{
-
-
-		cout << "false: is_evalable_and_returns_impl(f,1,2)\n";
-	    __CONSTEXPR_IF(decltype(is_evalable_and_returns_impl(f))) {
-			cout << "true: is_evalable_and_returns_impl(f)\n";
-			f();
-		}__CONSTEXPR_ELSE{
-			cout << "false: is_evalable_and_returns_impl(f)\n";
-
-		__CONSTEXPR_IF (decltype(__try_to_evaluate(f, 1))) {
- 			cout << "true: test_123(f, 1)\n";
- 			f(1);
- 		
- 		}__CONSTEXPR_ELSE{
- 			cout << "false: test_123(f, 1, 2)\n";
- 			f();
- 
- 		}__CONSTEXPR_ENDIF
-			
-			//decltype(f(1,2), true_type) c;
-
-		}__CONSTEXPR_ENDIF
-
-
-	}__CONSTEXPR_ENDIF
-	//auto i = is_evalable_and_returns< decltype(f), int>();
-	cout << "==================\n\n";
-
-}

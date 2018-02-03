@@ -84,21 +84,15 @@ namespace ArggLib {
 		}
 
 		template <typename NEXT_T, typename... ARGS>
-		//__ENABLE_IF(is_evalable_and_returns<T, ____get_T<ARGS>()...>(), procReturn) 
-			auto operator()(NEXT_T&& next, ARGS&&... args) {
+		auto operator()(NEXT_T&& next, ARGS&&... args) {
 
 			
 
 				return do_process_imput_and_return(m_fun, next, args...);
-			//return next(std::forward<ARGS>(args)..., m_fun(args...));
+		
 		}
 
-// 		template <typename NEXT_T, typename... ARGS>
-// 		auto operator()(NEXT_T&& next, ARGS&&... args)  {
-// 
-// 			m_fun();
-// 			return next(std::forward<ARGS>(args)...);
-// 		}
+
 
 	};
 
