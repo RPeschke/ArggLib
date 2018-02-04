@@ -20,7 +20,7 @@ namespace ArggLib {
 	}
 
 	template <typename C, typename True_Fun, typename False_fun>
-	void _constexpr_if(True_Fun&& t, False_fun&& f) {
+	auto _constexpr_if(True_Fun&& t, False_fun&& f) {
 	  return	select<C>(std::forward<True_Fun>(t), std::forward<False_fun>(f))(C::value);
 	}
 

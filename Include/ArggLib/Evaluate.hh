@@ -19,7 +19,7 @@ namespace ArggLib {
 
 
  template <typename F, typename... T>
- auto __try_to_evaluate_impl(F&& f, T&&... args) -> decltype(std::is_same<decltype(f(args...)), void>::type{});
+ auto __try_to_evaluate_impl(F&& f, T&&... args) -> decltype(std::is_same<decltype(f(args...)), void>::type());
  template <typename... T>
  std::false_type __try_to_evaluate(T...);
  template <typename F, typename... T>
@@ -68,8 +68,8 @@ namespace ArggLib {
 
  template<typename FUN,typename NEXT,typename... ARGS>
  auto do_process_imput_and_return(FUN&& f,NEXT&& n, ARGS&&... args ) -> decltype(_____try_and_set_return_type<procReturn>(f(args...))){
-
-	 return n(std::forward<ARGS>(args)..., f(args...));
+	 auto ret = f(args...);
+	 return n(std::forward<ARGS>(args)..., ret);
  }
 
 
@@ -79,17 +79,11 @@ namespace ArggLib {
 	public:
 		T m_fun;
 
-		Evaluate_impl(T fun) :m_fun(std::move(fun)) {
-
-		}
+		Evaluate_impl(T fun) :m_fun(std::move(fun)) {}
 
 		template <typename NEXT_T, typename... ARGS>
 		auto operator()(NEXT_T&& next, ARGS&&... args) {
-
-			
-
 				return do_process_imput_and_return(m_fun, next, args...);
-		
 		}
 
 
