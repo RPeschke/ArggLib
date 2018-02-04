@@ -179,6 +179,7 @@ ARGGLIB__DEFINE_TEST(processor_test7) {
 		>> OnEnd([] {cout << "4\n"; })
 		//		>>drop<0>()
 		>> Evaluate([](auto i) { cout << "eval\n";  return i*i; })
+		>> drop<-2>()
 		>> display();
 	
 

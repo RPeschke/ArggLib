@@ -13,9 +13,11 @@ namespace ArggLib {
 		template <typename NEXT_T, typename... args>
 		procReturn operator()(NEXT_T&& next, args... ar) const {
 
-			static_assert(N > 0);
+			static_assert(N < 0,"drop<n> with n < 5");
+			
 			auto dummy = drop <sizeof...(ar)+N>();
-
+			
+			static_assert(sizeof...(ar) >= -N, "sizeof...(ar)+N > 5");
 			return dummy(next, ar...);;
 		}
 	};
@@ -23,7 +25,7 @@ namespace ArggLib {
 	template<>
 	struct drop<0> {
 		template <typename NEXT_T, typename T, typename... args>
-			procReturn operator()(NEXT_T&& next, T i, args... ar) const {
+			procReturn operator()(NEXT_T&& next, T&& , args... ar) const {
 
 			return next(ar...);
 		}
