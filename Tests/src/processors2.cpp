@@ -202,7 +202,7 @@ void f2_a(const int& i, int & sum){
   }
 }
 int f2() {
-	timestamp t;
+  timestamp t;
  
   int sum = 0;
   for (int i =0 ;i< i_max ; ++i){
@@ -210,7 +210,7 @@ int f2() {
   }
 
 
-	std::cout << t.get_timestamp() << " seconds "<< sum << std::endl;
+  std::cout << t.get_timestamp() << " seconds "<< sum << std::endl;
 
   return sum;
 }

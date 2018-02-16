@@ -116,20 +116,20 @@ namespace ArggLib {
 		procReturn operator()(NEXT_T&& next, std::map<std::string, HAST_TABLE_t>&& hash_table) {
 			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, "  ");
 			
-			return next(std::move( args));
+			return next(std::move(hash_table));
 		}
 		template <typename NEXT_T, typename HAST_TABLE_t>
 		procReturn operator()(NEXT_T&& next, std::map<std::string, HAST_TABLE_t>& hash_table) {
 			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, "  ");
 			
-			return next(m_headers);
+			return next(hash_table);
 		}
 
 		template <typename NEXT_T, typename HAST_TABLE_t>
 		procReturn operator()(NEXT_T&& next, const std::map<std::string, HAST_TABLE_t>& hash_table) {
 			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, "  ");
 			
-			return next(m_headers);
+			return next(hash_table);
 		}
 
 	};
