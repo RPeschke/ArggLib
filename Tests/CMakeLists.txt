@@ -1,5 +1,5 @@
 file(GLOB src_files  "src/*.cpp" "src/*.cc" "src/*.cxx")
-include_directories(../include ./inc )
+include_directories(../Include ./inc )
 
 add_executable(bin_tests  ${src_files} )
 

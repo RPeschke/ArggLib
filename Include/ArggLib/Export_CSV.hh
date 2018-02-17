@@ -7,6 +7,7 @@
 #include "ArggLib/cautor.hh"
 #include "ArggLib/string_helpers.hh"
 #include <map>
+#include <memory>
 
 
 namespace ArggLib {

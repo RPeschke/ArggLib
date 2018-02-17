@@ -5,6 +5,7 @@
 #include <utility>
 #include "ArggLib/param.hh"
 #include "ArggLib/procReturn.hh"
+#include "ArggLib/impl_do_begin_do_end.hh"
 
 namespace ArggLib {
 

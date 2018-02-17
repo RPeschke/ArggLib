@@ -1,7 +1,7 @@
 #ifndef smart_ptr_helpers_h__
 #define smart_ptr_helpers_h__
 
-
+#include <memory>
 #define Unew ArggLib::ArggLib_impl::__unew_start << new 
 #define Snew ArggLib::ArggLib_impl::__Snew_start << new 
 

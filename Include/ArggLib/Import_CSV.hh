@@ -9,6 +9,14 @@ namespace ArggLib {
 
   namespace ArggLib_impl {
     
+	  template <bool COND, typename NEXT_T, typename... ARGS>
+	  std::enable_if_t < !COND, procReturn > expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
+
+		  throw std::invalid_argument("trying to read in a csv file with to many columns");
+
+
+		  return success;
+	  }
 
 
     template <bool COND, typename NEXT_T, typename... ARGS>
@@ -32,15 +40,20 @@ namespace ArggLib {
       return success;
     }
 
-    template <bool COND, typename NEXT_T, typename... ARGS>
-    std::enable_if_t < !COND, procReturn > expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
 
-      throw std::invalid_argument("trying to read in a csv file with to many columns");
+	template <bool COND, typename NEXT_T, typename... ARGS>
+	std::enable_if_t < !COND, procReturn > expand_buffer_line_named_variables(
+		NEXT_T&& next,
+		size_t index1, cstringr buffer,
+		size_t index_header, cstringsr headers,
+		const char delimiter,
+		ARGS&&... args) {
+
+		throw std::invalid_argument("trying to read in a csv file with to many columns");
 
 
-      return success;
-    }
-
+		return success;
+	}
 
     template <bool COND, typename NEXT_T, typename... ARGS>
     std::enable_if_t< COND, procReturn> expand_buffer_line_named_variables(
@@ -76,28 +89,20 @@ namespace ArggLib {
       return success;
     }
 
-    template <bool COND, typename NEXT_T, typename... ARGS>
-    std::enable_if_t < !COND, procReturn > expand_buffer_line_named_variables(
-      NEXT_T&& next, 
-      size_t index1, cstringr buffer,
-      size_t index_header, cstringsr headers,
-      const char delimiter,
-      ARGS&&... args) {
 
-      throw std::invalid_argument("trying to read in a csv file with to many columns");
-
-
-      return success;
-    }
 
 
     template <typename T>
     class Import_CSV_impl_base {
     public:
-      std::shared_ptr<T> m_in;
+      std::shared_ptr<std::ifstream> m_in;
       std::string m_name;
       const char  m_delimiter;
       std::string m_buffer;
+
+	  std::ifstream& get_instream() {
+		  return *m_in;
+	  }
       Import_CSV_impl_base(cstringr name, const char delimiter) :
         m_name(name),
         m_delimiter(delimiter)
@@ -106,14 +111,14 @@ namespace ArggLib {
 
 
       procReturn Start() {
-        m_in = Snew T(m_name);
+        m_in = Snew std::ifstream(m_name);
         std::getline(*m_in, m_buffer);
         m_headers.clear();
         m_headers = split_string2vector(m_buffer, ';');
         return procReturn::success;
       }
       procReturn End() {
-        m_in->close();
+       // m_in->close();
         m_in.reset();
         return procReturn::success;
       }
@@ -121,10 +126,10 @@ namespace ArggLib {
     
 
     template <typename T>
-    class Import_CSV_impl : public Import_CSV_impl_base<T> {
+    class Import_CSV_impl : public   Import_CSV_impl_base<T> {
     public:
 
-      using Import_CSV_impl_base::Import_CSV_impl_base;
+      using Import_CSV_impl_base<T>::Import_CSV_impl_base;
   
 
 
@@ -132,9 +137,9 @@ namespace ArggLib {
       procReturn operator()(NEXT_T&& next, ARGS&&... args) {
 
 
-        while (std::getline(*m_in, m_buffer)) {
+        while (std::getline(this->get_instream(), this->m_buffer)) {
 
-          auto ret = ArggLib_impl::expand_buffer_line<1>(next, 0, m_buffer, m_delimiter, std::forward<ARGS>(args)...);
+			auto ret =  ArggLib_impl::expand_buffer_line<1>(next, 0, this->m_buffer, this->m_delimiter, std::forward<ARGS>(args)...);
           if (ret != success) {
             return ret;
           }
@@ -151,15 +156,15 @@ namespace ArggLib {
     template <typename T>
     class Import_CSV_as_HashTable_impl : public Import_CSV_impl_base<T> {
     public:
-      using Import_CSV_impl_base::Import_CSV_impl_base;
+      using Import_CSV_impl_base<T>::Import_CSV_impl_base;
       template <typename NEXT_T, typename... ARGS>
       procReturn operator()(NEXT_T&& next, ARGS&&... args) {
         
         
         std::map<std::string, std::string> ret;
-        while (std::getline(*m_in, m_buffer)) {
+        while (std::getline(this->get_instream(), this->m_buffer)) {
           
-          split_string(m_buffer, m_delimiter, [&ret,header_index  = int(0), this](cautor s) mutable {
+          split_string(this->m_buffer, this->m_delimiter, [&ret,header_index  = int(0), this](cautor s) mutable {
             ret[this->m_headers[header_index++]] = s;
           
           });
@@ -184,20 +189,20 @@ namespace ArggLib {
     public:
   
 
-      using Import_CSV_impl_base::Import_CSV_impl_base;
+      using Import_CSV_impl_base<T>::Import_CSV_impl_base;
 
 
       template <typename NEXT_T, typename... ARGS>
       procReturn operator()(NEXT_T&& next, ARGS&&... args) {
 
 
-        while (std::getline(*m_in, m_buffer)) {
+        while (std::getline(this->get_instream(), this->m_buffer)) {
 
           auto ret = ArggLib_impl::expand_buffer_line_named_variables<1>(
             next, 
-            0, m_buffer, 
-            0, m_headers,
-            m_delimiter,  
+            0, this->m_buffer,
+            0, this->m_headers,
+			  this->m_delimiter,
             std::forward<ARGS>(args)...
             );
           if (ret != success) {

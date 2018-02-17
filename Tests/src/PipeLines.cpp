@@ -20,7 +20,7 @@
 #include "ArggLib/constexpr_if.hh"
 #include "ArggLib/Export_CSV.hh"
 #include "ArggLib/convert2HashTable.hh"
-#include "ArggLib/import_CSV.hh"
+#include "ArggLib/Import_CSV.hh"
 #include "ArggLib/named_variable.hh"
 #include <string>
 #include <iostream>
@@ -75,6 +75,7 @@ ARGGLIB__DEFINE_TEST( processor_test1)
 
       
 }
+
 
 
 ARGGLIB__DEFINE_TEST(processor_test2) {
@@ -275,12 +276,12 @@ class  fun_class {
 public:
   FunBase_t m_funB;
   Fun_t m_fun;
-  fun_class(FunBase_t&& funB, Fun_t&& fun) : m_funB(std::move(funB)),m_fun(std::move(fun)) {}
+  fun_class(FunBase_t funB, Fun_t fun) : m_funB(std::move(funB)),m_fun(std::move(fun)) {}
 
 };
 
 template <typename T,typename T1>
-auto make_fun_class(T&& t,T1&& t1) {
+auto make_fun_class(T t,T1 t1) {
   return fun_class<T,T1>(std::move(t),std::move(t1));
 }
 
@@ -329,3 +330,4 @@ ARGGLIB__DEFINE_TEST(processor_test13) {
 
 
 }
+

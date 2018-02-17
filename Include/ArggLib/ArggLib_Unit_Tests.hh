@@ -7,7 +7,8 @@
 #include <functional>
 #include <vector>
 #include "ArggLib/PRECOMPILER_HELPER.hh"
-#include "reverse.hh"
+#include "ArggLib/reverse.hh"
+#include <iostream>
 
 #define  ARGGLIB__DEFINE_TEST(x) void x();  __add_to_tests<> __MAKE_UNIQUE_PRECOMPILER_NAME__(dummy){ []() { x(); } }; void x() 
 
@@ -42,11 +43,11 @@ namespace ArggLib {
 	void __Test(std::string TestName, T1&& t1, T2&& t2) {
 
 		if (t1 != t2) {
-			cout << "test '" << TestName << "' failed\n";
-			cout << "Variable: \n" << t1 << "\n Unequal \n " << t2 << endl;
+			std::cout << "test '" << TestName << "' failed\n";
+			std::cout << "Variable: \n" << t1 << "\n Unequal \n " << t2 << "\n";
 		}
 		else {
-			cout << "test '" << TestName << "' successful\n";
+			std::cout << "test '" << TestName << "' successful\n";
 		}
 
 	}
