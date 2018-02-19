@@ -135,13 +135,13 @@ namespace ArggLib {
 	};
 
 	template <typename T>
-	out_stream_impl<T> out_stream(T& out_stream) {
-		return out_stream_impl<T>(out_stream);
+	auto out_stream(T& out_stream) {
+		return proc()>> out_stream_impl<T>(out_stream);
 	}
 
 
 
-	auto display() {
+	inline auto display() {
 		return	ArggLib::out_stream(std::cout);
 	}
 }

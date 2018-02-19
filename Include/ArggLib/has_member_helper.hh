@@ -9,6 +9,8 @@ T ____get_T();
 template <typename T, typename... ARGS>
 T _____try_and_set_return_type(ARGS&&...);
 
+template <typename... ARGS>
+int _____try_if_arg_has_return_type(ARGS&&...);
 
 #define CREATE_TEST_FOR_MEMBER(name,member) \
 template <typename... T> \

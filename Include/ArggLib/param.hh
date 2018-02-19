@@ -87,5 +87,14 @@ namespace ArggLib {
 	};
 
 
+
+	void __is_not_param(param&);
+	void __is_not_param(param&&);
+	void __is_not_param(const param&);
+
+	template<typename... ARGS>
+	int __is_not_param(ARGS&&...);
+
+
 }
 #endif // param_h__

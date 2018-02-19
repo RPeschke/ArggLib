@@ -51,7 +51,7 @@ namespace ArggLib {
     }
   }
 
-  inline auto split_string2vector(cstringr input_str, const char delimiter) {
+  inline strings split_string2vector(cstringr input_str, const char delimiter) {
     strings ret;
     split_string(input_str, delimiter, [&ret](cautor in) { ret.push_back(in); });
     return ret;

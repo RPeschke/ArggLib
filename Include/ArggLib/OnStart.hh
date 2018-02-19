@@ -28,8 +28,8 @@ namespace ArggLib {
 
 
 	template <typename T>
-	OnStart_impl<T> OnStart(T fun) {
-		return OnStart_impl<T>(std::move(fun));
+  auto OnStart(T fun) {
+		return proc()>> OnStart_impl<T>(std::move(fun));
 	}
 }
 

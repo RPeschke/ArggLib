@@ -29,8 +29,8 @@ namespace ArggLib {
 
 
 	template <typename T>
-	OnEnd_impl<T> OnEnd(T fun) {
-		return OnEnd_impl<T>(std::move(fun));
+	auto OnEnd(T fun) {
+		return proc()>> OnEnd_impl<T>(std::move(fun));
 	}
 }
 

@@ -12,7 +12,7 @@ namespace ArggLib {
 #define  DEFINE_PROC0(name, nextProcessorName)     class name ## imple { public: \
 template < typename NEXT_T>\
    procReturn operator()( NEXT_T&& nextProcessorName) const ;}; \
-auto name() ->decltype (proc() >> name ## imple()){return proc() >> name ## imple();}\
+inline auto name() ->decltype (proc() >> name ## imple()){return proc() >> name ## imple();}\
 template < typename NEXT_T>\
    procReturn  name ## imple ::operator()( NEXT_T&& nextProcessorName) const 
 
@@ -20,14 +20,14 @@ template < typename NEXT_T>\
 #define  DEFINE_PROC1(name, nextProcessorName,inputName)     class name ## imple { public: \
 template < typename NEXT_T,typename BLOCKS_T>\
    procReturn operator()( NEXT_T&& nextProcessorName,BLOCKS_T&& inputName) const ;}; \
-auto name() ->decltype (proc() >> name ## imple()){return proc() >> name ## imple();}\
+inline auto name() ->decltype (proc() >> name ## imple()){return proc() >> name ## imple();}\
 template < typename NEXT_T,typename BLOCKS_T>\
    procReturn name ## imple::operator()( NEXT_T&& nextProcessorName,BLOCKS_T&& inputName) const 
 
 #define  DEFINE_PROC2(name, nextProcessorName,inputName1,inputName2)     class  name ## imple  { public: \
 template < typename NEXT_T,typename BLOCKS_T1,typename BLOCKS_T2>\
    procReturn operator()( NEXT_T&& nextProcessorName,BLOCKS_T1&& inputName1,BLOCKS_T2&& inputName2) const ;}; \
-auto name()  ->decltype (proc() >> name ## imple()) {return proc() >> name ## imple();}\
+inline auto name()  ->decltype (proc() >> name ## imple()) {return proc() >> name ## imple();}\
 template < typename NEXT_T,typename BLOCKS_T1,typename BLOCKS_T2>\
    procReturn  name ## imple ::operator()( NEXT_T&& nextProcessorName,BLOCKS_T1&& inputName1,BLOCKS_T2&& inputName2) const 
 
@@ -42,7 +42,7 @@ template < typename NEXT_T,typename BLOCKS_T1,typename BLOCKS_T2,typename BLOCKS
 #define  DEFINE_PROC_V(name, nextProcessorName,inputNameV)     class name ## imple { public: \
 template < typename NEXT_T,typename... BLOCKS_T>\
    procReturn operator()( NEXT_T&& nextProcessorName,BLOCKS_T&&... inputNameV) const ;}; \
-auto name()  ->decltype (proc() >> name ## imple()) {return proc() >> name ## imple();}\
+inline auto name()  ->decltype (proc() >> name ## imple()) {return proc() >> name ## imple();}\
 template < typename NEXT_T,typename... BLOCKS_T>\
    procReturn name ## imple::operator()( NEXT_T&& nextProcessorName,BLOCKS_T&&... inputNameV) const 
 
@@ -130,7 +130,7 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 
 
-	class stop {
+	class stop_impl {
 	public:
 		template <  typename... BLOCKS_T>
 		procReturn operator()(BLOCKS_T&&... inputNameV) const {
@@ -138,6 +138,8 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 		}
 
 	};
+
+//	stop_impl stop(); 
 
 	template <typename PROCESSOR_T>
 	class procImple {
@@ -148,9 +150,9 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 
 		template<typename... Param>
-		auto operator()(Param&&... p)->decltype(m_pro(stop(), std::forward<Param>(p)...)) {
+		auto operator()(Param&&... p)->decltype(m_pro(stop_impl(), std::forward<Param>(p)...)) {
 			ArggLib_impl::unfold_Start(m_pro);
-			auto ret =  m_pro(stop(), std::forward<Param>(p)...);
+			auto ret =  m_pro(stop_impl(), std::forward<Param>(p)...);
 			ArggLib_impl::unfold_end(m_pro);
 
 			return ret;
@@ -270,6 +272,9 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 	};
 
 
+	inline auto stop() ->decltype(proc() >> stop_impl()) {
+		return proc() >> stop_impl();
+	}
 
 
 }
