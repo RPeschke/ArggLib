@@ -95,7 +95,9 @@ ARGGLIB__DEFINE_TEST(processor_test2) {
 
   std::stringstream out;
   make_vec({ 1,2,5,6 }) | proc() >> ArggLib::for_loop() >> ArggLib::out_stream(out);
-  ___ARGGLIB_TEST("Streaming the numbers 1,2,5,6 to out stream ", out.str(), "1\n2\n5\n6\n");
+  ___ARGGLIB_TEST("Streaming the numbers 1,2,5,6 to out stream ", 
+    out.str(), 
+    "1\n2\n5\n6\n");
 
 
 }
@@ -128,7 +130,9 @@ ARGGLIB__DEFINE_TEST(processor_test3) {
 
   int i = 0;
   vec | proc() >> ArggLib::for_loop() >> square() >> ArggLib::drop<0>() >> _where{ return i++ < 10; } >> out_stream(out);
-  ___ARGGLIB_TEST("stream out", out.str(),  "0\n1\n4\n9\n16\n25\n36\n49\n64\n81\n");
+  ___ARGGLIB_TEST("stream out", 
+    out.str(), 
+    "0\n1\n4\n9\n16\n25\n36\n49\n64\n81\n");
 
 }
 
@@ -172,7 +176,10 @@ ARGGLIB__DEFINE_TEST(processor_test4) {
 
   vec | proc() >> ArggLib::for_loop() >> square() >> ArggLib::drop<0>() >> ArggLib::out_stream(out);
 
-  ___ARGGLIB_TEST("vec | proc() >> ArggLib::for_loop() >> square() >> ArggLib::drop<0>() >> ArggLib::display();", out.str(), "0\n5\n20\n45\n80\n125\n180\n245\n320\n405\n");
+  ___ARGGLIB_TEST("vec | proc() >> ArggLib::for_loop() >> square() >> ArggLib::drop<0>() >> ArggLib::display();", 
+    out.str(), 
+    "0\n5\n20\n45\n80\n125\n180\n245\n320\n405\n");
+  
   out.str("");
   out.clear();
 
@@ -187,7 +194,10 @@ ARGGLIB__DEFINE_TEST(processor_test5) {
   auto p = proc() >> OnEnd([&] { out << "1\n"; }) >> OnEnd([&] { out << "2\n"; }) >> OnEnd([&] { out << "3\n"; }) >> OnEnd([&] { out << "4\n"; });
   ArggLib_impl::unfold_end(p.m_pro);
 
-  ___ARGGLIB_TEST("auto p = proc() >> OnEnd([] { cout << \"1\\n\"; }) >> OnEnd([] { cout << \"2\\n\"; }) >> OnEnd([] { cout << \"3\\n\"; }) >> OnEnd([] { cout << \"4\\n\"; });", out.str(),  "1\n2\n3\n4\n");
+  ___ARGGLIB_TEST("auto p = proc() >> OnEnd([] { cout << \"1\\n\"; }) >> OnEnd([] { cout << \"2\\n\"; }) >> OnEnd([] { cout << \"3\\n\"; }) >> OnEnd([] { cout << \"4\\n\"; });", 
+    out.str(), 
+    "1\n2\n3\n4\n");
+  
   out.str("");
   out.clear();
   
@@ -208,22 +218,32 @@ ARGGLIB__DEFINE_TEST(processor_test6) {
 
 
 ARGGLIB__DEFINE_TEST(processor_test7) {
-  cout << "==================\n" << "param() | proc() >> OnStart([] { cout << \"1\\n\"; }) >> OnEnd([] { cout << \"2\\n\"; }) >> OnStart([] {cout << \"3\\n\"; }) >> OnEnd([] {cout << \"4\\n\"; }) >> Evaluate([] { cout << \"eval\\n\"; return 1; });\n\n";
-  param() | proc() >> OnStart([] { cout << "1\n"; }) >> OnEnd([] { cout << "2\n"; }) >> OnStart([] {cout << "3\n"; }) >> OnEnd([] {cout << "4\n"; }) >> Evaluate([] { cout << "eval\n"; return 1; });
+ // cout << "==================\n" << "param() | proc() >> OnStart([] { cout << \"1\\n\"; }) >> OnEnd([] { cout << \"2\\n\"; }) >> OnStart([] {cout << \"3\\n\"; }) >> OnEnd([] {cout << \"4\\n\"; }) >> Evaluate([] { cout << \"eval\\n\"; return 1; });\n\n";
+  std::stringstream out;
+
+  param() | proc() >> OnStart([&] { out << "1\n"; }) >> OnEnd([&] { out << "2\n"; }) >> OnStart([&] {out << "3\n"; }) >> OnEnd([&] {out << "4\n"; }) >> Evaluate([&] { out << "eval\n"; return 1; });
+
+  ___ARGGLIB_TEST("param() | proc() >> OnStart([] { cout << \"1\\n\"; }) >> OnEnd([] { cout << \"2\\n\"; }) >> OnStart([] {cout << \"3\\n\"; }) >> OnEnd([] {cout << \"4\\n\"; }) >> Evaluate([] { cout << \"eval\\n\"; return 1; });", out.str(), "3\n1\neval\n2\n4\n");
+
+  out.str("");
+  out.clear();
+
 
   param() | proc()
     >> for_loop(10)
-    >> OnStart([] { cout << "1\n"; })
-    >> OnEnd([] { cout << "2\n"; })
-    >> OnStart([] {cout << "3\n"; })
-    >> OnEnd([] {cout << "4\n"; })
+    >> OnStart([&] { out << "1\n"; })
+    >> OnEnd([&] { out << "2\n"; })
+    >> OnStart([&] {out << "3\n"; })
+    >> OnEnd([&] {out << "4\n"; })
     //		>>drop<0>()
-    >> Evaluate([](auto i) { cout << "eval\n";  return i * i; })
+    >> Evaluate([&](auto i) { out << "eval\n";  return i * i; })
     >> drop<-2>()
-    >> display();
+    >> ArggLib::out_stream(out);
 
 
-  cout << "==================\n\n";
+  ___ARGGLIB_TEST("param() | proc() >> OnStart([] { cout << \"1\\n\"; }) >> OnEnd([] { cout << \"2\\n\"; }) >> OnStart([] {cout << \"3\\n\"; }) >> OnEnd([] {cout << \"4\\n\"; }) >> Evaluate([] { cout << \"eval\\n\"; return 1; });", out.str(), "3\n1\neval\n0\neval\n1\neval\n4\neval\n9\neval\n16\neval\n25\neval\n36\neval\n49\neval\n64\neval\n81\n2\n4\n");
+
+
 
 }
 
@@ -274,11 +294,15 @@ ARGGLIB__DEFINE_TEST(processor_test10) {
 
 ARGGLIB__DEFINE_TEST(processor_test11) {
 
-  cout << "==================\n" << "param() | proc() >> for_loop(10) >> for_loop(10) >> Modify([](auto x, auto y) {  std::map<std::string, double> ret;  ret[\"x\"] = x; ret[\"y\"] = y;  return ret; })>> Export_CSV(\"test4.csv\");\n\n";
-  10 | proc() >> for_loop() >> Evaluate([](auto i) {return i * i; }) >> convert2HashTable({ "x","y" }) >> Export_CSV("test5.csv") >> display();
+
+  std::stringstream out;
+  10 | proc() >> for_loop() >> Evaluate([](auto i) {return i * i; }) >> convert2HashTable({ "x","y" }) >> Export_CSV("test5.csv") >> out_stream(out);
+
+  ___ARGGLIB_TEST("  10 | proc() >> for_loop() >> Evaluate([](auto i) {return i * i; }) >> convert2HashTable({ \"x\",\"y\" }) >> Export_CSV(\"test5.csv\") >> out_stream(out);",
+    out.str(),
+    "0  0\n0  1\n0  2\n0  3\n0  4\n0  5\n0  6\n0  7\n0  8\n0  9\n");
 
 
-  cout << "==================\n\n";
 
 
 }
@@ -286,12 +310,21 @@ ARGGLIB__DEFINE_TEST(processor_test11) {
 
 ARGGLIB__DEFINE_TEST(processor_test12) {
 
-  cout << "==================\n" << "param() | proc() >> for_loop(10) >> for_loop(10) >> Modify([](auto x, auto y) {  std::map<std::string, double> ret;  ret[\"x\"] = x; ret[\"y\"] = y;  return ret; })>> Export_CSV(\"test4.csv\");\n\n";
+  std::stringstream out;
+  int i = 0;
+  param() | Import_CSV("test4.csv", ';') >> Where([&i](auto...) { return i++ < 10;  }) >> ArggLib::out_stream(out) ;
+  ___ARGGLIB_TEST("param() | Import_CSV(\"test4.csv\", ';') >> Where([&i](auto...) { return i++ < 10;  }) >> ArggLib::out_stream(out) ;",
+    out.str(), 
+    "0  0\n0  1\n0  2\n0  3\n0  4\n0  5\n0  6\n0  7\n0  8\n0  9\n");
 
-  param() | Import_CSV("test4.csv", ';') >> display();
-  param() | Import_CSV_as_HashTable("test4.csv", ';') >> display();
+  out.str("");
+  out.clear();
+  i = 0;
+  param() | Import_CSV_as_HashTable("test4.csv", ';') >> Where([&i](auto...) { return i++ < 10;  }) >> ArggLib::out_stream(out);
+  ___ARGGLIB_TEST("param() | Import_CSV_as_HashTable(\"test4.csv\", ';') >> Where([&i](auto...) { return i++ < 10;  }) >> ArggLib::out_stream(out) ;",
+    out.str(),
+    "x  y\n0  0\n0  1\n0  2\n0  3\n0  4\n0  5\n0  6\n0  7\n0  8\n0  9\n");
 
-  cout << "==================\n\n";
 
 
 }
@@ -371,7 +404,9 @@ ARGGLIB__DEFINE_TEST(processor_test13) {
   
 
   param() | Import_CSV_as_named_variables("test4.csv", ';') >> Where([&](auto...) { return ++iii < 10; }) >> out_stream(out);
-  ___ARGGLIB_TEST("Import_CSV_as_named_variables(\"test4.csv\", ';') >> Where([&](auto...) { return ++iii < 10; }) >> out_stream(out);", out.str(),  "x: {0}  y: {0}\nx: {0}  y: {1}\nx: {0}  y: {2}\nx: {0}  y: {3}\nx: {0}  y: {4}\nx: {0}  y: {5}\nx: {0}  y: {6}\nx: {0}  y: {7}\nx: {0}  y: {8}\n");
+  ___ARGGLIB_TEST("Import_CSV_as_named_variables(\"test4.csv\", ';') >> Where([&](auto...) { return ++iii < 10; }) >> out_stream(out);", 
+    out.str(),  
+    "x0: {0}  x1: {0}\nx0: {0}  x1: {1}\nx0: {0}  x1: {2}\nx0: {0}  x1: {3}\nx0: {0}  x1: {4}\nx0: {0}  x1: {5}\nx0: {0}  x1: {6}\nx0: {0}  x1: {7}\nx0: {0}  x1: {8}\n");
   out.str("");
   out.clear();
 
@@ -380,7 +415,9 @@ ARGGLIB__DEFINE_TEST(processor_test13) {
 
   iii = 0;
   param() | Import_CSV_as_HashTable("test4.csv", ';') >> Where([&](auto...) { return ++iii < 10; }) >> out_stream(out);
-  ___ARGGLIB_TEST("param() | Import_CSV_as_HashTable(\"test4.csv\", ';') >> out_stream(out);", out.str(),  "x  y\n0  0\n0  1\n0  2\n0  3\n0  4\n0  5\n0  6\n0  7\n0  8\n");
+  ___ARGGLIB_TEST("param() | Import_CSV_as_HashTable(\"test4.csv\", ';') >> out_stream(out);", 
+    out.str(),  
+    "x0  x1\n0  0\n0  1\n0  2\n0  3\n0  4\n0  5\n0  6\n0  7\n0  8\n");
   out.str("");
   out.clear();
 
