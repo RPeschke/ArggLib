@@ -118,11 +118,11 @@ ARGGLIB__DEFINE_TEST(processor_test14) {
 ARGGLIB__DEFINE_TEST(processor_test15) {
 
   std::stringstream out;
-  cout << "  param() | for_loop(2,20,3) >> \n   (_where{ return _x % 2 == 0; } >> wSpace1(10,out) >> out_stream(out))\n  + (_where{ return _x % 2 == 1; } >> wSpace1(5,out) >> out_stream(out)) ;\n";
+ // cout << "  param() | for_loop(2,20,3) >> \n   (_where{ return _x % 2 == 0; } >> wSpace1(10,out) >> out_stream(out))\n  + (_where{ return _x % 2 == 1; } >> wSpace1(5,out) >> out_stream(out)) ;\n";
   param() | for_loop(2, 20, 3) >>
     (_where{ return _x % 2 == 0; } >> wSpace1(10, out) >> out_stream(out))
     + (_where{ return _x % 2 == 1; } >> wSpace1(5, out) >> out_stream(out));
 
   ___ARGGLIB_TEST("stream out", out.str(), "          2\n     5\n          8\n     11\n          14\n     17\n");
-  cout << "==================\n\n";
+  //cout << "==================\n\n";
 }

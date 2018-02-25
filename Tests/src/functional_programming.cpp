@@ -17,6 +17,7 @@
 #include "ArggLib/param.hh"
 #include "ArggLib/ArggLib_Unit_Tests.hh"
 #include "ArggLib/has_member_helper.hh"
+#include <sstream>
 
 using namespace std;
 using namespace ArggLib;
@@ -27,10 +28,10 @@ using namespace ArggLib;
 
 
 ARGGLIB__DEFINE_TEST(func_test1) {
+	std::stringstream out;
+  auto disp= [&out](auto&& e) {
 
-  auto disp= [](auto&& e) {
-
-    std::cout << e << std::endl;
+		out << e << std::endl;
   };
 
   auto square_ = [](auto&& e) {

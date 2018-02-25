@@ -252,30 +252,30 @@ ARGGLIB__DEFINE_TEST(processor_test7) {
 
 ARGGLIB__DEFINE_TEST(processor_test8) {
 
-  cout << "==================\n" << "	param() | proc() >> for_loop(10) >> for_loop(10)  >> for_loop(10)  >> Export_CSV(\"test.csv\");\n\n";
+  //cout << "==================\n" << "	param() | proc() >> for_loop(10) >> for_loop(10)  >> for_loop(10)  >> Export_CSV(\"test.csv\");\n\n";
   param() | proc() >> for_loop(10) >> for_loop(10) >> for_loop(10) >> Export_CSV("test.csv");
 
-  cout << "==================\n\n";
+  //cout << "==================\n\n";
 
-  cout << "==================\n" << "	param() | proc() >> for_loop(10) >> for_loop(10)  >> for_loop(10)  >> Export_CSV(\"test2.csv\", { \"x\",\"y\",\"z\" }););\n\n";
+  //cout << "==================\n" << "	param() | proc() >> for_loop(10) >> for_loop(10)  >> for_loop(10)  >> Export_CSV(\"test2.csv\", { \"x\",\"y\",\"z\" }););\n\n";
   param() | proc() >> for_loop(10) >> for_loop(10) >> for_loop(10) >> Export_CSV("test2.csv", { "x","y","z" }, ":  ");
 
-  cout << "==================\n\n";
+  //cout << "==================\n\n";
 
-  cout << "==================\n" << "	param() | proc() >> for_loop(10) >> for_loop(10)  >> for_loop(10)  >> Export_CSV(\"test2.csv\", { \"x\",\"y\",\"z\" }););\n\n";
+  //cout << "==================\n" << "	param() | proc() >> for_loop(10) >> for_loop(10)  >> for_loop(10)  >> Export_CSV(\"test2.csv\", { \"x\",\"y\",\"z\" }););\n\n";
   param() | proc() >> for_loop(10) >> Export_CSV("test3.csv", ":  ", { "x" });
 
-  cout << "==================\n\n";
+  //cout << "==================\n\n";
 }
 
 
 ARGGLIB__DEFINE_TEST(processor_test9) {
 
-  cout << "==================\n" << "param() | proc() >> for_loop(10) >> for_loop(10) >> Modify([](auto x, auto y) {  std::map<std::string, double> ret;  ret[\"x\"] = x; ret[\"y\"] = y;  return ret; })>> Export_CSV(\"test4.csv\");\n\n";
+  //cout << "==================\n" << "param() | proc() >> for_loop(10) >> for_loop(10) >> Modify([](auto x, auto y) {  std::map<std::string, double> ret;  ret[\"x\"] = x; ret[\"y\"] = y;  return ret; })>> Export_CSV(\"test4.csv\");\n\n";
   param() | proc() >> for_loop(10) >> for_loop(10) >> Modify([](auto x, auto y) {  std::map<std::string, double> ret;  ret["x"] = x; ret["y"] = y;  return ret; }) >> Export_CSV("test4.csv");
 
 
-  cout << "==================\n\n";
+  //cout << "==================\n\n";
 
 
 }
@@ -283,11 +283,11 @@ ARGGLIB__DEFINE_TEST(processor_test9) {
 
 ARGGLIB__DEFINE_TEST(processor_test10) {
 
-  cout << "==================\n" << "param() | proc() >> for_loop(10) >> for_loop(10) >> Modify([](auto x, auto y) {  std::map<std::string, double> ret;  ret[\"x\"] = x; ret[\"y\"] = y;  return ret; })>> Export_CSV(\"test4.csv\");\n\n";
+  //cout << "==================\n" << "param() | proc() >> for_loop(10) >> for_loop(10) >> Modify([](auto x, auto y) {  std::map<std::string, double> ret;  ret[\"x\"] = x; ret[\"y\"] = y;  return ret; })>> Export_CSV(\"test4.csv\");\n\n";
   param() | proc() >> for_loop(10) >> for_loop(10) >> convert2HashTable<double>() >> Export_CSV("test4.csv");
 
 
-  cout << "==================\n\n";
+  //cout << "==================\n\n";
 
 
 }
@@ -300,7 +300,7 @@ ARGGLIB__DEFINE_TEST(processor_test11) {
 
   ___ARGGLIB_TEST("  10 | proc() >> for_loop() >> Evaluate([](auto i) {return i * i; }) >> convert2HashTable({ \"x\",\"y\" }) >> Export_CSV(\"test5.csv\") >> out_stream(out);",
     out.str(),
-    "0  0\n0  1\n0  2\n0  3\n0  4\n0  5\n0  6\n0  7\n0  8\n0  9\n");
+	  "x  y\n0  0\n1  1\n2  4\n3  9\n4  16\n5  25\n6  36\n7  49\n8  64\n9  81\n");
 
 
 
@@ -406,7 +406,7 @@ ARGGLIB__DEFINE_TEST(processor_test13) {
   param() | Import_CSV_as_named_variables("test4.csv", ';') >> Where([&](auto...) { return ++iii < 10; }) >> out_stream(out);
   ___ARGGLIB_TEST("Import_CSV_as_named_variables(\"test4.csv\", ';') >> Where([&](auto...) { return ++iii < 10; }) >> out_stream(out);", 
     out.str(),  
-    "x0: {0}  x1: {0}\nx0: {0}  x1: {1}\nx0: {0}  x1: {2}\nx0: {0}  x1: {3}\nx0: {0}  x1: {4}\nx0: {0}  x1: {5}\nx0: {0}  x1: {6}\nx0: {0}  x1: {7}\nx0: {0}  x1: {8}\n");
+	  "x: {0}  y: {0}\nx: {0}  y: {1}\nx: {0}  y: {2}\nx: {0}  y: {3}\nx: {0}  y: {4}\nx: {0}  y: {5}\nx: {0}  y: {6}\nx: {0}  y: {7}\nx: {0}  y: {8}\n");
   out.str("");
   out.clear();
 
@@ -417,7 +417,7 @@ ARGGLIB__DEFINE_TEST(processor_test13) {
   param() | Import_CSV_as_HashTable("test4.csv", ';') >> Where([&](auto...) { return ++iii < 10; }) >> out_stream(out);
   ___ARGGLIB_TEST("param() | Import_CSV_as_HashTable(\"test4.csv\", ';') >> out_stream(out);", 
     out.str(),  
-    "x0  x1\n0  0\n0  1\n0  2\n0  3\n0  4\n0  5\n0  6\n0  7\n0  8\n");
+	  "x  y\n0  0\n0  1\n0  2\n0  3\n0  4\n0  5\n0  6\n0  7\n0  8\n");
   out.str("");
   out.clear();
 
