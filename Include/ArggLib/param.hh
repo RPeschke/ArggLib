@@ -4,35 +4,16 @@
 #include <numeric>
 #include <tuple>
 
+#if(_MSC_VER >1910)
+#define ___ArggLib_Apply(Fun, par) std::apply(Fun, par)
 
+#else
+#include "ArggLib/deprecated/apply.hh"
+#define ___ArggLib_Apply(Fun, par) ArggLib::deprecated::apply(Fun, par)
+
+#endif
 namespace ArggLib {
-	template<size_t N>
-	struct Apply {
-		template<typename F, typename T, typename... A>
-		static inline auto apply(F && f, T && t, A &&... a) ->decltype(Apply<N - 1>::apply(::std::forward<F>(f), ::std::forward<T>(t),
-			::std::get<N - 1>(::std::forward<T>(t)), ::std::forward<A>(a)...
-		)) {
-			return Apply<N - 1>::apply(::std::forward<F>(f), ::std::forward<T>(t),
-				::std::get<N - 1>(::std::forward<T>(t)), ::std::forward<A>(a)...
-			);
-		}
-	};
-
-	template<>
-	struct Apply<0> {
-		template<typename F, typename T, typename... A>
-		static inline auto apply(F && f, T &&, A &&... a) ->decltype(::std::forward<F>(f)(::std::forward<A>(a)...)) {
-			return ::std::forward<F>(f)(::std::forward<A>(a)...);
-		}
-	};
-
-	template<typename F, typename T>
-	inline auto apply(F && f, T && t) -> decltype(Apply< ::std::tuple_size<typename ::std::decay<T>::type
-	>::value>::apply(::std::forward<F>(f), ::std::forward<T>(t))) {
-		return Apply< ::std::tuple_size<typename ::std::decay<T>::type
-		>::value>::apply(::std::forward<F>(f), ::std::forward<T>(t));
-	}
-
+	
 	template <typename T>
 	class param_impl;
 
@@ -41,26 +22,26 @@ namespace ArggLib {
 
 	class param_base {};
 
+
+
 	template <typename T>
-	class param_impl :public param_base {
-	public:
-		typename std::remove_reference<T>::type m_params;
+  class param_impl :public param_base {
+  public:
+    typename std::remove_reference<T>::type m_params;
 
 
-		param_impl(const T& param_) :m_params(param_) {
+    param_impl(const T& param_) :m_params(param_) {
 
-		}
-		template<typename T1>
-		auto operator<< (T1&& t)->decltype(make_param_impl(std::tuple_cat(m_params, std::make_tuple(t)))) {
-			return make_param_impl(std::tuple_cat(m_params, std::make_tuple(t)));
-		}
-
-
+    }
+    template<typename T1>
+    auto operator<< (T1&& t)->decltype(make_param_impl(std::tuple_cat(m_params, std::make_tuple(t)))) {
+      return make_param_impl(std::tuple_cat(m_params, std::make_tuple(t)));
+    }
 
 
-		template <typename F>
-		auto operator|(F&& f) const ->decltype(apply(std::forward<F>(f), m_params)) {
-			return  apply(std::forward<F>(f), m_params);
+    template <typename F>
+    auto operator|(F&& f) const->decltype(___ArggLib_Apply(std::forward<F>(f),m_params)){
+			return  ___ArggLib_Apply(std::forward<F>(f),m_params);
 		}
 	};
 
