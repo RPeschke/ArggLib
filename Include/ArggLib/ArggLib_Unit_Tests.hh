@@ -29,11 +29,11 @@ namespace ArggLib {
 				e();
 			}
 
-			std::cout << "<<<<<<<<<<   Test Finished >>>>>>>>>>>>>>\n \nFailed Test:";
+			std::cout << "<<<<<<<<<<   Test Finished >>>>>>>>>>>>>>\nFailed Test: " << get_error_list().size() << " of " << get_fun().size() << "\n\n" ;
 			for (auto& e : get_error_list()) {
 				e(std::cout);
 			}
-
+      std::cout << "\n<<<<<<<<<<   End  >>>>>>>>>>>>>>\n";
 		}
 
 		inline	static std::vector<std::function<void()>>& get_fun() {

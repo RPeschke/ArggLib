@@ -27,7 +27,8 @@ namespace ArggLib {
     };
 
     template<typename F, typename T>
-    [[deprecated("std::apply exist now. pls Update your Compiler!")]]	inline auto apply(F && f, T && t) -> decltype(Apply< ::std::tuple_size<typename ::std::decay<T>::type
+    [[deprecated("std::apply exist now. pls Update your Compiler!")]]	
+    inline auto apply(F && f, T && t) -> decltype(Apply< ::std::tuple_size<typename ::std::decay<T>::type
     >::value>::apply(::std::forward<F>(f), ::std::forward<T>(t))) {
       return Apply< ::std::tuple_size<typename ::std::decay<T>::type
       >::value>::apply(::std::forward<F>(f), ::std::forward<T>(t));
