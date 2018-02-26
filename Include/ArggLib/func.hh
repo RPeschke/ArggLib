@@ -7,7 +7,7 @@
 
 namespace ArggLib {
 
-	std::vector<int> get_ints2(int  in) {
+	inline std::vector<int> get_ints2(int  in) {
 
 		std::vector<int> ret;
 		for (int i = 0; i < in; ++i) {
@@ -17,7 +17,7 @@ namespace ArggLib {
 		return ret;
 	}
 
-	std::vector<int> get_ints3(int  start_, int end_, int step = 1) {
+  inline	std::vector<int> get_ints3(int  start_, int end_, int step = 1) {
 
 		std::vector<int> ret;
 		for (int i = start_; i < end_; i += step) {
@@ -28,7 +28,7 @@ namespace ArggLib {
 	}
 
 
-	int sum_ints(const std::vector<int>& vec) {
+  inline	int sum_ints(const std::vector<int>& vec) {
 
 		return std::accumulate(vec.begin(), vec.end(), 0);
 
