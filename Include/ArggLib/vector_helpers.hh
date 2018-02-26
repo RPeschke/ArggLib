@@ -1,6 +1,7 @@
 #ifndef vector_helpers_h__
 #define vector_helpers_h__
 #include <algorithm>
+#include "ArggLib/cautor.hh"
 #define ArggLib_to_vector  ArggLib::fun() << ArggLib::ArggLib_impl::to_vector_impl() << ArggLib::_X
 #define  ArggLib_sort_by(property) ArggLib::fun() << ArggLib::ArggLib_impl::sort_impl()<< ArggLib::_X << [](cautor e1, cautor e2) {return  e1.property < e2.property; }
 
@@ -42,7 +43,7 @@ namespace ArggLib_impl {
   };
   template <typename T1, typename T2>
   auto  to_vector_impl_convert_element(std::pair<T1, T2>&& t) {
-    std::pair<std::remove_const_t<T1>, std::remove_const_t<T2>> ret(t.first, t.second);
+
     return   std::pair<std::remove_const_t<T1>, std::remove_const_t<T2>>(t.first, t.second);;
 
   };

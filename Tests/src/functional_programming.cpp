@@ -18,6 +18,12 @@
 #include "ArggLib/ArggLib_Unit_Tests.hh"
 #include "ArggLib/has_member_helper.hh"
 #include <sstream>
+#include <map>
+#include "ArggLib/vector_helpers.hh"
+#include "ArggLib/cautor.hh"
+#include "ArggLib/proc_tools.hh"
+#include "ArggLib/out_stream.hh"
+#include "ArggLib/for_loop.hh"
 
 using namespace std;
 using namespace ArggLib;
@@ -28,10 +34,10 @@ using namespace ArggLib;
 
 
 ARGGLIB__DEFINE_TEST(func_test1) {
-	std::stringstream out;
+  std::stringstream out;
   auto disp= [&out](auto&& e) {
 
-		out << e << std::endl;
+    out << e << std::endl;
   };
 
   auto square_ = [](auto&& e) {
@@ -79,7 +85,47 @@ ARGGLIB__DEFINE_TEST(func_test1) {
 
 
 }
+template <typename T1, typename T2>
+std::ostream& operator<<(std::ostream& out, const std::pair<T1, T2> & t) {
+  out << "first: {" << t.first << "} second: {" << t.second << "}";
+  return out;
+}
 
+
+ARGGLIB__DEFINE_TEST(func_test_pipe_test) {
+
+
+  std::map<std::string, double> map_in;
+  map_in["dsad0"] = 0;
+  map_in["dsad1"] = 2;
+  map_in["dsad3"] = 3;
+  map_in["dsad4"] = -5454;
+
+
+  auto vector_out = map_in | ArggLib_to_vector | ArggLib_sort_by(second);
+  std::stringstream out;
+  //map_in | ArggLib::out_stream(out);
+  vector_out | ArggLib::for_loop() >> ArggLib::out_stream(out);
+  ___ARGGLIB_TEST("Function pipe operator",
+    out.str(), 
+    "first: {dsad4} second: {-5454}\nfirst: {dsad0} second: {0}\nfirst: {dsad1} second: {2}\nfirst: {dsad3} second: {3}\n"
+  );
+
+
+  auto x_true = ArggLib:: contains(make_vec({ 1,2,5,6 }), 1);
+
+  ___ARGGLIB_TEST("Function contains true case",
+    x_true,
+    true
+  );
+  auto x_false = ArggLib::contains(make_vec({ 1,2,5,6 }), 100);
+
+  ___ARGGLIB_TEST("Function contains",
+    x_false,
+    false
+  );
+
+}
 
 
 
