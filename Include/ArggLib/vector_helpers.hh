@@ -25,6 +25,32 @@ auto operator()(Container_t hir, Predicate_t F) {
 };
 #define  ArggLib_sort_by(property) fun() << sort_impl()<< _X << [](cautor e1, cautor e2) {return  e1.property < e2.property; }
 
+template <typename T>
+auto  to_vector_impl_convert_element(T&& t) {
+  return t;
+
+};
+
+
+template <typename T1, typename T2>
+auto  to_vector_impl_convert_element(std::pair<T1, T2>& t) {
+
+  return   std::pair<std::remove_const_t<T1>, std::remove_const_t<T2>>(t.first, t.second);;
+
+};
+template <typename T1, typename T2>
+auto  to_vector_impl_convert_element(std::pair<T1, T2>&& t) {
+  std::pair<std::remove_const_t<T1>, std::remove_const_t<T2>> ret(t.first, t.second);
+  return   std::pair<std::remove_const_t<T1>, std::remove_const_t<T2>>(t.first, t.second);;
+
+};
+
+template <typename T1, typename T2>
+auto  to_vector_impl_convert_element(const std::pair<T1, T2>& t) {
+
+  return   std::pair<std::remove_const_t<T1>, std::remove_const_t<T2>>(t.first, t.second);;
+
+};
 
 
 class to_vector_impl {
@@ -34,11 +60,11 @@ public:
     std::vector<
         std::remove_const_t<
             std::remove_reference_t<
-              decltype(*container_v.begin())>
+              decltype(to_vector_impl_convert_element(*container_v.begin()))>
                 >
                 > ret;
     for (auto e : container_v) {
-      ret.push_back(e);
+      ret.push_back(to_vector_impl_convert_element(e));
     }
 
     return ret;
