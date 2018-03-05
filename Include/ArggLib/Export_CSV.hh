@@ -98,7 +98,7 @@ namespace ArggLib {
 		procReturn Start() {
 			out = Snew T(m_name);
 
-			print__(*out, m_delimiter, m_headers);
+			ArggLib_impl::print__(*out, m_delimiter, m_headers);
 			return procReturn::success;
 		}
 		procReturn End() {

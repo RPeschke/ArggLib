@@ -85,11 +85,6 @@ ARGGLIB__DEFINE_TEST(func_test1) {
 
 
 }
-template <typename T1, typename T2>
-std::ostream& operator<<(std::ostream& out, const std::pair<T1, T2> & t) {
-  out << "first: {" << t.first << "} second: {" << t.second << "}";
-  return out;
-}
 
 
 ARGGLIB__DEFINE_TEST(func_test_pipe_test) {
@@ -112,21 +107,57 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test) {
   );
 
 
-  auto x_true = ArggLib:: contains(make_vec({ 1,2,5,6 }), 1);
+  auto x_true = make_vec({ 1,2,5,6 }) | ArggLib:: contains(1);
 
   ___ARGGLIB_TEST("Function contains true case",
     x_true,
     true
   );
-  auto x_false = ArggLib::contains(make_vec({ 1,2,5,6 }), 100);
+  auto x_false = make_vec({ 1,2,5,6 }) |  ArggLib::contains(100);
 
-  ___ARGGLIB_TEST("Function contains",
+  ___ARGGLIB_TEST("Function contains false case",
     x_false,
     false
   );
 
 }
 
+
+
+ARGGLIB__DEFINE_TEST(func_test_pipe_test2121) {
+  std::stringstream out;
+  auto x = ArggLib::_to_vector << 1.0 << 10;
+
+  x | ArggLib::for_loop() >> ArggLib::out_stream(out);
+  ___ARGGLIB_TEST("auto x = _to_vector << 1.0 << 10;",
+    out.str(),
+    "1\n2\n3\n4\n5\n6\n7\n8\n9\n"
+  );
+
+  out.str("");
+  out.clear();
+
+
+  auto x2 = ArggLib::_to_vector << 1.0 < -2 < -11;
+  x2 | ArggLib::for_loop() >> ArggLib::out_stream(out);
+    ___ARGGLIB_TEST("auto x2 = ArggLib::_to_vector << 1.0 < -2 < -11;",
+    out.str(),
+      "1\n-1\n-3\n-5\n-7\n-9\n"
+  );
+
+
+  out.str("");
+  out.clear();
+
+  auto x3 = ArggLib::_to_vector << 1.0 < -2 <= -11;
+  x3 | ArggLib::for_loop() >> ArggLib::out_stream(out);
+  ___ARGGLIB_TEST("auto x3 = ArggLib::_to_vector << 1.0 < -2 <= -11;",
+    out.str(),
+    "1\n-1\n-3\n-5\n-7\n-9\n-11\n"
+  );
+  out.str("");
+  out.clear();
+}
 
 
 

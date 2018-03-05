@@ -36,20 +36,7 @@ namespace ArggLib {
 	}
 
 
-	class make_vec {
-	public:
 
-
-		template<typename T>
-		auto operator()(T&& t1, T&& t2, T&& t3) {
-			std::vector<double> ret;
-			for (double i = t1; i < t2; i += t3) {
-				ret.push_back(i);
-			}
-
-			return ret;
-		}
-	};
 
 
 	template <typename T>

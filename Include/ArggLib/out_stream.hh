@@ -12,53 +12,70 @@
 namespace ArggLib {
 
 
+  namespace ArggLib_impl {
+    template <typename T1, typename T2>
+    std::ostream& operator<<(std::ostream& out, const std::pair<T1, T2> & t) {
+      out << "first: {" << t.first << "} second: {" << t.second << "}";
+      return out;
+    }
+    template <typename T1, typename T2>
+    std::ostream& operator<<(std::ostream& out, std::pair<T1, T2> & t) {
+      out << "first: {" << t.first << "} second: {" << t.second << "}";
+      return out;
+    }
 
-	template<typename T>
-	void print__(std::ostream& out, const std::string& delimer, T&& t) {
-		out << t << '\n';
-	}
-	template<typename T, typename... ARGS>
-	void print__(std::ostream& out,const std::string& delimer, T&& t, ARGS&&... args) {
-		out << t << delimer;
-		print__(out, delimer, std::forward<ARGS>(args)...);
-	}
+    template <typename T1, typename T2>
+    std::ostream& operator<<(std::ostream& out, std::pair<T1, T2> && t) {
+      out << "first: {" << t.first << "} second: {" << t.second << "}";
+      return out;
+    }
 
-	template<typename T, typename accessor_F >
-	void print__(std::ostream& out, const std::string& delimer,const std::vector<T>& t, accessor_F&& accessor) {
-		bool first = true;
-		for (auto& e : t)
-		{
-			if (first) {
-				out << accessor(e);
-				first = false;
-			}
-			else {
-				out << delimer << accessor(e);
-			}
-		}
-		out << '\n';
-	}
+    template<typename T>
+    void print__(std::ostream& out, const std::string& delimer, T&& t) {
+      out << t << '\n';
+    }
+    template<typename T, typename... ARGS>
+    void print__(std::ostream& out, const std::string& delimer, T&& t, ARGS&&... args) {
+      out << t << delimer;
+      print__(out, delimer, std::forward<ARGS>(args)...);
+    }
 
-	template<typename T, typename accessor_F >
-	void print__(std::ostream& out, const std::string& delimer,  std::vector<T>& t, accessor_F&& accessor) {
+    template<typename T, typename accessor_F >
+    void print__(std::ostream& out, const std::string& delimer, const std::vector<T>& t, accessor_F&& accessor) {
+      bool first = true;
+      for (auto& e : t)
+      {
+        if (first) {
+          out << accessor(e);
+          first = false;
+        }
+        else {
+          out << delimer << accessor(e);
+        }
+      }
+      out << '\n';
+    }
 
-		print__(out, delimer, const_cast<const  std::vector<T>&>(t), accessor);
-	}
-	template<typename T  >
-	void print__(std::ostream& out, const std::string& delimer, const std::vector<T>& t) {
-		print__(out, delimer, t, [](auto e) { return e; });
-	}
+    template<typename T, typename accessor_F >
+    void print__(std::ostream& out, const std::string& delimer, std::vector<T>& t, accessor_F&& accessor) {
 
-	template<typename T  >
-	void print__(std::ostream& out, const std::string& delimer,  std::vector<T>& t) {
-		print__(out, delimer, const_cast<const  std::vector<T>&>(t));
-	}
+      print__(out, delimer, const_cast<const  std::vector<T>&>(t), accessor);
+    }
+    template<typename T  >
+    void print__(std::ostream& out, const std::string& delimer, const std::vector<T>& t) {
+      print__(out, delimer, t, [](auto e) { return e; });
+    }
 
+    template<typename T  >
+    void print__(std::ostream& out, const std::string& delimer, std::vector<T>& t) {
+      print__(out, delimer, const_cast<const  std::vector<T>&>(t));
+    }
 
+  }
 
 	template <typename... T>
 	void _Fill(std::ostream& out, const std::string& delimer, T&&... i) {
-		ArggLib::print__(out, delimer, std::forward<T>(i)...);
+		ArggLib::ArggLib_impl::print__(out, delimer, std::forward<T>(i)...);
 	}
 
 	namespace ArggLib_impl {
