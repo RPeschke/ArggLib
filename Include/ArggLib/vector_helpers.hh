@@ -11,27 +11,30 @@
 
 namespace ArggLib {
 
-
-template < typename T>
-auto contains( const T& value){
-  return fun() << [value](const auto& cont_v) {return std::find(cont_v.begin(), cont_v.end(), value) != cont_v.end(); };
-}
-
-
-
-
-
-
-enum  __make_vec_enum {
-  _to_vector
-
-};
+  template <typename Container_t, typename T>
+  auto contains(const Container_t& cont_v, const T& value) {
+    return std::find(cont_v.begin(), cont_v.end(), value) != cont_v.end();
+  }
+  template < typename T>
+  auto contains(const T& value) {
+    return fun() << [value](const auto& cont_v) {return std::find(cont_v.begin(), cont_v.end(), value) != cont_v.end(); };
+  }
 
 
-template <typename T>
-auto operator<<(__make_vec_enum in_, T t) {
-  return ArggLib_impl::make_vec_impl_1<T>(std::move(t));
-}
+
+
+
+
+  enum  __make_vec_enum {
+    _to_vector
+
+  };
+
+
+  template <typename T>
+  auto operator<<(__make_vec_enum in_, T t) {
+    return ArggLib_impl::make_vec_impl_1<T>(std::move(t));
+  }
 
 }
 #endif // vector_helpers_h__
