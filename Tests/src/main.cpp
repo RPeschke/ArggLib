@@ -32,9 +32,9 @@ public:
   int get_number() {
     return 1;
   }
-//   operator c2() {
-//     return c2{*this};
-//   }
+  //   operator c2() {
+  //     return c2{*this};
+  //   }
 
 } _impl_test;
 
