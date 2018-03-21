@@ -4,12 +4,21 @@
 
 namespace ArggLib {
 
-  template <typename T,typename F> 
+  template <typename T, typename F>
   class validated_variable {
   public:
-    validated_variable(T value, F fun ):m_value(std::move(value)), m_fun(std::move(fun)) {
-    
+    validated_variable(T value, F fun) :m_value(std::move(value)), m_fun(std::move(fun)) {
+
       if (!fun(m_value)) {
+
+
+        throw std::invalid_argument("Argument: '" + std::to_string(m_value) + "' is not valid as an Argument for validated_variable.");
+      }
+    }
+
+    validated_variable(T value) :m_value(std::move(value)){
+
+      if (!m_fun(m_value)) {
 
 
         throw std::invalid_argument("Argument: '" + std::to_string(m_value) + "' is not valid as an Argument for validated_variable.");
@@ -34,8 +43,8 @@ namespace ArggLib {
   };
 
 
-  template <typename T, typename F> 
-  auto make_validated_variable(T value, F fun ) {
+  template <typename T, typename F>
+  auto make_validated_variable(T value, F fun) {
 
 
     return validated_variable<T, F>(std::move(value), std::move(fun));
@@ -48,6 +57,43 @@ namespace ArggLib {
     return make_validated_variable(std::move(value), [](auto) {return true; });
   }
 
+  
+  namespace ArggLib_impl {
+    class positive_number {
+    public:
+      template <typename T>
+      auto operator()(const T& e) {
+        return e > 0;
+      }
+    };
+    class negative_number {
+    public:
+      template <typename T>
+      auto operator()(const T& e) {
+        return e < 0;
+      }
+    };
+
+    class not_negative {
+    public:
+      template <typename T>
+      auto operator()(const T& e) {
+        return e >= 0;
+      }
+    };
+    class not_positive {
+    public:
+      template <typename T>
+      auto operator()(const T& e) {
+        return e <= 0;
+      }
+    };
+  }
+
+  using  double_positive = validated_variable<double, ArggLib_impl::positive_number>;
+  using  double_negative = validated_variable<double, ArggLib_impl::negative_number>;
+  using  double_not_negative = validated_variable<double, ArggLib_impl::not_negative>;
+  using  double_not_positive = validated_variable<double, ArggLib_impl::not_positive>;
 }
 
 #endif // validated_variable_h__

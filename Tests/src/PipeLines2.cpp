@@ -161,4 +161,8 @@ ARGGLIB__DEFINE_TEST(validated_variable_test) {
     ___ARGGLIB_TEST("validated_variable_2", errormsg, "Argument: '100' is not valid as an Argument for validated_variable.");
   }
 
+  int i = x1;
+  ArggLib::double_positive x4 = 100;
+  ArggLib::double_positive x5 = -100;
+
 }
