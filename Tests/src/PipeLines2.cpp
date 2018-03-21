@@ -24,6 +24,7 @@
 #include "ArggLib/named_variable.hh"
 #include <string>
 #include <iostream>
+#include "ArggLib/validated_variable.hh"
 
 
 
@@ -125,4 +126,39 @@ ARGGLIB__DEFINE_TEST(processor_test15) {
 
   ___ARGGLIB_TEST("stream out", out.str(), "          2\n     5\n          8\n     11\n          14\n     17\n");
   //cout << "==================\n\n";
+}
+
+ARGGLIB__DEFINE_TEST(validated_variable_test) {
+
+
+
+  auto x = make_validated_variable(100, [](auto) { return true; });
+  auto x1 = make_validated_variable(100);
+
+  try
+  {
+    auto x2 = make_validated_variable(100, [](auto x) {return x > 200; });
+
+  }
+  catch (const std::exception& e)
+  {
+    std::string errormsg = e.what();
+    ___ARGGLIB_TEST("validated_variable_1", errormsg, "Argument: '100' is not valid as an Argument for validated_variable.");
+  }
+
+  x1 = 200;
+
+
+  auto x2 = make_validated_variable(300, [](auto x) {return x > 200; });
+  try
+  {
+    x2 = 100;
+
+  }
+  catch (const std::exception& e)
+  {
+    std::string errormsg =  e.what();
+    ___ARGGLIB_TEST("validated_variable_2", errormsg, "Argument: '100' is not valid as an Argument for validated_variable.");
+  }
+
 }
