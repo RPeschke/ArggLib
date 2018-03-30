@@ -4,6 +4,7 @@
 #include <vector>
 #include <numeric>
 #include <tuple>
+#include "ArggLib/param.hh"
 
 namespace ArggLib {
 

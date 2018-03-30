@@ -166,3 +166,15 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test2121) {
 
 
 
+ARGGLIB__DEFINE_TEST(func_test_pipe_test21211) {
+
+	std::vector<double> vec = { 1,2,4,5 };
+
+	auto x =  vec | contains(1);
+	auto x1 = vec | contains_any({ 10,20 });
+	auto x2 = vec | contains_all({ 1,20 });
+	auto x3 = vec | contains_if([](cautor x) { return x > 3; });
+
+	auto x4 = vec | contains_if([](cautor x) { return x > 30; });
+
+}
