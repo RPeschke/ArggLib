@@ -11,8 +11,8 @@
 #include <iostream>
 #include <sstream>
 
-#define  ARGGLIB__DEFINE_TEST(x) void x();  __add_to_tests<> __MAKE_UNIQUE_PRECOMPILER_NAME__(dummy){ []() { x(); } }; void x() 
-#define ___ARGGLIB_TEST(TestName,First,Second) __Test_imple( __LINE__ , __FUNCTION__ ,__FILE__ , TestName, First, Second)
+#define  ARGGLIB__DEFINE_TEST(x) void x(); ArggLib::__add_to_tests<> __MAKE_UNIQUE_PRECOMPILER_NAME__(dummy){ []() { x(); } }; void x() 
+#define ___ARGGLIB_TEST(TestName,First,Second) ArggLib::__Test_imple( __LINE__ , __FUNCTION__ ,__FILE__ , TestName, First, Second)
 
 namespace ArggLib {
 
