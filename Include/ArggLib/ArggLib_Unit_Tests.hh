@@ -11,7 +11,7 @@
 #include <iostream>
 #include <sstream>
 
-#define  ARGGLIB__DEFINE_TEST(x) void x(); ArggLib::__add_to_tests<> __MAKE_UNIQUE_PRECOMPILER_NAME__(dummy){ []() { x(); } }; void x() 
+#define  ARGGLIB__DEFINE_TEST(x) void x(); ArggLib::__add_to_tests<> __MAKE_UNIQUE_PRECOMPILER_NAME__(x){ []() { x(); } }; void x() 
 #define ___ARGGLIB_TEST(TestName,First,Second) ArggLib::__Test_imple( __LINE__ , __FUNCTION__ ,__FILE__ , TestName, First, Second)
 
 namespace ArggLib {
@@ -66,7 +66,7 @@ namespace ArggLib {
       "\ntest '" << TestName << "'\n";
     if (t1 != t2) {
       out << "status = failed\n";
-      out << "Variable: \n" << t1 << "\n Unequal \n " << t2 << "\n";
+      out << "Variable: \n" << t1 << "\n Unequal \n" << t2 << "\n";
 
 
     }

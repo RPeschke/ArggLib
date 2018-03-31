@@ -1,6 +1,7 @@
 #ifndef for_loop_h__
 #define for_loop_h__
 #include "ArggLib/has_member_helper.hh"
+#include "ArggLib/proc_tools.hh"
 
 namespace ArggLib {
 

@@ -1,30 +1,14 @@
 // PipeLines.cpp : Defines the entry point for the console application.
 //
 
-#include "ArggLib/proc.hh"
-#include "ArggLib/param.hh"
-#include "ArggLib/proc_tools.hh"
+
 
 #include <sstream>
-#include "ArggLib/ArggLib_Unit_Tests.hh"
-#include "ArggLib/for_loop.hh"
-#include "ArggLib/out_stream.hh"
-#include "ArggLib/Evaluate.hh"
-#include "ArggLib/Drop.hh"
-#include "ArggLib/Modify.hh"
-#include "ArggLib/Where.hh"
-#include "ArggLib/has_member_helper.hh"
-#include "ArggLib/OnEnd.hh"
-#include "ArggLib/impl_do_begin_do_end.hh"
-#include "ArggLib/OnStart.hh"
-#include "ArggLib/constexpr_if.hh"
-#include "ArggLib/Export_CSV.hh"
-#include "ArggLib/convert2HashTable.hh"
-#include "ArggLib/Import_CSV.hh"
-#include "ArggLib/named_variable.hh"
 #include <string>
 #include <iostream>
 
+
+#include "ArggLib/complete_lib.hh"
 
 
 
@@ -184,6 +168,9 @@ ARGGLIB__DEFINE_TEST(processor_test4) {
   out.clear();
 
 }
+
+
+
 
 
 

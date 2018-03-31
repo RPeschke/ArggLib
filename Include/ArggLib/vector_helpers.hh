@@ -19,6 +19,10 @@ namespace ArggLib {
 	inline auto sort(T1  comp, T2 get_proberty,T3 abs_f) {
 		return  ArggLib::ArggLib_impl::sort_impl<T1,T2, T3>(std::move(comp),std::move(get_proberty) ,std::move(abs_f));
 	}
+	template <typename T1, typename T2>
+	inline auto sort(T1  comp, T2 get_proberty) {
+		return  sort(std::move(comp), std::move(get_proberty), [](cautor e) { return e; });
+	}
 
 	inline auto sort() {
 		return  sort([](cautor e1, cautor e2) {return  e1 < e2; }, [](cautor e) { return e; }, [](cautor e) { return e; });

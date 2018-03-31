@@ -1,5 +1,4 @@
-#include "ArggLib/ArggLib_Unit_Tests.hh"
-#include "ArggLib/factoryDef.hh"
+#include "ArggLib/complete_lib.hh"
 #include <string>
 #include <iostream>
 

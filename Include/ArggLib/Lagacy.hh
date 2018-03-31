@@ -104,11 +104,11 @@ namespace ArggLib {
 	};
 
 
-	void ___reset(std::ostream*) {}
+	inline void ___reset(std::ostream*) {}
 
 	template<typename... ARGS> void ___Fill(std::ostream* out, ARGS&&... args) { print__(*out, args...); }
 
-	void ___reset(std::shared_ptr<std::ofstream>*) {}
+	inline void ___reset(std::shared_ptr<std::ofstream>*) {}
 
 	template<typename... ARGS> void ___Fill(std::shared_ptr<std::ostream>* out, ARGS&&... args) { print__(*out->get(), args...); }
 }
