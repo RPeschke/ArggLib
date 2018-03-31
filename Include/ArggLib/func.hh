@@ -7,6 +7,7 @@
 #include "ArggLib/param.hh"
 #include <type_traits>
 #include "ArggLib/type_trates.hh"
+#include "ArggLib/add_parameter.hh"
 
 namespace ArggLib {
 

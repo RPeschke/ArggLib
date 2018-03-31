@@ -3,6 +3,7 @@
 
 
 
+
 namespace ArggLib {
 
 	template<typename Fun_t>
@@ -28,17 +29,6 @@ namespace ArggLib {
 	}
 
 
-#define add_parameter(name,type) \
-public: \
-	auto name() const { \
-		return m_##name; \
-	} \
-	auto name(const type& del) { \
-		m_##name = del; \
-		return *this; \
-	} \
-private: \
-	type m_##name
 
 
 

@@ -3,6 +3,7 @@
 
 
 #include "ArggLib/add.hh"
+#include "ArggLib/add_parameter.hh"
 #include "ArggLib/ArggLib_Unit_Tests.hh"
 #include "ArggLib/cautor.hh"
 #include "ArggLib/constexpr_if.hh"
