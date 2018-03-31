@@ -55,7 +55,7 @@ ARGGLIB__DEFINE_TEST(func_test1) {
   auto f = fun() << square_ << 7;
   auto xx = param() | f;
   auto xxx = param() | fun() << square_ << 8;
-  auto xxx1 = param() | fun() << square_ << 8 > fun() << get_ints3 << 1 << _X << 1;
+//  auto xxx1 = param() | fun() << square_ << 8 > fun() << get_ints3 << 1 << _X << 1;
 
   auto f1 = fun() << square_;
 

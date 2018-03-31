@@ -10,60 +10,6 @@
 
 namespace ArggLib {
 
-	inline std::vector<int> get_ints2(int  in) {
-
-		std::vector<int> ret;
-		for (int i = 0; i < in; ++i) {
-			ret.push_back(i);
-		}
-
-		return ret;
-	}
-
-  inline	std::vector<int> get_ints3(int  start_, int end_, int step = 1) {
-
-		std::vector<int> ret;
-		for (int i = start_; i < end_; i += step) {
-			ret.push_back(i);
-		}
-
-		return ret;
-	}
-
-
-  inline	int sum_ints(const std::vector<int>& vec) {
-
-		return std::accumulate(vec.begin(), vec.end(), 0);
-
-
-	}
-
-
-
-
-
-	template <typename T>
-	auto getvec4(T t) {
-		std::vector<T> ret;
-		for (T i = 0.0; i < t; ++i) {
-			ret.push_back(i);
-		}
-
-		return ret;
-	}
-
-
-	class sum_all {
-	public:
-		template <typename T>
-		auto operator()(T&& t) const {
-			return accumulate(t.begin(), t.end(), typename T::value_type(0));
-		}
-		template <typename T1, typename T2>
-		auto operator()(T1&& t, T2 && start_) const {
-			return accumulate(t.begin(), t.end(), start_);
-		}
-	};
 
 
 	template <size_t N, typename T>
