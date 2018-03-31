@@ -134,36 +134,36 @@ namespace ArggLib {
 
 		};
 
-		template <typename comp_t, typename GET_Prob_t>
+		template <typename comp_t, typename GET_Prob_t, typename ABS_F>
 		class sort_impl :public fun_impl_b0 {
 			GET_Prob_t m_get_proberty;
 			comp_t m_comp;
-
+			ABS_F m_abs;
 		public:
 
 			template<typename T>
 			auto by_property(T get_proberty) {
-				return  sort(m_comp, get_proberty);
+				return  sort(m_comp, get_proberty, m_abs);
 			}
 			auto absulute() const {
-				return  sort(m_comp, [get_proberty = this->m_get_proberty](cautor e) { return std::abs(get_proberty(e)); });
+				return  sort(m_comp, m_get_proberty, [](cautor e) { return std::abs(e); });
 			}
 			auto by_first() const {
-				return  sort(m_comp, [](cautor e) { return e.first; });
+				return  sort(m_comp, [](cautor e) { return e.first; } , m_abs);
 			}
 			auto by_second() const {
-				return  sort(m_comp, [](cautor e) { return e.second; });
+				return  sort(m_comp, [](cautor e) { return e.second; } , m_abs);
 			}
 			auto ascending() const {
-				return  sort([](cautor e1, cautor e2) {return  e1 < e2; }, m_get_proberty);
+				return  sort([](cautor e1, cautor e2) {return  e1 < e2; }, m_get_proberty, m_abs);
 			}
 			auto descending() const {
-				return  sort([](cautor e1, cautor e2) {return  e1 > e2; }, m_get_proberty);
+				return  sort([](cautor e1, cautor e2) {return  e1 > e2; }, m_get_proberty, m_abs);
 			}
-			sort_impl(comp_t comp, GET_Prob_t get_proberty) :m_comp(std::move(comp)), m_get_proberty(std::move(get_proberty)) {}
+			sort_impl(comp_t comp, GET_Prob_t get_proberty, ABS_F abs_f) :m_comp(std::move(comp)), m_get_proberty(std::move(get_proberty)),m_abs(std::move(abs_f)) {}
 			template <typename Container_t>
 			auto operator()(Container_t hir) {
-				auto pred = [&](cautor e1, cautor e2) {  return m_comp(m_get_proberty(e1), m_get_proberty(e2)); };
+				auto pred = [&](cautor e1, cautor e2) {  return m_comp(m_abs(m_get_proberty(e1)), m_abs(m_get_proberty(e2))); };
 				std::sort(hir.begin(), hir.end(), pred);
 				return hir;
 			}

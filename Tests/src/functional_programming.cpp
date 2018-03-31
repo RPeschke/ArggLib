@@ -288,7 +288,7 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test12212) {
 
 
 
-	auto vector_out = map_in | to_vector() | sort().by_second().absulute();
+	auto vector_out = map_in | to_vector() | sort().by_second();
 
 	int i = 2;
 	auto s1 = vector_out | _where_f( _x.second > i; ) |   to_string_f() | write_out(out);
