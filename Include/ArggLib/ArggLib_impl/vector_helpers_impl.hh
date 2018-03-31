@@ -257,7 +257,7 @@ namespace ArggLib {
 			to_string_impl(to_string_f f1) :m_to_string(std::move(f1)) {}
 
 			template <typename Container_t>
-			auto operator()(const Container_t& con) const {
+			auto operator()(const Container_t& con) const  -> decltype(std::begin(con), std::string()) {
 
 				std::string buffer = header();
 				bool first = true;
@@ -275,7 +275,14 @@ namespace ArggLib {
 				return buffer;
 			}
 
+			template <typename Container_t>
+			auto operator()(const Container_t& con) const  -> decltype(con.str(), std::string()) {
 
+				std::string buffer = header();
+				buffer += con.str();
+				buffer += footer();
+				return buffer;
+			}
 		};
 
 	}

@@ -152,11 +152,30 @@ namespace ArggLib {
 	};
 
 	template <typename T>
+	class out_stream_impl0 : public out_stream_impl<T> {
+	public:
+		std::shared_ptr<T> m_out_owned;
+		out_stream_impl0(std::shared_ptr<T> out_sp) : out_stream_impl<T>(*out_sp), m_out_owned(out_sp) {}
+		
+		template<typename... ARGs>
+		auto End(ARGs&&... ) {
+			
+			auto ret = m_out_owned;
+			m_out_owned.reset();
+			return std::move(*ret);
+		}
+
+	};
+
+	template <typename T>
 	auto out_stream(T& out_stream) {
 		return proc()>> out_stream_impl<T>(out_stream);
 	}
 
 
+	inline auto out_stream() {
+		return proc() >> out_stream_impl0<std::stringstream>( Snew std::stringstream() );
+	}
 
 	inline auto display() {
 		return	ArggLib::out_stream(std::cout);

@@ -25,6 +25,8 @@
 #include <string>
 #include <iostream>
 #include "ArggLib/validated_variable.hh"
+#include "ArggLib/write_host.hh"
+#include "ArggLib/vector_helpers.hh"
 
 
 
@@ -128,6 +130,8 @@ ARGGLIB__DEFINE_TEST(processor_test15) {
   //cout << "==================\n\n";
 }
 
+
+
 ARGGLIB__DEFINE_TEST(validated_variable_test) {
 
 
@@ -167,10 +171,12 @@ ARGGLIB__DEFINE_TEST(validated_variable_test) {
 
 }
 
+
+
 ARGGLIB__DEFINE_TEST(where_p_test1) {
 
 
-	10 | for_loop() >> _where_p(   _x > 5  ) >> display();
-
+	10 | for_loop() >> _where_p(_x > 5) >> out_stream() | to_string_f() | write_host();
+	//std::cout << out.str();
 	int i = 0;
 }

@@ -16,82 +16,71 @@ namespace ArggLib {
 
 
 
-		template <typename N>
-		procReturn do_end1(N&& n) {
+		template <typename... N>
+		procReturn do_end1(N&&... n) {
 			return success;
 		}
 
-		template <typename N>
-		__ENABLE_IF(hasEnd<N>(), procReturn) do_end1(N& n) {
-			return	n.End();
-
-		}
-
-		template <typename N>
-		__ENABLE_IF(hasEnd<const N>(), procReturn) do_end1(const N& n) {
-			return	n.End();
-
-		}
-
-		template <typename N>
-		__ENABLE_IF(hasEnd< N>(), procReturn) do_end1(N&& n) {
-			return n.End();
+		template <typename N ,typename T >
+		auto do_end1(N&& n,T&& value) ->decltype(n.End(declval<T>() )) {
+			return	n.End(value);
 
 		}
 
 
-		template <typename N>
-		__ENABLE_IF_NOT(has_n<N>(), procReturn)  do_end2(N&& n) {
-			return do_end1(n);
+		template <typename... N>
+		auto do_end2(N&&... n) {
+			return do_end1(n...);
 		}
 
-		template <typename N>
-		__ENABLE_IF(has_n<N>(), procReturn) do_end2(N& n) {
-			return	do_end1(n.n);
+		template <typename N,typename T>
+		auto do_end2(N&& n,T&& value) ->decltype(do_end1(n.n,value)){
+			return	do_end1(n.n ,value);
 
 		}
+// 
+// 		template <typename N>
+// 		__ENABLE_IF(has_n<const N>(), procReturn) do_end2(const N& n) {
+// 			return	do_end1(n.n);
+// 
+// 		}
+// 
+// 		template <typename N>
+// 		__ENABLE_IF(has_n< N>(), procReturn) do_end2(N&& n) {
+// 			return	do_end1(n.n);
+// 
+// 		}
 
-		template <typename N>
-		__ENABLE_IF(has_n<const N>(), procReturn) do_end2(const N& n) {
-			return	do_end1(n.n);
 
-		}
-
-		template <typename N>
-		__ENABLE_IF(has_n< N>(), procReturn) do_end2(N&& n) {
-			return	do_end1(n.n);
-
-		}
-
-
-		template <typename P>
-		procReturn unfold_end(P&& p) {
-			do_end2(p);
-			return success;
+		template <typename... P>
+		auto unfold_end(P&&... p) {
+			
+			return do_end2(p...);;
 		}
 
 		template <typename P>
-		__ENABLE_IF(has_t<P>(), procReturn)  unfold_end(P& p) {
+		auto  unfold_end(P&& p) -> decltype(p.t, do_end2(p, unfold_end(p.t))) {
 
-			unfold_end(p.t);
-			return do_end2(p);
+			auto ret = unfold_end(p.t);
+			auto ret1 = do_end2(p, ret);
+			return ret1;
 		}
 
-
-		template <typename P>
-		__ENABLE_IF(has_t<const P>(), procReturn)  unfold_end(const P& p) {
-
-			unfold_end(p.t);
-			return do_end2(p);
-		}
-
-
-		template <typename P>
-		__ENABLE_IF(has_t< P>(), procReturn)  unfold_end(P&& p) {
-
-			unfold_end(p.t);
-			return do_end2(p);
-		}
+// 
+// 		template <typename P>
+// 		__ENABLE_IF(has_t<const P>(), procReturn)  unfold_end(const P& p) {
+// 
+// 			unfold_end(p.t);
+// 			return do_end2(p);
+// 		}
+// 
+// 
+// 		template <typename P>
+// 		__ENABLE_IF(has_t< P>(), procReturn)  unfold_end(P&& p) {
+// 
+// 			unfold_end(p.t);
+// 			return do_end2(p);
+// 		}
 
 
 

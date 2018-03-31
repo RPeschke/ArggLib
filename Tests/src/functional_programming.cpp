@@ -300,7 +300,7 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test12212) {
 
 	auto vec = _to_vector << 1 <= -10;
 
-	_to_vector << 1 <= -10  | sort() | display();
+	_to_vector << 10 <= -10  | sort() | display();
 
 
 	

@@ -29,6 +29,10 @@ auto name(T&&) ->decltype(name##impl(____get_T<T>()))
 #define __ENABLE_IF(hasMember,type_) typename std::enable_if< std::is_same<decltype(hasMember), std::true_type>::value, type_>::type
 #define __ENABLE_IF_NOT(hasMember,type_) typename std::enable_if< std::is_same<decltype(hasMember), std::false_type >::value, type_>::type
 
+
+#define __ENABLE_IF_V2(hasMember) typename  std::enable_if< std::is_same<decltype(hasMember), std::true_type>::value, int>::type = 0
+#define __ENABLE_IF_NOT_V2(hasMember) typename  std::enable_if< !std::is_same<decltype(hasMember), std::true_type>::value, int>::type = 0
+
 #define __ENABLE_IF_ARITHMETIC(Template_ARG,return_type) typename std::enable_if<std::is_arithmetic<typename std::remove_all_extents<Template_ARG>::type >::value ,	return_type>::type 
 
 
