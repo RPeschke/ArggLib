@@ -22,7 +22,7 @@ namespace ArggLib {
 		}
 
 		template <typename N ,typename T >
-		auto do_end1(N&& n,T&& value) ->decltype(n.End(declval<T>() )) {
+		auto do_end1(N&& n,T&& value) ->decltype(n.End(value)) {
 			return	n.End(value);
 
 		}

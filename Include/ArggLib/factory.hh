@@ -31,7 +31,7 @@ namespace ArggLib {
 #ifdef WIN32
     using map_t = std::map <typename MainType,typename  Class_Factory<baseClassType>::factoryfunc_raw > ;
 #else
-    using map_t = std::map < MainType, Factory<baseClassType>::factoryfunc_raw >;
+    using map_t = std::map < MainType, Class_Factory<baseClassType>::factoryfunc_raw >;
 #endif
 
 
