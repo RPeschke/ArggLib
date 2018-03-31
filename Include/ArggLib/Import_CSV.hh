@@ -95,12 +95,12 @@ namespace ArggLib {
     template <typename T>
     class Import_CSV_impl_base {
     public:
-      std::shared_ptr<std::ifstream> m_in;
+      std::shared_ptr<T> m_in;
       std::string m_name;
       const char  m_delimiter;
       std::string m_buffer;
 
-      std::ifstream& get_instream() {
+	  T& get_instream() {
         return *m_in;
       }
       Import_CSV_impl_base(cstringr name, const char delimiter) :
@@ -111,10 +111,10 @@ namespace ArggLib {
 
 
       procReturn Start() {
-        m_in = Snew std::ifstream(m_name);
+        m_in = Snew T(m_name);
         std::getline(*m_in, m_buffer);
         m_headers.clear();
-        m_headers = split_string2vector(m_buffer, ';');
+        m_headers = split_string2vector(m_buffer, m_delimiter);
         return procReturn::success;
       }
       procReturn End() {
