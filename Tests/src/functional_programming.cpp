@@ -1,33 +1,18 @@
-// functional_programming.cpp : Definiert den Einstiegspunkt für die Konsolenanwendung.
-//
-
+#include "ArggLib/complete_lib.hh"
 
 #include <vector>
 #include <algorithm>
 #include <numeric>
 #include <ostream>
 #include <iostream>
-#include  <functional>
+#include <functional>
 #include <string>
 
 
-#include "ArggLib/proc.hh"
-#include "ArggLib/func.hh"
-#include "ArggLib/proc.hh"
-#include "ArggLib/param.hh"
-#include "ArggLib/ArggLib_Unit_Tests.hh"
-#include "ArggLib/has_member_helper.hh"
+
 #include <sstream>
 #include <map>
-#include "ArggLib/vector_helpers.hh"
-#include "ArggLib/cautor.hh"
-#include "ArggLib/proc_tools.hh"
-#include "ArggLib/out_stream.hh"
-#include "ArggLib/for_loop.hh"
-#include "ArggLib/contains.hh"
-#include "ArggLib/write_host.hh"
-#include "ArggLib/object_modifier.hh"
-#include "ArggLib/where_f.hh"
+
 
 using namespace std;
 using namespace ArggLib;

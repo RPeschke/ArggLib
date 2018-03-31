@@ -2,12 +2,14 @@
 #define ArggLibconvert2HashTable_h__
 #include <map>
 #include <type_traits>
+#include <string>
+#include <assert.h>
 
 namespace ArggLib {
 
 	namespace ArggLib_impl {
 
-		inline	void fill_header(std::vector<string> & out,  size_t numberOfCollums) {
+		inline	void fill_header(std::vector<std::string> & out,  size_t numberOfCollums) {
 
 			out.push_back("x0");
 			for (size_t i = 1; i < numberOfCollums; ++i) {
