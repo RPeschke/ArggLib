@@ -24,11 +24,17 @@
 #include "ArggLib/proc_tools.hh"
 #include "ArggLib/out_stream.hh"
 #include "ArggLib/for_loop.hh"
+#include "ArggLib/contains.hh"
+#include "ArggLib/write_host.hh"
+#include "ArggLib/object_modifier.hh"
+#include "ArggLib/where_f.hh"
 
 using namespace std;
 using namespace ArggLib;
 
 #define  EXAMPLE 1
+
+
 
 
 
@@ -97,7 +103,7 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test) {
   map_in["dsad4"] = -5454;
 
 
-  auto vector_out = map_in | ArggLib_to_vector | ArggLib_sort_by(second);
+  auto vector_out = map_in | to_vector() | ArggLib_sort_by(second);
   std::stringstream out;
   //map_in | ArggLib::out_stream(out);
   vector_out | ArggLib::for_loop() >> ArggLib::out_stream(out);
@@ -177,4 +183,127 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test21211) {
 
 	auto x4 = vec | contains_if([](cautor x) { return x > 30; });
 
+}
+
+
+ARGGLIB__DEFINE_TEST(func_test_pipe_test12) {
+
+
+	std::map<std::string, double> map_in;
+	map_in["dsad0"] = 0;
+	map_in["dsad1"] = 2;
+	map_in["dsad3"] = 3;
+	map_in["dsad4"] = -5454;
+
+
+	auto vector_out = map_in | to_vector() | ArggLib_sort_by(second);
+	std::stringstream out;
+	//map_in | ArggLib::out_stream(out);
+	vector_out | ArggLib::for_loop() >> ArggLib::out_stream(out);
+	___ARGGLIB_TEST("Function pipe operator",
+		out.str(),
+		"first: {dsad4} second: {-5454}\nfirst: {dsad0} second: {0}\nfirst: {dsad1} second: {2}\nfirst: {dsad3} second: {3}\n"
+	);
+
+
+	auto x_true = make_vec({ 1,2,5,6 }) | ArggLib::contains(1);
+
+	___ARGGLIB_TEST("Function contains true case",
+		x_true,
+		true
+	);
+	auto x_false = make_vec({ 1,2,5,6 }) | ArggLib::contains(100);
+
+	___ARGGLIB_TEST("Function contains false case",
+		x_false,
+		false
+	);
+
+}
+
+
+
+
+
+ARGGLIB__DEFINE_TEST(func_test_pipe_test122) {
+
+
+	std::map<std::string, double> map_in;
+	map_in["dsad0"] = 0;
+	map_in["dsad1"] = 2;
+	map_in["dsad3"] = 3;
+	map_in["dsad4"] = -5454;
+
+	std::stringstream out;
+	map_in | to_string_f().delimiter("\n") | write_out(out);
+
+	___ARGGLIB_TEST("map_in | to_string().delimiter(\"\\n\") | write_out(out);",
+		out.str(),
+		"dsad0  0.000000\ndsad1  2.000000\ndsad3  3.000000\ndsad4  -5454.000000\n"
+	);
+	out.str("");
+	out.clear();
+
+
+	auto vector_out = map_in | to_vector() | ArggLib_sort_by(second);
+
+	auto vec = _to_vector << 1 << 10;
+	auto s1 = vector_out | to_string_f()  | write_out(out);
+	___ARGGLIB_TEST("auto s1 = vector_out | to_string()  | write_out(out);",
+		out.str(),
+		"dsad4  -5454.000000dsad0  0.000000dsad1  2.000000dsad3  3.000000\n"
+	);
+
+	___ARGGLIB_TEST("auto s1 = vector_out | to_string()  | write_out(out);",
+		s1,
+		"dsad4  -5454.000000dsad0  0.000000dsad1  2.000000dsad3  3.000000"
+	);
+	out.str("");
+	out.clear();
+
+
+	vector_out | to_string_f().delimiter("\n").header("<header>\n").footer("\n</header>") | write_out(out);
+
+
+	___ARGGLIB_TEST("vector_out | to_string().delimiter(\"\\n\").header(\"<header>\\n\").footer(\"\\n< / header>\") | write_out(out);",
+		out.str(),
+		"<header>\ndsad4  -5454.000000\ndsad0  0.000000\ndsad1  2.000000\ndsad3  3.000000\n</header>\n"
+	);
+
+}
+
+
+
+
+ARGGLIB__DEFINE_TEST(func_test_pipe_test12212) {
+
+
+	std::map<std::string, double> map_in;
+	map_in["dsad0"] = 0;
+	map_in["dsad1"] = 2;
+	map_in["dsad3"] = 3;
+	map_in["dsad4"] = -5454;
+
+	std::stringstream out;
+
+
+
+	auto vector_out = map_in | to_vector() | sort().by_second().absulute();
+
+	int i = 2;
+	auto s1 = vector_out | _where_f( _x.second > i; ) |   to_string_f() | write_out(out);
+	___ARGGLIB_TEST("auto s1 = vector_out | to_string()  | write_out(out);",
+		out.str(),
+		"dsad4  -5454.000000dsad0  0.000000dsad1  2.000000\n"
+	);
+
+
+	auto vec = _to_vector << 1 <= -10;
+
+	_to_vector << 1 <= -10  | sort() | display();
+
+
+	
+
+	_to_vector << -10 << 10  | sort().descending().absulute() | display();
 }

@@ -7,72 +7,55 @@
 #include "ArggLib/param.hh"
 
 
-#define ArggLib_to_vector  ArggLib::fun() << ArggLib::ArggLib_impl::to_vector_impl() << ArggLib::_X
-#define  ArggLib_sort_by(property) ArggLib::fun() << ArggLib::ArggLib_impl::sort_impl()<< ArggLib::_X << [](cautor e1, cautor e2) {return  e1.property < e2.property; }
+
+#define  ArggLib_sort_by(property) ArggLib::sort( [](cautor e1, cautor e2) {return  e1 < e2; } , [](cautor e){return e.property;}  )
 
 
 namespace ArggLib {
 
 
 
+	template <typename T1 , typename T2> 
+	inline auto sort(T1  comp, T2 get_proberty) {
+		return  ArggLib::ArggLib_impl::sort_impl<T1,T2>(std::move(comp),std::move(get_proberty) );
+	}
+
+	inline auto sort() {
+		return  sort([](cautor e1, cautor e2) {return  e1 < e2; }, [](cautor e) { return e; });
+	}
+
+	
+
+	template <typename T>
+	inline auto to_vector(T f1) {
+		return  ArggLib::ArggLib_impl::to_vector_impl<T>(std::move(f1));
+	}
+
+	inline auto to_vector() {
+		return  to_vector([](cautor e) {return ArggLib_impl::to_vector_impl_convert_element(e); });
+	}
+
+
+
+
+
+
+	template <typename T>
+	inline auto to_string_f(T f_to_string) {
+		return  ArggLib_impl::to_string_impl<T>{std::move(f_to_string) };
+
+	}
+	inline auto to_string_f() {
+		return  to_string_f([](cautor e) { return ArggLib_impl::to_string(e); });
+
+	}
 	template <typename Container_t, typename T>
 	void remove_erase( Container_t& vec, const T& value) {
 		vec.erase(std::remove(vec.begin(), vec.end(), value), vec.end());
 
 	}
 
-  template <typename Container_t, typename T>
-  auto contains(const Container_t& cont_v, const T& value) {
-    return std::find(cont_v.begin(), cont_v.end(), value) != cont_v.end();
-  }
-  template < typename T>
-  auto contains(const T& value) {
-    return fun() << [value](const auto& cont_v) {return std::find(begin(cont_v), end(cont_v), value) != end(cont_v); };
-  }
 
-
-  template < typename F>
-  auto contains_if(const F& value) {
-	  return fun() << [value](const auto& cont_v) {return std::find_if(begin(cont_v), end(cont_v), value) != end(cont_v); };
-  }
-
-  template < typename T>
-  auto contains_any( std::initializer_list<T> l) {
-	  return fun() << [l](const auto& cont_v) {
-		  
-		  for (cautor e: cont_v){
-			  if (contains(l,e)){
-				  return true;
-			  }
-
-		  }
-
-		  return false;
-	  };
-  }
-
-  template < typename T>
-  auto contains_all(std::initializer_list<T> l) {
-	  return fun() << [l](const auto& cont_v) {
-		  std::vector<T> vec(l);
-		  if (vec.empty()) {
-			  return false;
-		  }
-		  for (cautor e : cont_v) {
-
-			  if (contains(vec, e)) {
-				  remove_erase(vec, e);
-				  
-			  }
-			  if (vec.empty()) {
-				  return true;
-			  }
-
-		  }
-
-		  return false;
-	  };
-  }
 
 
 

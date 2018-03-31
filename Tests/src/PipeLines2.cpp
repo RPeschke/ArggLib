@@ -163,6 +163,14 @@ ARGGLIB__DEFINE_TEST(validated_variable_test) {
 
   int i = x1;
   ArggLib::double_positive x4 = 100;
-  ArggLib::double_positive x5 = -100;
+//  ArggLib::double_positive x5 = -100;
 
+}
+
+ARGGLIB__DEFINE_TEST(where_p_test1) {
+
+
+	10 | for_loop() >> _where_p(   _x > 5  ) >> display();
+
+	int i = 0;
 }

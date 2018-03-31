@@ -5,6 +5,8 @@
 #include <numeric>
 #include <tuple>
 #include "ArggLib/param.hh"
+#include <type_traits>
+#include "ArggLib/type_trates.hh"
 
 namespace ArggLib {
 
@@ -96,8 +98,12 @@ namespace ArggLib {
 	class _run {
 
 	};
+
+	class fun_impl_b0 {
+
+	};
 	template <typename T, std::size_t N>
-	class fun_impl_b {
+	class fun_impl_b :public fun_impl_b0 {
 	public:
 		fun_impl_b(T&& t) :m_function(std::forward<T>(t)) {}
 
@@ -105,12 +111,18 @@ namespace ArggLib {
 		auto operator()(Param_T&&... p)  {
 			return m_function(p...);
 		}
+		auto* operator->()
+		{
+
+			return  &m_function;
+		}
+
+		T& operator * ()
+		{
+			return m_function;
+		}
 		T m_function;
 
-		template<typename T1>
-		auto operator > (T1&& t1) {
-			return make_fun_impl<0>([=](auto&&... s) mutable { return t1(m_function(s...)); });
-		}
 
 
 
@@ -140,6 +152,7 @@ namespace ArggLib {
 		}
 
 	};
+
 
 
 	template <typename T, std::size_t N>
@@ -256,22 +269,39 @@ namespace ArggLib {
 	};
 
 
-	template <typename IN, typename T, std::size_t N, typename std::enable_if<!std::is_same<ArggLib::param, IN>::value, int>::type = 0>
-	auto operator|(IN&& in_, fun_impl_d<T, N>& f)
+	template<typename T1, typename T2,
+		typename std::enable_if<std::is_base_of<fun_impl_b0, ArggLib::remove_cvref_t<T1> >::value, int>::type = 0,
+		typename std::enable_if<std::is_base_of<fun_impl_b0, ArggLib::remove_cvref_t<T2>  >::value, int>::type = 0 >
+	auto operator > (T1&& t1, T2&& t2) {
+		return make_fun_impl<0>([=](auto&&... s) mutable { return t2(t1(s...)); });
+	}
+
+
+
+	template <typename IN, typename T, 
+		typename std::enable_if<!std::is_same<ArggLib::param, ArggLib::remove_cvref_t<IN> >::value, int>::type = 0 ,
+		typename std::enable_if<std::is_base_of<fun_impl_b0,  ArggLib::remove_cvref_t<T> >::value, int>::type = 0 >
+	auto operator|(IN&& in_, T&& f)
 	{
 		return f(std::forward<IN>(in_));
 	}
 
-	template <typename IN, typename T, std::size_t N, typename std::enable_if<!std::is_same<ArggLib::param, IN>::value, int>::type = 0>
-	auto operator|(IN&& in_, fun_impl_d<T, N>&& f)
-	{
-		return f(std::forward<IN>(in_));
-	}
-	template <typename IN, typename T, std::size_t N , typename std::enable_if<!std::is_same<ArggLib::param,IN>::value , int>::type = 0>
-	auto  operator|(IN&& in_, const  fun_impl_d<T, N>& f) 
-	{
-		return f(std::forward<IN>(in_));
-	}
+// 	template <typename IN, typename T, std::size_t N, typename std::enable_if<!std::is_same<ArggLib::param, IN>::value, int>::type = 0>
+// 	auto operator|(IN&& in_, fun_impl_d<T, N>& f)
+// 	{
+// 		return f(std::forward<IN>(in_));
+// 	}
+// 
+// 	template <typename IN, typename T, std::size_t N, typename std::enable_if<!std::is_same<ArggLib::param, IN>::value, int>::type = 0>
+// 	auto operator|(IN&& in_, fun_impl_d<T, N>&& f)
+// 	{
+// 		return f(std::forward<IN>(in_));
+// 	}
+// 	template <typename IN, typename T, std::size_t N , typename std::enable_if<!std::is_same<ArggLib::param,IN>::value , int>::type = 0>
+// 	auto  operator|(IN&& in_, const  fun_impl_d<T, N>& f) 
+// 	{
+// 		return f(std::forward<IN>(in_));
+// 	}
 
 	template <typename IN, typename T, std::size_t N>
 	auto operator|(param_impl<IN>&& in_, fun_impl_d<T, N>& f) {
