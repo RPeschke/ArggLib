@@ -17,8 +17,19 @@ namespace ArggLib {
 
 
 		template <typename... N>
-		procReturn do_end1(N&&... n) {
+		procReturn do_end0(N&&... n) {
 			return success;
+		}
+
+		template <typename N, typename T >
+		auto do_end0(N&& n, T&& value) ->decltype(n.End()) {
+			return	n.End();
+
+		}
+
+		template <typename... N>
+		auto do_end1(N&&... n) {
+			return do_end0(n...);
 		}
 
 		template <typename N ,typename T >
@@ -55,7 +66,7 @@ namespace ArggLib {
 		template <typename... P>
 		auto unfold_end(P&&... p) {
 			
-			return do_end2(p...);;
+			return do_end2(p...,success);;
 		}
 
 		template <typename P>
