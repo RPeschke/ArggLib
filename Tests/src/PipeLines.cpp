@@ -221,7 +221,12 @@ ARGGLIB__DEFINE_TEST(processor_test7) {
   // cout << "==================\n" << "param() | proc() >> OnStart([] { cout << \"1\\n\"; }) >> OnEnd([] { cout << \"2\\n\"; }) >> OnStart([] {cout << \"3\\n\"; }) >> OnEnd([] {cout << \"4\\n\"; }) >> Evaluate([] { cout << \"eval\\n\"; return 1; });\n\n";
   std::stringstream out;
 
-  param() | proc() >> OnStart([&] { out << "1\n"; }) >> OnEnd([&] { out << "2\n"; }) >> OnStart([&] {out << "3\n"; }) >> OnEnd([&] {out << "4\n"; }) >> Evaluate([&] { out << "eval\n"; return 1; });
+  param() | proc() 
+	  >> OnStart([&]  { out << "1\n"; }) 
+	  >> OnEnd([&] ( ) { out << "2\n"; }) 
+	  >> OnStart([&] {out << "3\n"; }) 
+	  >> OnEnd([&]() {out << "4\n"; })
+	  >> Evaluate([&] { out << "eval\n"; return 1; });
 
   ___ARGGLIB_TEST("param() | proc() >> OnStart([] { cout << \"1\\n\"; }) >> OnEnd([] { cout << \"2\\n\"; }) >> OnStart([] {cout << \"3\\n\"; }) >> OnEnd([] {cout << \"4\\n\"; }) >> Evaluate([] { cout << \"eval\\n\"; return 1; });", out.str(), "3\n1\neval\n2\n4\n");
 
