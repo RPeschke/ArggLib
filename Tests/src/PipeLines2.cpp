@@ -162,9 +162,11 @@ ARGGLIB__DEFINE_TEST(where_p_test1) {
 ARGGLIB__DEFINE_TEST(where_p_test21) {
 
 
-	"test.csv" | Import_CSV() >> display()->delimiter(" del ");
+	"test.csv" | Import_CSV() >>  Where([i = int(0)](auto...) mutable { return i++ < 10;  }) >> display()->delimiter(" del ");
 	"fileNames.txt" | Import_CSV()>> display();
 	auto s = "fileNames.txt" | Import_CSV() >> Import_CSV() >> display()->delimiter(" del ");
+
+	param()  | Import_CSV()->fileName("fileNames.txt") >> display();
 //	std::cout << s.str() << std::endl;
 	//std::cout << out.str();
 	int i = 0;

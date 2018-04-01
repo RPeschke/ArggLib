@@ -13,25 +13,36 @@ namespace ArggLib {
 
 			return success;
 		}
+		struct  split_string_index_triplet{
+			size_t start, size_trimed, end;
+		};
+		inline auto  split_string_to_index_pairs(cstringr buffer, const char delimiter, size_t offset) {
+			auto index2 = buffer.find(delimiter, offset);
+			auto index3 = buffer.find_first_not_of(' ', offset);
+			offset = std::max(offset, index3);
+			auto index4 = buffer.find_first_of(' ', index3);
+			index4 = std::min(index2, index4);
+			auto ret = split_string_index_triplet{ offset ,index4 - offset ,index2 };
+			return ret;
 
-
+		}
 		template <bool COND, typename NEXT_T, typename... ARGS>
 		std::enable_if_t< COND, procReturn> expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
 
 			//std::cout << buffer << std::endl;
-			auto index2 = buffer.find(delimiter, index1);
-			auto index3 = buffer.find_first_not_of(' ', index1);
-			index1 = std::max(index1, index3);
-			auto index4 = buffer.find_first_of(' ', index3) ;
-			index4 = std::min(index2, index4);
 
+			auto in = split_string_to_index_pairs(buffer, delimiter, index1);
 
-			if (index2 != std::string::npos) {
-				expand_buffer_line < sizeof...(args) < 10 > (next, index2 + 1, buffer, delimiter, std::forward<ARGS>(args)..., buffer.substr(index1, index4-index1));
+			if (in.end != std::string::npos) {
+				expand_buffer_line < sizeof...(args) < 10 > (next, in.end + 1, 
+					buffer, 
+					delimiter, 
+					std::forward<ARGS>(args)..., 
+					buffer.substr(in.start, in.size_trimed));
 			}
 			else
 			{
-				next(std::forward<ARGS>(args)..., buffer.substr(index1));
+				next(std::forward<ARGS>(args)..., buffer.substr(in.start));
 			}
 
 			return success;
@@ -60,27 +71,23 @@ namespace ArggLib {
 			const char delimiter,
 			ARGS&&... args) {
 
-			auto index2 = buffer.find(delimiter, index1);
-			auto index3 = buffer.find_first_not_of(' ', index1);
-			index1 = std::max(index1, index3);
-			auto index4 = buffer.find_last_not_of(' ', index2) + 1;
-			index4 = std::min(index2, index4);
+			auto in = split_string_to_index_pairs(buffer, delimiter, index1);
 
 
 
-			if (index2 != std::string::npos) {
+			if (in.end != std::string::npos) {
 				expand_buffer_line_named_variables < sizeof...(args) < ArggLib_Import_CSV_MAX_NUMBER_OF_COLUMNS > (
 					next,
-					index2 + 1, buffer,
+					in.end + 1, buffer,
 					index_header + 1, headers,
 					delimiter,
 					std::forward<ARGS>(args)...,
 					make_named_variable(headers[index_header],
-						buffer.substr(index1, index4)));
+						buffer.substr(in.start, in.size_trimed)));
 			}
 			else
 			{
-				next(std::forward<ARGS>(args)..., make_named_variable(headers[index_header], buffer.substr(index1, index4)));
+				next(std::forward<ARGS>(args)..., make_named_variable(headers[index_header], buffer.substr(in.start)));
 			}
 
 			return success;
