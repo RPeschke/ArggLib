@@ -148,8 +148,11 @@ namespace ArggLib {
 
   template<typename T>
   class for_loop_imple_3 {
-    using param_t = typename std::remove_all_extents<T>::type;
+    using param_t = typename ArggLib::remove_cvref<T>::type;
   public:
+	  auto set_start(param_t start) {
+		  return for_loop(start, m_end, m_step);
+	  }
     const param_t m_end;
     const param_t m_start;
     const param_t m_step;

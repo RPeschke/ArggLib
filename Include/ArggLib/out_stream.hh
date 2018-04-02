@@ -119,7 +119,12 @@ namespace ArggLib {
 		T& m_out_stream;
 		std::vector<std::string> m_headers; // used for hash tables
 		bool m_first; // used for hash tables
-		out_stream_impl(T& out_stream) :m_out_stream(out_stream) {
+		const std::string m_delimiter;
+
+		auto delimiter(cstringr delimiter_) {
+			return out_stream(m_out_stream, delimiter_);
+		}
+		out_stream_impl(T& out_stream, const std::string& delimiter) :m_out_stream(out_stream) , m_delimiter(delimiter) {
 
 		}
 
@@ -130,29 +135,31 @@ namespace ArggLib {
 			return procReturn::success;
 		}
 
+
+
 		template <typename NEXT_T, typename... ARGS>
 		procReturn operator()(NEXT_T&& next, ARGS&&... args) {
 
-			_Fill(m_out_stream,"  ", args...);
+			_Fill(m_out_stream, m_delimiter, args...);
 			return next(std::forward<ARGS>(args)...);
 		}
 
 		template <typename NEXT_T, typename HAST_TABLE_t>
 		procReturn operator()(NEXT_T&& next, std::map<std::string, HAST_TABLE_t>&& hash_table) {
-			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, "  ");
+			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, m_delimiter);
 			
 			return next(std::move(hash_table));
 		}
 		template <typename NEXT_T, typename HAST_TABLE_t>
 		procReturn operator()(NEXT_T&& next, std::map<std::string, HAST_TABLE_t>& hash_table) {
-			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, "  ");
+			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, m_delimiter);
 			
 			return next(hash_table);
 		}
 
 		template <typename NEXT_T, typename HAST_TABLE_t>
 		procReturn operator()(NEXT_T&& next, const std::map<std::string, HAST_TABLE_t>& hash_table) {
-			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, "  ");
+			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, m_delimiter);
 			
 			return next(hash_table);
 		}
@@ -163,7 +170,12 @@ namespace ArggLib {
 	class out_stream_impl0 : public out_stream_impl<T> {
 	public:
 		std::shared_ptr<T> m_out_owned;
-		out_stream_impl0(std::shared_ptr<T> out_sp) : out_stream_impl<T>(*out_sp), m_out_owned(out_sp) {}
+
+		auto delimiter(cstringr delimiter_) {
+			return proc() >> out_stream_impl0<std::stringstream>(m_out_owned, delimiter_);
+		}
+
+		out_stream_impl0(std::shared_ptr<T> out_sp , cstringr delimiter ) : out_stream_impl<T>(*out_sp, delimiter), m_out_owned(out_sp) {}
 		
 		template<typename... ARGs>
     T&& End(ARGs&&... )   {
@@ -176,16 +188,16 @@ namespace ArggLib {
 	};
 
 	template <typename T>
-	auto out_stream(T& out_stream) ->decltype(proc() >> out_stream_impl<T>(out_stream)) {
-		return proc()>> out_stream_impl<T>(out_stream);
+	auto out_stream(T& out_stream, cstringr delimiter = "  ") {
+		return proc()>> out_stream_impl<T>(out_stream, delimiter);
 	}
 
 
-	inline auto out_stream() ->decltype(proc() >> out_stream_impl0<std::stringstream>(Snew std::stringstream())) {
-		return proc() >> out_stream_impl0<std::stringstream>( Snew std::stringstream() );
+	inline auto out_stream( cstringr delimiter = "  " ) {
+		return proc() >> out_stream_impl0<std::stringstream>( Snew std::stringstream(),delimiter );
 	}
 
-	inline auto display() -> decltype(ArggLib::out_stream(std::cout)) {
+	inline auto display() {
 		return	ArggLib::out_stream(std::cout);
 	}
 }

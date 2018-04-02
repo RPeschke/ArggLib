@@ -148,6 +148,14 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 		PROCESSOR_T m_pro;
 
+		PROCESSOR_T* operator->() {
+			return &m_pro;
+		}
+		PROCESSOR_T& operator*()
+		{
+			return m_pro;
+		}
+
 
 		template<typename... Param>
 		auto operator()(Param&&... p)->decltype(ArggLib_impl::unfold_end(m_pro)) {
