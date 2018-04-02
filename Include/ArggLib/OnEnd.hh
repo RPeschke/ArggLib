@@ -29,7 +29,7 @@ namespace ArggLib {
 
 
 	template <typename T>
-	auto OnEnd(T fun) {
+	auto OnEnd(T fun) ->decltype(proc() >> OnEnd_impl<T>(std::move(fun))) {
 		return proc()>> OnEnd_impl<T>(std::move(fun));
 	}
 }

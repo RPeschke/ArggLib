@@ -12,24 +12,27 @@
 namespace ArggLib {
 
 
+  template <typename T, std::size_t N>
+  class fun_impl_d;
+
 
 	template <size_t N, typename T>
-	auto make_fun_impl(T&& t);
+  fun_impl_d<T, N> make_fun_impl(T&& t) ;
 
 
 	class fun {
 	public:
 		template<typename T>
-		auto operator* (T&& t) {
+		auto operator* (T&& t) ->decltype(make_fun_impl<0>(std::forward<T>(t)) ){
 			return make_fun_impl<0>(std::forward<T>(t));
 		}
 		template<typename T>
-		auto operator> (T&& t) {
+		auto operator> (T&& t) ->decltype(make_fun_impl<0>(std::forward<T>(t))) {
 			return make_fun_impl<0>(std::forward<T>(t));
 		}
 
 		template<typename T>
-		auto operator<< (T&& t) {
+		auto operator<< (T&& t) ->decltype(make_fun_impl<0>(std::forward<T>(t))) {
 			return make_fun_impl<0>(std::forward<T>(t));
 		}
 	};
@@ -55,7 +58,7 @@ namespace ArggLib {
 		fun_impl_b(T&& t) :m_function(std::forward<T>(t)) {}
 
 		template<typename... Param_T>
-		auto operator()(Param_T&&... p)  {
+		auto operator()(Param_T&&... p){
 			return m_function(p...);
 		}
 		auto* operator->()
@@ -74,27 +77,27 @@ namespace ArggLib {
 
 
 
-		auto operator<<= (const _run& t) {
+		auto operator<<= (const _run& t)  {
 			return m_function();
 		}
-		auto operator<<= (_run& t) {
+		auto operator<<= (_run& t)  {
 			return m_function();
 		}
-		auto operator<<= (_run&& t) {
+		auto operator<<= (_run&& t)  {
 			return m_function();
 		}
 
 		auto operator<= (const _run& t) {
 			return m_function();
 		}
-		auto operator<= (_run& t) {
+		auto operator<= (_run& t)  {
 			return m_function();
 		}
-		auto operator<= (_run&& t) {
+		auto operator<= (_run&& t){
 			return m_function();
 		}
 
-		auto operator<< (func_pipeline_op t) {
+		auto operator<< (func_pipeline_op t) -> decltype (make_fun_impl<N + 1>(m_function)) {
 			return make_fun_impl<N + 1>(m_function);
 		}
 
@@ -115,7 +118,7 @@ namespace ArggLib {
 			return make_fun_impl<N>([t1, _function = this->m_function](auto&&... s) mutable { return _function(t1, s...); });
 		}
 
-		auto operator<<  (func_pipeline_op t) {
+		auto operator<<  (func_pipeline_op t) -> decltype(make_fun_impl<N + 1>(this->m_function)) {
 			return make_fun_impl<N + 1>(this->m_function);
 		}
 	};
@@ -131,7 +134,7 @@ namespace ArggLib {
 			return make_fun_impl<1>([t1, _function = this->m_function](auto&& x1, auto&&... s) mutable{ return _function(x1, t1, s...); });
 		}
 
-		auto operator<<  (func_pipeline_op t) {
+		auto operator<<  (func_pipeline_op t) ->decltype( make_fun_impl<2>(this->m_function)) {
 			return make_fun_impl<2>(this->m_function);
 		}
 	};
@@ -147,7 +150,7 @@ namespace ArggLib {
 			return make_fun_impl<2>([t1, _function = this->m_function](auto&& x1, auto&& x2, auto&&... s) mutable { return _function(x1, x2, t1, s...); });
 		}
 		
-		auto operator<< (func_pipeline_op t) {
+		auto operator<< (func_pipeline_op t)  -> decltype(make_fun_impl<3>(this->m_function) ){
 			return make_fun_impl<3>(this->m_function);
 		}
 	};
@@ -297,7 +300,7 @@ namespace ArggLib {
 	
 
 	template <std::size_t N, typename T>
-	auto make_fun_impl(T&& t) {
+  fun_impl_d<T, N>  make_fun_impl(T&& t) {
 		return fun_impl_d<T, N>(std::forward<T>(t));
 	}
 

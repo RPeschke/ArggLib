@@ -4,6 +4,9 @@
 #include <type_traits>
 #include <string>
 #include <assert.h>
+#include "ArggLib/procReturn.hh"
+#include "ArggLib/proc.hh"
+
 
 namespace ArggLib {
 
@@ -112,13 +115,13 @@ namespace ArggLib {
 	};
 
 	template<typename T = std::string>
-	auto convert2HashTable() {
-		return convert2HashTable_impl_no_header<T>();
+	auto convert2HashTable() ->decltype (proc() >> convert2HashTable_impl_no_header<T>()) {
+		return proc() >> convert2HashTable_impl_no_header<T>();
 	}
 
 	template<typename T = std::string>
-	auto convert2HashTable(std::vector<std::string> headers) {
-		return convert2HashTable_impl<T>( std::move(headers));
+	auto convert2HashTable(std::vector<std::string> headers) ->decltype(proc() >> convert2HashTable_impl<T>(std::move(headers))) {
+		return proc () >>  convert2HashTable_impl<T>( std::move(headers));
 	}
 }
 

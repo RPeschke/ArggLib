@@ -25,8 +25,8 @@ namespace ArggLib{
 
 	};
 	template <typename T>
-	auto Modify(T fun) {
-		return Modify_impl<T>(std::move(fun)) ;
+	auto Modify(T fun) -> decltype(proc() >> Modify_impl<T>(std::move(fun)) ){
+		return proc() >> Modify_impl<T>(std::move(fun)) ;
 	}
 }
 

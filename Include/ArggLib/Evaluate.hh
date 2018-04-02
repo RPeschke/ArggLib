@@ -1,4 +1,3 @@
-#include "constexpr_if.hh"
 #ifndef ArggLibEvaluate_h__
 #define ArggLibEvaluate_h__
 
@@ -34,7 +33,7 @@ namespace ArggLib {
  }
 
  template<typename... FUN>
- auto do_process_imput_and_ignore_return(FUN&&... args) {
+ auto do_process_imput_and_ignore_return(FUN&&... args) -> decltype(do_ignore_imput_and_ignore_return(std::forward<FUN>(args)...)) {
 
 	 return do_ignore_imput_and_ignore_return(std::forward<FUN>(args)...);
  }
@@ -47,7 +46,7 @@ namespace ArggLib {
 
 
  template<typename... FUN>
- auto do_Ignore_imput_and_return(FUN&&... args) {
+ auto do_Ignore_imput_and_return(FUN&&... args) -> decltype (do_process_imput_and_ignore_return(std::forward<FUN>(args)...) ){
 
 	 return do_process_imput_and_ignore_return(std::forward<FUN>(args)...);
  }
@@ -61,7 +60,7 @@ namespace ArggLib {
 
 
  template<typename... FUN>
- auto do_process_imput_and_return(FUN&&... args) {
+ auto do_process_imput_and_return(FUN&&... args) -> decltype(do_Ignore_imput_and_return(std::forward<FUN>(args)...)) {
 	 return do_Ignore_imput_and_return(std::forward<FUN>(args)...);
 	
  }
@@ -82,7 +81,7 @@ namespace ArggLib {
 		Evaluate_impl(T fun) :m_fun(std::move(fun)) {}
 
 		template <typename NEXT_T, typename... ARGS>
-		auto operator()(NEXT_T&& next, ARGS&&... args) {
+		auto operator()(NEXT_T&& next, ARGS&&... args) -> decltype(do_process_imput_and_return(m_fun, next, args...)) {
 				return do_process_imput_and_return(m_fun, next, args...);
 		}
 
@@ -93,8 +92,8 @@ namespace ArggLib {
 
 
 	template <typename T>
-	Evaluate_impl<T> Evaluate(T fun) {
-		return Evaluate_impl<T>(std::move(fun));
+	auto Evaluate(T fun) -> decltype(proc() >> Evaluate_impl<T>(std::move(fun))) {
+		return proc() >>  Evaluate_impl<T>(std::move(fun));
 	}
 }
 

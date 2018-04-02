@@ -73,8 +73,8 @@ namespace ArggLib {
 	};
 
 	template <typename T = std::ofstream>
-	auto Export_CSV(cstringr name, cstringr delimiter = ";  ") {
-		return Export_CSV_impl_no_header<T>(name, delimiter);
+	auto Export_CSV(cstringr name, cstringr delimiter = ";  ") -> decltype(proc() >> Export_CSV_impl_no_header<T>(name, delimiter)) {
+		return proc() >> Export_CSV_impl_no_header<T>(name, delimiter);
 
 	}
 
@@ -123,14 +123,14 @@ namespace ArggLib {
 	};
 
 	template <typename T = std::ofstream>
-	auto Export_CSV(const std::string& name, std::vector<std::string> headers, const std::string& delimiter = ";  ") {
-		return Export_CSV_impl<T>(name, std::move(headers), delimiter);
+	auto Export_CSV(const std::string& name, std::vector<std::string> headers, const std::string& delimiter = ";  ") ->decltype (proc() >> Export_CSV_impl<T>(name, std::move(headers), delimiter)) {
+		return proc() >> Export_CSV_impl<T>(name, std::move(headers), delimiter);
 
 	}
 
 	template <typename T = std::ofstream>
-	auto Export_CSV(const std::string& name, const std::string& delimiter, std::vector<std::string> headers) {
-		return Export_CSV_impl<T>(name, std::move(headers), delimiter);
+	auto Export_CSV(const std::string& name, const std::string& delimiter, std::vector<std::string> headers) ->decltype(proc() >> Export_CSV_impl<T>(name, std::move(headers), delimiter)) {
+		return proc() >> Export_CSV_impl<T>(name, std::move(headers), delimiter);
 
 	}
 }

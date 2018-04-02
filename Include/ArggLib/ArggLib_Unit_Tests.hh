@@ -77,7 +77,8 @@ namespace ArggLib {
 
     std::cout << out.str();
     if (t1 != t2) {
-      __add_to_tests<>::push_error([str = out.str()](std::ostream& out){
+      std::string str = out.str();
+      __add_to_tests<>::push_error([str](std::ostream& out){
         out << str;
       });
     }
