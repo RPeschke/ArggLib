@@ -7,6 +7,7 @@
 #include "ArggLib/string_helpers.hh"
 #include "ArggLib/smart_ptr_helpers.hh"
 #include "ArggLib/cautor.hh"
+#include "ArggLib/proc.hh"
 
 
 namespace ArggLib {
