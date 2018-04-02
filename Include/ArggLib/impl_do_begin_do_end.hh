@@ -15,23 +15,51 @@ namespace ArggLib {
 		CREATE_TEST_FOR_MEMBER(has_n, n);
 
 
+    template <typename... N>
+    auto do_end0a_check_for_return(N&&... n)  {
+      return success;
+    }
+
+
+
+
+    template <typename N, typename T , __ENABLE_IF_V2 (hasEnd<N>)>
+    T&& do_end0a_check_for_return(N&& n, T&& value) {
+      	n.End(value);
+        return value;
+
+    }
+
+
+
 
 		template <typename... N>
 		procReturn do_end0(N&&... n) {
-			return success;
+			return do_end0a_check_for_return(n...);
 		}
 
+
+    // function has return but no input 
 		template <typename N, typename T >
 		auto do_end0(N&& n, T&& value) ->decltype(n.End()) {
 			return	n.End();
 
 		}
 
+
+    template <typename N, typename T >
+    auto do_end1a_no_return_value(N&& n, T&& value) {
+      n.End(value);
+      return value;
+    }
+
+
 		template <typename... N>
 		auto do_end1(N&&... n)  -> decltype(do_end0(n...)){
 			return do_end0(n...);
 		}
 
+    // function hat input und return 
 		template <typename N ,typename T >
 		auto do_end1(N&& n,T&& value) ->decltype(n.End(value)) {
 			return	n.End(value);
@@ -39,11 +67,15 @@ namespace ArggLib {
 		}
 
 
+
+    //remaining  element
 		template <typename... N>
 		auto do_end2(N&&... n) -> decltype(do_end1(n...)){
 			return do_end1(n...);
 		}
 
+
+    // last elements 
 		template <typename N,typename T>
 		auto do_end2(N&& n,T&& value) ->decltype(do_end1(n.n,value)){
 			return	do_end1(n.n ,value);
@@ -72,9 +104,9 @@ namespace ArggLib {
 		template <typename P>
 		auto  unfold_end(P&& p) -> decltype(p.t, do_end2(p, unfold_end(p.t))) {
 
-			auto ret = unfold_end(p.t);
-			auto ret1 = do_end2(p, ret);
-			return ret1;
+			
+	
+			return  do_end2(p, unfold_end(p.t));
 		}
 
 // 

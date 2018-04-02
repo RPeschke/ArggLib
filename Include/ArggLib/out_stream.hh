@@ -179,11 +179,11 @@ namespace ArggLib {
 		out_stream_impl0(std::shared_ptr<T> out_sp , cstringr delimiter ) : out_stream_impl<T>(*out_sp, delimiter), m_out_owned(out_sp) {}
 		
 		template<typename... ARGs>
-    T&& End(ARGs&&... )   {
+    std::shared_ptr<T> End(ARGs&&... )   {
 			
-			auto ret = m_out_owned;
+			auto ret = std::move(m_out_owned);
 			m_out_owned.reset();
-			return std::move(*ret);
+			return  ret;
 		}
 
 	};

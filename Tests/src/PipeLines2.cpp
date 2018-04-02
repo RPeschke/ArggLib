@@ -154,10 +154,126 @@ ARGGLIB__DEFINE_TEST(validated_variable_test) {
 ARGGLIB__DEFINE_TEST(where_p_test1) {
 
 
-	10 | for_loop() >> _where_p(_x > 5) >> out_stream() | to_string_f() | write_host();
+  auto x = 10 | for_loop() >> _where_p(_x > 5) >> out_stream();
+  *x| to_string_f() | write_host();
 	//std::cout << out.str();
 	int i = 0;
 }
+
+
+template<typename T>
+class OnEnd_impl2 {
+public:
+  T m_fun;
+
+  OnEnd_impl2(T fun) :m_fun(std::move(fun)) {
+
+  }
+
+  auto End() {
+  
+    return   m_fun();
+  }
+
+  template <typename NEXT_T, typename... ARGS>
+  procReturn operator()(NEXT_T&& next, ARGS&&... args) {
+
+
+    return next(std::forward<ARGS>(args)...);
+  }
+
+
+};
+
+
+template <typename T>
+auto OnEnd2(T fun) ->decltype(proc() >> OnEnd_impl2<T>(std::move(fun))) {
+  return proc() >> OnEnd_impl2<T>(std::move(fun));
+}
+
+template <typename T1>
+struct types_of_f {
+
+  T1 m_fun;
+
+  auto operator()() {
+    return m_fun();
+  }
+};
+
+template <typename T1>
+auto make_types_of_f(T1 f ) {
+  return types_of_f<T1>{f};
+}
+
+
+
+
+template <typename T, typename... N>
+auto return_first(T&& t, N&&... n) {
+  return t;
+}
+
+template <typename... N>
+auto try_call_fnction2(N&&... n) {
+  return return_first(n...);
+}
+
+
+
+
+template <typename default_T, typename Fun_t, typename ARG>
+auto  try_call_fnction2(default_T&& def, Fun_t&& fun, ARG && arg) -> decltype(fun.End()) {
+
+  return fun.End();
+
+}
+
+
+template <typename... N>
+auto try_call_fnction3(N&&... n) {
+  return try_call_fnction2(n...);
+}
+
+
+
+
+template <typename default_T, typename Fun_t, typename ARG>
+auto  try_call_fnction3(default_T&& def, Fun_t&& fun , ARG && arg) -> decltype(fun.End(arg)) {
+
+  return fun.End(def);
+
+}
+
+template <typename default_T, typename Fun_t, typename ARG>
+struct types_of_f1 {
+  default_T def;
+  Fun_t fun;
+  ARG arg;
+
+
+  auto operator()() {
+    return try_call_fnction3( def,  fun,  arg);
+  }
+};
+
+
+template <typename default_T, typename Fun_t, typename ARG>
+auto make_types_of_f(default_T&& def, Fun_t&& fun, ARG && arg) {
+  return types_of_f1<ArggLib::remove_cvref_t< default_T>, ArggLib::remove_cvref_t<  Fun_t>, ArggLib::remove_cvref_t< ARG > >{def, fun, arg };
+}
+
+template <typename T, typename std::enable_if_t<std::is_same_v< std::result_of_t<T()>, void>, int> = 0 >
+auto try_call_fnction4(T&& t) {
+   t();
+   return 123;
+}
+
+template <typename T, typename std::enable_if_t<!std::is_same_v< std::result_of_t<T()>, void>, int> = 0 >
+auto try_call_fnction4(T&& t) {
+  return t();
+}
+
 
 ARGGLIB__DEFINE_TEST(where_p_test21) {
 
@@ -166,8 +282,18 @@ ARGGLIB__DEFINE_TEST(where_p_test21) {
 	"fileNames.txt" | Import_CSV()>> display();
 	auto s = "fileNames.txt" | Import_CSV() >> Import_CSV() >> display()->delimiter(" del ");
 
-	param()  | Import_CSV()->fileName("fileNames.txt") >> display();
+  param() | Import_CSV()->fileName("fileNames.txt") >> display();
 //	std::cout << s.str() << std::endl;
 	//std::cout << out.str();
 	int i = 0;
+  auto x = OnEnd2([] { std::cout << "SDAA\n";  });
+ // auto x12 = try_call_fnction3(123, x.m_pro,321);
+  auto x13 = make_types_of_f(123, x.m_pro, 321);
+  auto x14 =  try_call_fnction4(x13);
+  auto r = [x]() mutable {return   x.m_pro.End(); };
+  r();
+  auto r2 = make_types_of_f(r);
+  auto xxx = std::is_same_v< std::result_of_t<decltype(x13)()>,int> ;
+  auto x2 = std::is_same_v< std::result_of_t<decltype(x13)()>, void>;
+  ArggLib_impl::unfold_end(OnEnd2([] { std::cout << "SDAA\n"; }));
 }
