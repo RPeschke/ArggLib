@@ -209,41 +209,6 @@ auto make_types_of_f(T1 f ) {
 
 
 
-template <typename T, typename... N>
-auto return_first(T&& t, N&&... n) {
-  return t;
-}
-
-template <typename... N>
-auto try_call_fnction2(N&&... n) {
-  return return_first(n...);
-}
-
-
-
-
-template <typename default_T, typename Fun_t, typename ARG>
-auto  try_call_fnction2(default_T&& def, Fun_t&& fun, ARG && arg) -> decltype(fun.End()) {
-
-  return fun.End();
-
-}
-
-
-template <typename... N>
-auto try_call_fnction3(N&&... n) {
-  return try_call_fnction2(n...);
-}
-
-
-
-
-template <typename default_T, typename Fun_t, typename ARG>
-auto  try_call_fnction3(default_T&& def, Fun_t&& fun , ARG && arg) -> decltype(fun.End(arg)) {
-
-  return fun.End(def);
-
-}
 
 template <typename default_T, typename Fun_t, typename ARG>
 struct types_of_f1 {
@@ -252,6 +217,41 @@ struct types_of_f1 {
   ARG arg;
 
 
+  template <typename T, typename... N>
+  auto return_first(T&& t, N&&... n) {
+    return t;
+  }
+
+  template <typename... N>
+  auto try_call_fnction2(N&&... n) {
+    return return_first(n...);
+  }
+
+
+
+
+  template <typename default_T, typename Fun_t, typename ARG>
+  auto  try_call_fnction2(default_T&& def, Fun_t&& fun, ARG && arg) -> decltype(fun.End()) {
+
+    return fun.End();
+
+  }
+
+
+  template <typename... N>
+  auto try_call_fnction3(N&&... n) {
+    return try_call_fnction2(n...);
+  }
+
+
+
+
+  template <typename default_T, typename Fun_t, typename ARG>
+  auto  try_call_fnction3(default_T&& def, Fun_t&& fun, ARG && arg) -> decltype(fun.End(arg)) {
+
+    return fun.End(def);
+
+  }
   auto operator()() {
     return try_call_fnction3( def,  fun,  arg);
   }
@@ -274,6 +274,13 @@ auto try_call_fnction4(T&& t) {
   return t();
 }
 
+template <typename default_T, typename Fun_t, typename ARG>
+auto try_run_default(default_T&& def, Fun_t&& fun, ARG && arg) {
+
+  auto x13 = make_types_of_f(def, fun, arg);
+  return try_call_fnction4(x13);
+}
+
 
 ARGGLIB__DEFINE_TEST(where_p_test21) {
 
@@ -288,6 +295,8 @@ ARGGLIB__DEFINE_TEST(where_p_test21) {
 	int i = 0;
   auto x = OnEnd2([] { std::cout << "SDAA\n";  });
  // auto x12 = try_call_fnction3(123, x.m_pro,321);
+
+  auto x12 = try_run_default(111, x.m_pro, 1.2);
   auto x13 = make_types_of_f(123, x.m_pro, 321);
   auto x14 =  try_call_fnction4(x13);
   auto r = [x]() mutable {return   x.m_pro.End(); };
