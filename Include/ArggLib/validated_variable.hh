@@ -1,6 +1,6 @@
 #ifndef validated_variable_h__
 #define validated_variable_h__
-
+#include  <functional>
 
 namespace ArggLib {
 
@@ -44,32 +44,26 @@ namespace ArggLib {
 
 
   template <typename T, typename F>
-  auto make_validated_variable(T value, F fun) {
+  auto make_validated_variable(T value, F fun) -> decltype(validated_variable<T, F>(std::move(value), std::move(fun))) {
 
 
     return validated_variable<T, F>(std::move(value), std::move(fun));
   }
 
-  template <typename T>
-  auto make_validated_variable(T value) {
-
-
-    return make_validated_variable(std::move(value), [](auto) {return true; });
-  }
 
   
   namespace ArggLib_impl {
     class positive_number {
     public:
       template <typename T>
-      auto operator()(const T& e) {
+      bool operator()(const T& e) {
         return e > 0;
       }
     };
     class negative_number {
     public:
       template <typename T>
-      auto operator()(const T& e) {
+      bool operator()(const T& e) {
         return e < 0;
       }
     };
@@ -77,18 +71,35 @@ namespace ArggLib {
     class not_negative {
     public:
       template <typename T>
-      auto operator()(const T& e) {
+      bool operator()(const T& e) {
         return e >= 0;
       }
     };
     class not_positive {
     public:
       template <typename T>
-      auto operator()(const T& e) {
+      bool operator()(const T& e) {
         return e <= 0;
       }
     };
+    class any_number {
+    public:
+      template <typename T>
+      bool operator()(const T& e) {
+        return true;
+      }
+    };
   }
+
+  template <typename T>
+  auto make_validated_variable(T value)
+    -> decltype(make_validated_variable(std::move(value), ArggLib_impl::any_number{}))
+  {
+
+
+    return make_validated_variable(std::move(value), ArggLib_impl::any_number{} );
+  }
+
 
   using  double_positive = validated_variable<double, ArggLib_impl::positive_number>;
   using  double_negative = validated_variable<double, ArggLib_impl::negative_number>;

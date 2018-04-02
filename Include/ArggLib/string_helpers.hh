@@ -29,9 +29,24 @@ namespace ArggLib {
 
   // trim from end (in place)
   static inline void rtrim(std::string &s) {
+    
+    auto last = s.size();
+    
+    while (last-- > 0 ) {
+      
+      if (!std::isspace(s[last])) {
+        break;
+      }
+    }
+    last++;
+    if (last < s.size()) {
+      s.erase(last);
+    }
+    /*
     s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
       return !std::isspace(ch);
     }).base(), s.end());
+    */
   }
 
   // trim from both ends (in place)
@@ -53,7 +68,7 @@ namespace ArggLib {
 
   inline strings split_string2vector(cstringr input_str, const char delimiter) {
     strings ret;
-    split_string(input_str, delimiter, [&ret](cautor in) { ret.push_back(in); });
+    split_string(input_str, delimiter, [&ret](cstringr in) { ret.push_back(in); });
     return ret;
   }
 }

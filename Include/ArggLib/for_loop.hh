@@ -2,6 +2,9 @@
 #define for_loop_h__
 #include "ArggLib/has_member_helper.hh"
 #include "ArggLib/proc_tools.hh"
+#include "ArggLib/string_helpers.hh"
+#include "ArggLib/smart_ptr_helpers.hh"
+#include "ArggLib/type_trates.hh"
 
 namespace ArggLib {
 
@@ -12,7 +15,7 @@ namespace ArggLib {
     template <typename NEXT_T, typename T>
     __ENABLE_IF_ARITHMETIC(T, procReturn)
       operator()(NEXT_T&& next, T t) {
-      for (typename std::remove_all_extents<T>::type i = 0; i < t; ++i) {
+      for (typename ArggLib::remove_cvref_t<T> i = 0; i < t; ++i) {
         if (next(i) == stop_) {
           return stop_;
         }
@@ -58,14 +61,14 @@ namespace ArggLib {
       return success;
     }
   };
-  inline	auto for_loop() {
+  inline	auto for_loop() -> decltype(proc() >> for_loop_imple_0{}){
     return proc() >> for_loop_imple_0{};
   }
 
 
   template<typename END_T>
   class for_loop_imple_1 {
-    using param_t = typename std::remove_all_extents<END_T>::type;
+    using param_t = typename ArggLib::remove_cvref_t<END_T>;
   public:
 
     const param_t m_end;
@@ -86,7 +89,7 @@ namespace ArggLib {
   };
 
   template <typename T, __ENABLE_IF_ARITHMETIC(T, int) = 0>
-  auto for_loop(T&& t) {
+  auto for_loop(T&& t) -> decltype(proc() >> for_loop_imple_1<T>(std::forward<T>(t))) {
     return proc() >> for_loop_imple_1<T>(std::forward<T>(t));
   }
 
@@ -110,7 +113,7 @@ namespace ArggLib {
   };
 
   template <typename T, __ENABLE_IF(has_begin<T>(), int) = 0>
-  auto for_loop(T&& t) {
+  auto for_loop(T&& t) -> decltype (proc() >> for_loop_imple_1_vec_lv<T>(std::move(t)) ){
     return proc() >> for_loop_imple_1_vec_lv<T>(std::move(t));
   }
 
@@ -138,8 +141,8 @@ namespace ArggLib {
 
 
   template <typename T1, typename T2>
-  auto  for_loop(T1&& start_, T2&& end_) {
-    return proc()>> for_loop_imple_2<typename ___IS_BOTH_INT<typename std::remove_all_extents<T1>::type, typename std::remove_all_extents<T2>::type, double>::type>(std::forward<T1>(start_), std::forward<T2>(end_));
+  auto  for_loop(T1&& start_, T2&& end_) ->decltype(proc() >> for_loop_imple_2<typename ___IS_BOTH_INT<typename ArggLib::remove_cvref_t<T1>, typename ArggLib::remove_cvref_t<T2>, double>::type>(std::forward<T1>(start_), std::forward<T2>(end_))) {
+    return proc()>> for_loop_imple_2<typename ___IS_BOTH_INT<typename ArggLib::remove_cvref_t<T1>, typename ArggLib::remove_cvref_t<T2>, double>::type>(std::forward<T1>(start_), std::forward<T2>(end_));
   }
 
 
@@ -166,7 +169,7 @@ namespace ArggLib {
   };
 
   template <typename T1, typename T2, typename T3>
-  auto for_loop(T1&& start_, T2&& end_, T3&& step_) {
+  auto for_loop(T1&& start_, T2&& end_, T3&& step_) -> decltype(proc() >> for_loop_imple_3<typename ___IS_ALL_INT<T1, T2, T3, double>::type>(std::forward<T1>(start_), std::forward<T2>(end_), std::forward<T3>(step_))) {
     return proc()>> for_loop_imple_3<typename ___IS_ALL_INT<T1, T2, T3, double>::type>(std::forward<T1>(start_), std::forward<T2>(end_), std::forward<T3>(step_));
   }
 
@@ -220,22 +223,22 @@ namespace ArggLib {
 
   
   template <typename T>
-  auto  for_loop(const std::vector<T>& vec) {
+  auto  for_loop(const std::vector<T>& vec) -> decltype(proc() >> for_loop_impl_vec<T>(vec)) {
     return proc() >> for_loop_impl_vec<T>(vec);
   }
 
   template <typename T>
-  auto  for_loop(std::vector<T>& vec) {
+  auto  for_loop(std::vector<T>& vec) -> decltype(proc() >> for_loop_impl_vec<T>(vec)) {
     return proc() >> for_loop_impl_vec<T>(vec);
   }
 
   template <typename T>
-  auto  for_loop(std::vector<T>&& vec) {
+  auto  for_loop(std::vector<T>&& vec) -> decltype(proc() >> for_loop_impl_vec_RV<T>(std::move(vec))) {
     return proc() >> for_loop_impl_vec_RV<T>(std::move(vec));
   }
   
   template <typename T>
-  auto  for_loop(std::initializer_list<T> l) {
+  auto  for_loop(std::initializer_list<T> l) -> decltype(for_loop(std::vector<T>(std::move(l)))) {
     
     return for_loop(std::vector<T>(std::move(l)));
   }

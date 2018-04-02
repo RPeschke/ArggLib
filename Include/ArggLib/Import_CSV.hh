@@ -1,8 +1,12 @@
 #ifndef ArggLibimport_CSV_h__
 #define ArggLibimport_CSV_h__
 #include <type_traits>
-#include "ArggLib/constexpr_if.hh"
-#include "named_variable.hh"
+//#include "ArggLib/constexpr_if.hh"
+#include "ArggLib/named_variable.hh"
+#include "ArggLib/string_helpers.hh"
+#include "ArggLib/smart_ptr_helpers.hh"
+#include "ArggLib/type_trates.hh"
+#include <type_traits>
 #define ArggLib_Import_CSV_MAX_NUMBER_OF_COLUMNS 10
 
 namespace ArggLib {
@@ -10,7 +14,8 @@ namespace ArggLib {
   namespace ArggLib_impl {
 
     template <bool COND, typename NEXT_T, typename... ARGS>
-    std::enable_if_t < !COND, procReturn > expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
+    typename std::enable_if< !COND, procReturn >::type 
+      expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
 
       throw std::invalid_argument("trying to read in a csv file with to many columns");
 
@@ -20,7 +25,9 @@ namespace ArggLib {
 
 
     template <bool COND, typename NEXT_T, typename... ARGS>
-    std::enable_if_t< COND, procReturn> expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
+    
+    typename std::enable_if< COND, procReturn >::type
+      expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
 
       auto index2 = buffer.find(delimiter, index1);
       auto index3 = buffer.find_first_not_of(' ', index1);
@@ -42,7 +49,8 @@ namespace ArggLib {
 
 
     template <bool COND, typename NEXT_T, typename... ARGS>
-    std::enable_if_t < !COND, procReturn > expand_buffer_line_named_variables(
+    typename std::enable_if< !COND, procReturn >::type
+        expand_buffer_line_named_variables(
       NEXT_T&& next,
       size_t index1, cstringr buffer,
       size_t index_header, cstringsr headers,
@@ -56,7 +64,8 @@ namespace ArggLib {
     }
 
     template <bool COND, typename NEXT_T, typename... ARGS>
-    std::enable_if_t< COND, procReturn> expand_buffer_line_named_variables(
+    typename std::enable_if<COND, procReturn >::type
+          expand_buffer_line_named_variables(
       NEXT_T&& next,
       size_t index1, cstringr buffer,
       size_t index_header, cstringsr headers,
@@ -164,7 +173,8 @@ namespace ArggLib {
         std::map<std::string, std::string> ret;
         while (std::getline(this->get_instream(), this->m_buffer)) {
 
-          split_string(this->m_buffer, this->m_delimiter, [&ret, header_index = int(0), this](cautor s) mutable {
+          auto  header_index = int(0);
+          split_string(this->m_buffer, this->m_delimiter, [&ret, header_index, this](cstringr s) mutable {
             ret[this->m_headers[header_index++]] = s;
 
           });
@@ -218,15 +228,15 @@ namespace ArggLib {
     };
   }
   template <typename T = std::ifstream>
-  auto Import_CSV_as_HashTable(cstringr name, const char delimiter) {
+  auto Import_CSV_as_HashTable(cstringr name, const char delimiter) ->decltype(proc() >> ArggLib_impl::Import_CSV_as_HashTable_impl<T>(name, delimiter)) {
     return proc() >> ArggLib_impl::Import_CSV_as_HashTable_impl<T>(name, delimiter);
   }
   template <typename T = std::ifstream>
-  auto Import_CSV(cstringr name, const char delimiter) {
+  auto Import_CSV(cstringr name, const char delimiter) -> decltype(proc() >> ArggLib_impl::Import_CSV_impl<T>(name, delimiter)) {
     return proc() >> ArggLib_impl::Import_CSV_impl<T>(name, delimiter);
   }
   template <typename T = std::ifstream>
-  auto Import_CSV_as_named_variables(cstringr name, const char delimiter) {
+  auto Import_CSV_as_named_variables(cstringr name, const char delimiter) -> decltype(proc() >> ArggLib_impl::Import_CSV_as_named_variables_impl<T>(name, delimiter) ){
     return proc() >> ArggLib_impl::Import_CSV_as_named_variables_impl<T>(name, delimiter);
   }
 }

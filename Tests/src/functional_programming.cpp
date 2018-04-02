@@ -292,3 +292,11 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test12212) {
 
 	_to_vector << -10 << 10  | sort().descending().absulute() | display();
 }
+
+ARGGLIB__DEFINE_TEST(rtrim) {
+  std::string s = "asdad    ";
+  
+
+  ArggLib::rtrim(s);
+  ___ARGGLIB_TEST("rtrim", s, "asdad");
+}

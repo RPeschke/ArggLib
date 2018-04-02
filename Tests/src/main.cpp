@@ -7,6 +7,7 @@
 #include "ArggLib/cautor.hh"
 #include "ArggLib/func.hh"
 
+#include "ArggLib/complete_lib.hh"
 #include <map>
 #include <string>
 

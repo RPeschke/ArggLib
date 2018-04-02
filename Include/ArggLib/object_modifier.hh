@@ -14,7 +14,7 @@ namespace ArggLib {
 		object_modifier_impl(Fun_t v) :m_fun(v) {}
 
 		template <typename T>
-		auto& modify(T& t) const{
+		T& modify(T& t) const{
 			
 			m_fun(t);
 			return t;
@@ -24,7 +24,7 @@ namespace ArggLib {
 
 
 	template <typename F>
-	auto object_modifier(F f) {
+	auto object_modifier(F f) -> decltype(object_modifier_impl<F>(std::move(f))){
 		return object_modifier_impl<F>(std::move(f));
 	}
 
@@ -35,7 +35,7 @@ namespace ArggLib {
 
 
 	template <typename T1, typename T2>
-	auto& operator-(T1& t1, const object_modifier_impl<T2>& t2) {
+  T1& operator-(T1& t1, const object_modifier_impl<T2>& t2) {
 		t2.modify(t1);
 		return t1;
 	}

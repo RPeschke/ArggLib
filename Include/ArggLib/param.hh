@@ -8,7 +8,10 @@
 #define ___ArggLib_Apply(Fun, par) std::apply(Fun, par)
 
 #else
+#ifndef ArggLibApply_h__
 #include "ArggLib/deprecated/apply.hh"
+#endif
+
 #define ___ArggLib_Apply(Fun, par) ArggLib::deprecated::apply(Fun, par)
 
 #endif

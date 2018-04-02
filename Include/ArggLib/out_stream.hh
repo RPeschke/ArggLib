@@ -13,6 +13,14 @@ namespace ArggLib {
 
 
   namespace ArggLib_impl {
+
+    class return_input {
+    public: 
+      template<typename T>
+      auto operator()(T&& t)  -> decltype (std::forward<T>(t)){
+        return std::forward<T>(t);
+      }
+    };
     template <typename T1, typename T2>
     std::ostream& operator<<(std::ostream& out, const std::pair<T1, T2> & t) {
       out << "first: {" << t.first << "} second: {" << t.second << "}";
@@ -63,7 +71,7 @@ namespace ArggLib {
     }
     template<typename T  >
     void print__(std::ostream& out, const std::string& delimer, const std::vector<T>& t) {
-      print__(out, delimer, t, [](auto e) { return e; });
+      print__(out, delimer, t, ArggLib_impl::return_input{});
     }
 
     template<typename T  >
@@ -158,7 +166,7 @@ namespace ArggLib {
 		out_stream_impl0(std::shared_ptr<T> out_sp) : out_stream_impl<T>(*out_sp), m_out_owned(out_sp) {}
 		
 		template<typename... ARGs>
-		auto End(ARGs&&... ) {
+    T&& End(ARGs&&... )   {
 			
 			auto ret = m_out_owned;
 			m_out_owned.reset();
@@ -168,16 +176,16 @@ namespace ArggLib {
 	};
 
 	template <typename T>
-	auto out_stream(T& out_stream) {
+	auto out_stream(T& out_stream) ->decltype(proc() >> out_stream_impl<T>(out_stream)) {
 		return proc()>> out_stream_impl<T>(out_stream);
 	}
 
 
-	inline auto out_stream() {
+	inline auto out_stream() ->decltype(proc() >> out_stream_impl0<std::stringstream>(Snew std::stringstream())) {
 		return proc() >> out_stream_impl0<std::stringstream>( Snew std::stringstream() );
 	}
 
-	inline auto display() {
+	inline auto display() -> decltype(ArggLib::out_stream(std::cout)) {
 		return	ArggLib::out_stream(std::cout);
 	}
 }

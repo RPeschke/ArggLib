@@ -28,7 +28,7 @@ namespace ArggLib {
 		}
 
 		template <typename... N>
-		auto do_end1(N&&... n) {
+		auto do_end1(N&&... n)  -> decltype(do_end0(n...)){
 			return do_end0(n...);
 		}
 
@@ -40,7 +40,7 @@ namespace ArggLib {
 
 
 		template <typename... N>
-		auto do_end2(N&&... n) {
+		auto do_end2(N&&... n) -> decltype(do_end1(n...)){
 			return do_end1(n...);
 		}
 
@@ -64,7 +64,7 @@ namespace ArggLib {
 
 
 		template <typename... P>
-		auto unfold_end(P&&... p) {
+		auto unfold_end(P&&... p) -> decltype(do_end2(p..., success)) {
 			
 			return do_end2(p...,success);;
 		}

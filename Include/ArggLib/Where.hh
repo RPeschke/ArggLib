@@ -30,7 +30,7 @@ namespace ArggLib {
 		};
 	}
 	template <typename T>
-	auto Where(T fun) {
+	auto Where(T fun) -> decltype(proc() >> ArggLib_impl::Where_impl<T>(std::move(fun))) {
 		return proc()>> ArggLib_impl::Where_impl<T>(std::move(fun));
 	}
 
@@ -39,7 +39,7 @@ namespace ArggLib {
   };
 
   template<typename T>
-  auto operator*(where_begin_e, T&& t) {
+  auto operator*(where_begin_e, T&& t) -> decltype(Where(std::forward<T>(t))) {
     return Where(std::forward<T>(t));
   }
 #define _where __whereBegin_enum * [&](cautor _x)

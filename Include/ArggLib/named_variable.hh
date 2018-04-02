@@ -26,7 +26,7 @@ namespace ArggLib {
   }
 
   template <typename T> 
-  auto make_named_variable(std::string name, T value) {
+  auto make_named_variable(std::string name, T value) ->decltype(named_variable<T>(std::move(name), std::move(value))) {
     return named_variable<T>(std::move(name), std::move(value));
   }
 

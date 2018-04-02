@@ -13,7 +13,7 @@ namespace ArggLib {
 		};
 
 		template <typename T>
-		auto operator<<(_unew_, T* in_) {
+		auto operator<<(_unew_, T* in_) ->decltype(std::unique_ptr<T>(in_)) {
 			return std::unique_ptr<T>(in_);
 		}
 
@@ -24,7 +24,7 @@ namespace ArggLib {
 		};
 
 		template <typename T>
-		auto operator<<(_Snew_, T* in_) {
+		auto operator<<(_Snew_, T* in_) -> decltype(std::shared_ptr<T>(in_)) {
 			return std::shared_ptr<T>(in_);
 		}
 	}
