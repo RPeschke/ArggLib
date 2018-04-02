@@ -150,7 +150,7 @@ namespace ArggLib {
   class for_loop_imple_3 {
     using param_t = typename ArggLib::remove_cvref<T>::type;
   public:
-	  auto set_start(param_t start) {
+	  auto set_start(param_t start) ->ArggLib::procImple<for_loop_imple_3<T>> {
 		  return for_loop(start, m_end, m_step);
 	  }
     const param_t m_end;

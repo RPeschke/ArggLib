@@ -1,12 +1,18 @@
 #ifndef import_CSV_impl_h__
 #define import_CSV_impl_h__
+#include <type_traits>
+#include "ArggLib/procReturn.hh"
+#include "ArggLib/string_helpers.hh"
+#include "ArggLib/smart_ptr_helpers.hh"
+
 
 #define ArggLib_Import_CSV_MAX_NUMBER_OF_COLUMNS 10
 namespace ArggLib {
 	namespace ArggLib_impl {
 
 		template <bool COND, typename NEXT_T, typename... ARGS>
-		std::enable_if_t < !COND, procReturn > expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
+		typename std::enable_if < !COND, procReturn > ::type
+      expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
 
 			throw std::invalid_argument("trying to read in a csv file with to many columns");
 
@@ -16,7 +22,7 @@ namespace ArggLib {
 		struct  split_string_index_triplet{
 			size_t start, size_trimed, end;
 		};
-		inline auto  split_string_to_index_pairs(cstringr buffer, const char delimiter, size_t offset) {
+		inline split_string_index_triplet  split_string_to_index_pairs(cstringr buffer, const char delimiter, size_t offset) {
 			auto index2 = buffer.find(delimiter, offset);
 			auto index3 = buffer.find_first_not_of(' ', offset);
 			offset = std::max(offset, index3);
@@ -27,7 +33,8 @@ namespace ArggLib {
 
 		}
 		template <bool COND, typename NEXT_T, typename... ARGS>
-		std::enable_if_t< COND, procReturn> expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
+    typename std::enable_if< COND, procReturn>::type
+      expand_buffer_line(NEXT_T&& next, size_t index1, cstringr buffer, const char delimiter, ARGS&&... args) {
 
 			//std::cout << buffer << std::endl;
 
@@ -50,7 +57,8 @@ namespace ArggLib {
 
 
 		template <bool COND, typename NEXT_T, typename... ARGS>
-		std::enable_if_t < !COND, procReturn > expand_buffer_line_named_variables(
+		typename std::enable_if < !COND, procReturn >::type
+      expand_buffer_line_named_variables(
 			NEXT_T&& next,
 			size_t index1, cstringr buffer,
 			size_t index_header, cstringsr headers,
@@ -64,7 +72,8 @@ namespace ArggLib {
 		}
 
 		template <bool COND, typename NEXT_T, typename... ARGS>
-		std::enable_if_t< COND, procReturn> expand_buffer_line_named_variables(
+    typename std::enable_if <COND, procReturn >::type
+        expand_buffer_line_named_variables(
 			NEXT_T&& next,
 			size_t index1, cstringr buffer,
 			size_t index_header, cstringsr headers,
