@@ -121,7 +121,7 @@ namespace ArggLib {
 		bool m_first; // used for hash tables
 		const std::string m_delimiter;
 
-		auto delimiter(cstringr delimiter_) {
+		auto delimiter(cstringr delimiter_) -> ArggLib::procImple<out_stream_impl<T>> {
 			return out_stream(m_out_stream, delimiter_);
 		}
 		out_stream_impl(T& out_stream, const std::string& delimiter) :m_out_stream(out_stream) , m_delimiter(delimiter) {
@@ -171,8 +171,8 @@ namespace ArggLib {
 	public:
 		std::shared_ptr<T> m_out_owned;
 
-		auto delimiter(cstringr delimiter_) {
-			return proc() >> out_stream_impl0<std::stringstream>(m_out_owned, delimiter_);
+		auto delimiter(cstringr delimiter_) -> ArggLib::procImple<out_stream_impl0<T>>  {
+			return proc() >> out_stream_impl0<T>(m_out_owned, delimiter_);
 		}
 
 		out_stream_impl0(std::shared_ptr<T> out_sp , cstringr delimiter ) : out_stream_impl<T>(*out_sp, delimiter), m_out_owned(out_sp) {}
@@ -188,16 +188,16 @@ namespace ArggLib {
 	};
 
 	template <typename T>
-	auto out_stream(T& out_stream, cstringr delimiter = "  ") {
+	auto out_stream(T& out_stream, cstringr delimiter = "  ") -> decltype(proc() >> out_stream_impl<T>(out_stream, delimiter)) {
 		return proc()>> out_stream_impl<T>(out_stream, delimiter);
 	}
 
 
-	inline auto out_stream( cstringr delimiter = "  " ) {
+	inline auto out_stream( cstringr delimiter = "  " ) -> decltype(proc() >> out_stream_impl0<std::stringstream>(Snew std::stringstream(), delimiter)) {
 		return proc() >> out_stream_impl0<std::stringstream>( Snew std::stringstream(),delimiter );
 	}
 
-	inline auto display() {
+	inline auto display() -> decltype(ArggLib::out_stream(std::cout)) {
 		return	ArggLib::out_stream(std::cout);
 	}
 }
