@@ -22,7 +22,7 @@
     }
 
 #define __ARGGLIB_IMPL_TRY_CLASS_maker_function(name, function_Name) \
-        template <typename default_T, typename Fun_t, typename ARG> auto name##_make_types_try(default_T&& def, Fun_t&& fun, ARG && arg) ->decltype(name##_try_run_or_default_impl<ArggLib::remove_cvref_t< default_T>, ArggLib::remove_cvref_t<  Fun_t>, ArggLib::remove_cvref_t< ARG > >{def, fun, arg }) { return name##_try_run_or_default_impl<ArggLib::remove_cvref_t< default_T>, ArggLib::remove_cvref_t<  Fun_t>, ArggLib::remove_cvref_t< ARG > >{def, fun, arg }; }  class dummy_dont_use
+        template <typename default_T, typename Fun_t, typename ARG> auto name##_make_types_try(default_T&& def, Fun_t&& fun, ARG && arg) ->decltype(name##_try_run_or_default_impl< default_T,   Fun_t,  ARG  >{def, fun, arg }) { return name##_try_run_or_default_impl<default_T,  Fun_t,  ARG  >{def, fun, arg }; }  class dummy_dont_use
 
 #define __ARGGLIB_IMPL_TRY_CREATE_ENTRY_POINT(name, function_Name) \
     template <typename default_T, typename Fun_t, typename ARG> auto name(default_T&& def, Fun_t&& fun, ARG && arg) ->decltype( try_call_fnction4(ArggLib_impl::name##_make_types_try(def, fun, arg))) { \
