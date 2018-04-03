@@ -5,7 +5,8 @@
 #include <string>
 #include <iostream>
 
-
+#include "ArggLib/try_run_default.hh"
+#include "ArggLib/onEnd2.hh"
 
 
 
@@ -161,35 +162,6 @@ ARGGLIB__DEFINE_TEST(where_p_test1) {
 }
 
 
-template<typename T>
-class OnEnd_impl2 {
-public:
-  T m_fun;
-
-  OnEnd_impl2(T fun) :m_fun(std::move(fun)) {
-
-  }
-
-  auto End() {
-  
-    return   m_fun();
-  }
-
-  template <typename NEXT_T, typename... ARGS>
-  procReturn operator()(NEXT_T&& next, ARGS&&... args) {
-
-
-    return next(std::forward<ARGS>(args)...);
-  }
-
-
-};
-
-
-template <typename T>
-auto OnEnd2(T fun) ->decltype(proc() >> OnEnd_impl2<T>(std::move(fun))) {
-  return proc() >> OnEnd_impl2<T>(std::move(fun));
-}
 
 template <typename T1>
 struct types_of_f {
@@ -209,77 +181,8 @@ auto make_types_of_f(T1 f ) {
 
 
 
+#define MAKE_TRY_RUN_FUNCION 
 
-template <typename default_T, typename Fun_t, typename ARG>
-struct types_of_f1 {
-  default_T def;
-  Fun_t fun;
-  ARG arg;
-
-
-  template <typename T, typename... N>
-  auto return_first(T&& t, N&&... n) {
-    return t;
-  }
-
-  template <typename... N>
-  auto try_call_fnction2(N&&... n) {
-    return return_first(n...);
-  }
-
-
-
-
-  template <typename default_T, typename Fun_t, typename ARG>
-  auto  try_call_fnction2(default_T&& def, Fun_t&& fun, ARG && arg) -> decltype(fun.End()) {
-
-    return fun.End();
-
-  }
-
-
-  template <typename... N>
-  auto try_call_fnction3(N&&... n) {
-    return try_call_fnction2(n...);
-  }
-
-
-
-
-  template <typename default_T, typename Fun_t, typename ARG>
-  auto  try_call_fnction3(default_T&& def, Fun_t&& fun, ARG && arg) -> decltype(fun.End(arg)) {
-
-    return fun.End(def);
-
-  }
-  auto operator()() {
-    return try_call_fnction3( def,  fun,  arg);
-  }
-};
-
-
-template <typename default_T, typename Fun_t, typename ARG>
-auto make_types_of_f(default_T&& def, Fun_t&& fun, ARG && arg) {
-  return types_of_f1<ArggLib::remove_cvref_t< default_T>, ArggLib::remove_cvref_t<  Fun_t>, ArggLib::remove_cvref_t< ARG > >{def, fun, arg };
-}
-
-template <typename T, typename std::enable_if_t<std::is_same_v< std::result_of_t<T()>, void>, int> = 0 >
-auto try_call_fnction4(T&& t) {
-   t();
-   return 123;
-}
-
-template <typename T, typename std::enable_if_t<!std::is_same_v< std::result_of_t<T()>, void>, int> = 0 >
-auto try_call_fnction4(T&& t) {
-  return t();
-}
-
-template <typename default_T, typename Fun_t, typename ARG>
-auto try_run_default(default_T&& def, Fun_t&& fun, ARG && arg) {
-
-  auto x13 = make_types_of_f(def, fun, arg);
-  return try_call_fnction4(x13);
-}
 
 
 ARGGLIB__DEFINE_TEST(where_p_test21) {
@@ -293,11 +196,12 @@ ARGGLIB__DEFINE_TEST(where_p_test21) {
 //	std::cout << s.str() << std::endl;
 	//std::cout << out.str();
 	int i = 0;
-  auto x = OnEnd2([] { std::cout << "SDAA\n";  });
+  auto x =  OnEnd2([] { std::cout << "SDAA\n";  });
  // auto x12 = try_call_fnction3(123, x.m_pro,321);
 
-  auto x12 = try_run_default(111, x.m_pro, 1.2);
-  auto x13 = make_types_of_f(123, x.m_pro, 321);
+  auto x12 = try_run_or_default_End(111, x.m_pro, 1.2);
+  auto x121 = try_run_or_default_End(111, x, 1.2);
+  auto x13 = ArggLib_impl::try_run_or_default_End_make_types_try(123, x.m_pro, 321);
   auto x14 =  try_call_fnction4(x13);
   auto r = [x]() mutable {return   x.m_pro.End(); };
   r();
@@ -305,4 +209,15 @@ ARGGLIB__DEFINE_TEST(where_p_test21) {
   auto xxx = std::is_same_v< std::result_of_t<decltype(x13)()>,int> ;
   auto x2 = std::is_same_v< std::result_of_t<decltype(x13)()>, void>;
   ArggLib_impl::unfold_end(OnEnd2([] { std::cout << "SDAA\n"; }));
+
+  auto x6 = OnEnd3([](double x) { 
+    return x; 
+  });
+  std::cout << try_run_or_default_End(111, x6.m_pro, 1.2) << std::endl;
+
+  std::cout << try_run_or_default_functor(123, [](auto e) {
+    std::cout << e<< "\nasdasd\n";
+    return 3324;
+  }, 123) << std::endl;
+
 }

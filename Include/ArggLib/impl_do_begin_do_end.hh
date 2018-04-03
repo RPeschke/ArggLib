@@ -16,7 +16,7 @@ namespace ArggLib {
 
 
     template <typename... N>
-    auto do_end0a_check_for_return(N&&... n)  {
+    auto do_end0a_check_for_return(N&&... n) ->decltype(success){
       return success;
     }
 
@@ -48,7 +48,7 @@ namespace ArggLib {
 
 
     template <typename N, typename T >
-    auto do_end1a_no_return_value(N&& n, T&& value) {
+    T&& do_end1a_no_return_value(N&& n, T&& value) {
       n.End(value);
       return value;
     }
