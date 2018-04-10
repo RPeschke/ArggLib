@@ -41,7 +41,11 @@ namespace ArggLib {
 
 
 
-
+	template <typename T>
+	class is_future_type {
+	public:
+		enum { value = decltype(is_future(declval<	T>()))::value };
+	};
 
 
 }

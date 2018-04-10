@@ -1,5 +1,5 @@
-#ifndef proc_h__
-#define proc_h__
+#ifndef ArggLib_proc_h__
+#define ArggLib_proc_h__
 
 #include <type_traits>
 #include <utility>
@@ -139,10 +139,15 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 	};
 
-//	stop_impl stop(); 
+
+	template <typename T>
+	auto __helper_to_proc(T&& t) -> decltype(t) {
+		return t;
+	}
+	class procImple_base {};
 
 	template <typename PROCESSOR_T>
-	class procImple {
+	class procImple  : public  procImple_base{
 	public:
 		procImple(const PROCESSOR_T& pro) :m_pro(pro) {}
 
@@ -170,18 +175,18 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 
 
-
+		
 
 
 		template <typename NEXT>
-		auto operator >> (const NEXT& n)-> decltype(make_proImple(make_outterLamda(m_pro, n))) {
+		auto operator >> (const NEXT& n)-> decltype(make_proImple(make_outterLamda(m_pro, __helper_to_proc(n)))) {
 
-			return make_proImple(make_outterLamda(m_pro, n));
+			return make_proImple(make_outterLamda(m_pro, __helper_to_proc( n)));
 		}
 		template <typename NEXT>
-		auto operator >> (NEXT& n)-> decltype(make_proImple(make_outterLamda(m_pro, n))) {
+		auto operator >> (NEXT& n)-> decltype(make_proImple(make_outterLamda(m_pro, __helper_to_proc( n)))) {
 
-			return make_proImple(make_outterLamda(m_pro, n));
+			return make_proImple(make_outterLamda(m_pro, __helper_to_proc( n)));
 		}
 
 
@@ -226,8 +231,15 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 	template <typename T>
 	class is_not_param {
 	public:
-		enum { value = !std::is_base_of<param_base, typename std::remove_all_extents<T>::type>::value };
+		enum { value = !std::is_base_of<param_base, typename ArggLib::remove_cvref<T>::type>::value };
 	};
+
+	template <typename T>
+	class is_proc {
+	public:
+		enum { value = !std::is_base_of<ArggLib::procImple_base, typename ArggLib::remove_cvref<T>::type>::value };
+	};
+
 
 	template <typename T, typename PROCESSOR_T>
 	auto operator|(T&& t, procImple<PROCESSOR_T>& rhs)->decltype(___enable_if_test__<is_not_param<T>::value>(rhs(std::forward<T>(t)))) {
@@ -246,6 +258,8 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 	auto make_proImple(T&& t) ->decltype(procImple<typename std::remove_reference<T>::type>(std::forward<T>(t))) {
 		return procImple<typename std::remove_reference<T>::type>(std::forward<T>(t));
 	}
+
+
 
 	class proc {
 	public:
@@ -286,5 +300,5 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 
 }
-#endif // proc_h__
+#endif // ArggLib_proc_h__
 

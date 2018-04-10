@@ -8,8 +8,9 @@
 #include "ArggLib/try_run_default.hh"
 #include "ArggLib/onEnd2.hh"
 
-
-
+#include "ArggLib/proc_fill_obj.hh"
+#include "ArggLib/async_for_loop.hh"
+#include "ArggLib/impl_do_begin_do_end.hh"
 
 using namespace std;
 
@@ -152,6 +153,120 @@ ARGGLIB__DEFINE_TEST(validated_variable_test) {
 
 
 
+ARGGLIB__DEFINE_TEST(try_run_or_default_End) {
+	{
+		std::stringstream out;
+		auto x = OnEnd2([&out] { out << "Called end sucessfully\n"; });
+
+		auto x13 = try_run_or_default_End(123, x.m_pro, 321);
+		___ARGGLIB_TEST("try_run_or_default_End", out.str(), "Called end sucessfully\n");
+		___ARGGLIB_TEST("try_run_or_default_End", x13, 123);
+	}
+
+	{
+		std::stringstream out;
+		auto x = OnEnd2([&out] { out << "Called end sucessfully\n"; return 1; });
+
+		auto x13 = try_run_or_default_End(123, x.m_pro, 321);
+		___ARGGLIB_TEST("try_run_or_default_End", out.str(), "Called end sucessfully\n");
+		___ARGGLIB_TEST("try_run_or_default_End", x13, 1);
+	}
+
+
+	{
+		std::stringstream out;
+		auto x = OnEnd3([&out] (auto i) { out << "Called end sucessfully\n"<< i << "\n"; });
+
+		auto x13 = try_run_or_default_End(123, x.m_pro, 321);
+		___ARGGLIB_TEST("try_run_or_default_End", out.str(), "Called end sucessfully\n321\n");
+		___ARGGLIB_TEST("try_run_or_default_End", x13, 123);
+	}
+
+	{
+		std::stringstream out;
+		auto x = OnEnd3([&out](auto i) { out << "Called end sucessfully\n" << i << "\n"; return 1; });
+
+		auto x13 = try_run_or_default_End(123, x.m_pro, 321);
+		___ARGGLIB_TEST("try_run_or_default_End", out.str(), "Called end sucessfully\n321\n");
+		___ARGGLIB_TEST("try_run_or_default_End", x13, 1);
+	}
+
+	{
+		std::stringstream out;
+		auto x = OnEnd3([&out](auto i) { out << "Called end sucessfully\n" << i << "\n"; return 1; });
+
+		auto x13 = try_run_or_default_End(123, x, 321);
+		___ARGGLIB_TEST("try_run_or_default_End", out.str(), "");
+		___ARGGLIB_TEST("try_run_or_default_End", x13, 123);
+	}
+}
+
+
+
+
+ARGGLIB__DEFINE_TEST(try_run_or_default_functor) {
+	{
+		std::stringstream out;
+		auto x = [&out] { out << "Called end sucessfully\n"; };
+
+		auto x13 = try_run_or_default_functor(123, x, 321);
+		___ARGGLIB_TEST("try_run_or_default_functor", out.str(), "Called end sucessfully\n");
+		___ARGGLIB_TEST("try_run_or_default_functor", x13, 123);
+	}
+
+	{
+		std::stringstream out;
+		auto x = [&out] { out << "Called end sucessfully\n"; return 1; };
+
+		auto x13 = try_run_or_default_functor(123, x, 321);
+		___ARGGLIB_TEST("try_run_or_default_functor", out.str(), "Called end sucessfully\n");
+		___ARGGLIB_TEST("try_run_or_default_functor", x13, 1);
+	}
+
+
+	{
+		std::stringstream out;
+		auto x = [&out](auto i) { out << "Called end sucessfully\n" << i << "\n"; };
+
+		auto x13 = try_run_or_default_functor(123, x, 321);
+		___ARGGLIB_TEST("try_run_or_default_functor", out.str(), "Called end sucessfully\n321\n");
+		___ARGGLIB_TEST("try_run_or_default_functor", x13, 123);
+	}
+
+	{
+		std::stringstream out;
+		auto x = [&out](auto i) { out << "Called end sucessfully\n" << i << "\n"; return 1; };
+
+		auto x13 = try_run_or_default_functor(123, x, 321);
+		___ARGGLIB_TEST("try_run_or_default_functor", out.str(), "Called end sucessfully\n321\n");
+		___ARGGLIB_TEST("try_run_or_default_functor", x13, 1);
+	}
+
+	{
+		std::stringstream out;
+		auto x = [&out](auto i) { out << "Called end sucessfully\n" << i << "\n"; return 1; };
+
+		auto x13 = try_run_or_default_functor(123, "no Functor", 321);
+		___ARGGLIB_TEST("try_run_or_default_functor", out.str(), "");
+		___ARGGLIB_TEST("try_run_or_default_functor", x13, 123);
+	}
+}
+
+ARGGLIB__DEFINE_TEST(test_end_unrole) {
+	
+
+
+	auto i = ArggLib_impl::do_end3(12, std::async([] {return 1; }));
+	___ARGGLIB_TEST("test_end_unrole", i.get(), 1);
+
+	std::stringstream out;
+	auto x = OnEnd2([&out] { out << "Called end sucessfully\n"; });
+	auto i2 = ArggLib_impl::do_end3(x,123);
+	
+	std::cout << i2 << std::endl;
+
+}
+
 ARGGLIB__DEFINE_TEST(where_p_test1) {
 
 
@@ -220,4 +335,24 @@ ARGGLIB__DEFINE_TEST(where_p_test21) {
     return 3324;
   }, 123) << std::endl;
 
+
+
 }
+
+
+ARGGLIB__DEFINE_TEST(fill_test) {
+	auto x1 = 10 | for_loop() >> out_stream();
+	std::cout << "<>\n ";
+	std::future<int> i;
+	//auto i1 = is_future(i);
+	ArggLib_impl::do_end3(1, std::move(i));
+
+	int i3 = ArggLib::is_future_type<int>::value;
+	int i4 = ArggLib::is_future_type<std::future<int>>::value;
+	auto i2 = std::enable_if_t< decltype(is_future(declval<	std::future<int> >() ))::value , int>(0) ;
+    auto x =  10 | for_loop() >> "adadas" >> 1.2;
+	//auto x1 = 10 | proc_async()>>  for_loop() >> display();
+	std::cout << x <<  "\n</>\n ";
+}
+
+
