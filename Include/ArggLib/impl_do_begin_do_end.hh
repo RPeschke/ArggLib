@@ -1,8 +1,25 @@
 #ifndef ArggLib_impl_do_begin_do_end_h__
 #define ArggLib_impl_do_begin_do_end_h__
 #include "ArggLib/has_member_helper.hh"
+#include "ArggLib/try_run_default.hh"
+#include <future>
+
+#include <type_traits>
+
 
 namespace ArggLib {
+
+	template <typename T>
+	std::false_type is_future(T&&);
+
+	template <typename T>
+	std::true_type is_future(std::future<T>&&);
+	template <typename T>
+	std::true_type is_future(std::future<T>&);
+
+	template <typename T>
+	std::true_type is_future(const std::future<T>&);
+
 
 	namespace ArggLib_impl {
 
@@ -70,16 +87,18 @@ namespace ArggLib {
 
     //remaining  element
 		template <typename... N>
-		auto do_end2(N&&... n) -> decltype(do_end1(n...)){
-			return do_end1(n...);
+		auto do_end2(N&&... n) -> decltype(try_run_or_default_End(std::forward<N>( n)...)){
+
+
+			return try_run_or_default_End(std::forward<N>(n)...);
 		}
 
 
     // last elements 
-		template <typename N,typename T>
-		auto do_end2(N&& n,T&& value) ->decltype(do_end1(n.n,value)){
-			return	do_end1(n.n ,value);
+		template <typename Def_t, typename N,typename T>
+		auto do_end2(Def_t&& def, N&& n,T&& value) ->decltype(try_run_or_default_End(std::forward<Def_t>(def), n.n, std::forward<T>(value))){
 
+			return try_run_or_default_End(std::forward<Def_t>(def), n.n, std::forward<T>(value));
 		}
 // 
 // 		template <typename N>
@@ -94,20 +113,59 @@ namespace ArggLib {
 // 
 // 		}
 
+		template <typename P, typename V, typename std::enable_if < !ArggLib::is_future_type<V>::value, int > ::type = 0 >
+		auto do_end3(P&& p, V&& v) {
+			auto ret = do_end2(success,std::forward<P>(p), std::forward<V>(v));
+			return  ret;
+		}
+		template <typename P, typename V, typename std::enable_if < ArggLib::is_future_type<V>::value, int > ::type = 0 >
+		auto do_end3(P&& p, V&& v) {
+			return std::forward<V>(v);
+		}
 
+		template <typename... T1>
+		auto do_end3a(T1&&... p) {
+			return  do_end2(std::forward<T1>(p)...);
+		}
+		template <typename P, typename V>
+		auto do_end3a(P&& p, V&& v) -> decltype(v.wait(),v) {
+			return v;
+		}
+/*
+		template <typename P, typename V ,typename std::is_same< ArggLib::remove_cvref <V>::type , std::future >
+		auto do_end3(P&& p, V&& v) {
+			do_end2(p, v);
+		}
+		*/
 		template <typename... P>
-		auto unfold_end(P&&... p) -> decltype(do_end2(p..., success)) {
+		auto unfold_end(P&&... p) -> decltype(do_end3(p..., success)) {
 			
-			return do_end2(p...,success);;
+			return do_end3(p...,success);;
 		}
 
 		template <typename P>
-		auto  unfold_end(P&& p) -> decltype(p.t, do_end2(p, unfold_end(p.t))) {
+		auto  unfold_end(P&& p) -> decltype(p.t, do_end3(p, unfold_end(p.t))) {
 
 			
-	
-			return  do_end2(p, unfold_end(p.t));
+			auto ret = unfold_end(p.t);
+			return  do_end3(p, std::move(ret));
 		}
+
+
+		template <typename... P>
+		auto unfold_end1(P&&... p) -> decltype(do_end3(p..., success)) {
+
+			return do_end3(p..., success);;
+		}
+
+		template <typename P>
+		auto  unfold_end1(P&& p) -> decltype(p.t, do_end3(p, unfold_end(p.t))) {
+
+
+			auto ret = unfold_end1(p.t);
+			return  do_end3(p, std::move(ret));
+		}
+
 
 // 
 // 		template <typename P>

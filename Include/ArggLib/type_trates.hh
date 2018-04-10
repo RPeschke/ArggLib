@@ -1,6 +1,7 @@
 #ifndef type_trates_h__
 #define type_trates_h__
 #include <type_traits>
+#include <utility>
 
 namespace ArggLib {
   template< class T > struct remove_reference { typedef T type; };
@@ -44,7 +45,7 @@ namespace ArggLib {
 	template <typename T>
 	class is_future_type {
 	public:
-		enum { value = decltype(is_future(declval<	T>()))::value };
+		enum { value = decltype(is_future(std::declval<	T>()))::value };
 	};
 
 
