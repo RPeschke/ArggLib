@@ -2,7 +2,7 @@
 #define type_trates_h__
 #include <type_traits>
 #include <utility>
-
+#define  ARGGLIB__REQUIRES(X) typename std::enable_if < X , int > ::type = 0
 namespace ArggLib {
   template< class T > struct remove_reference { typedef T type; };
   template< class T > struct remove_reference<T&> { typedef T type; };

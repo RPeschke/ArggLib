@@ -117,18 +117,30 @@ namespace ArggLib {
 	template<typename T>
 	class out_stream_impl {
 	public:
-		T& m_out_stream;
+		T* m_out_stream;
 		std::vector<std::string> m_headers; // used for hash tables
 		bool m_first; // used for hash tables
 		const std::string m_delimiter;
 
 		auto delimiter(cstringr delimiter_) -> ArggLib::procImple<out_stream_impl<T>> {
-			return out_stream(m_out_stream, delimiter_);
+			return out_stream(*m_out_stream, delimiter_);
 		}
-		out_stream_impl(T& out_stream, const std::string& delimiter) :m_out_stream(out_stream) , m_delimiter(delimiter) {
+		out_stream_impl(T* out_stream, const std::string& delimiter) :m_out_stream(out_stream) , m_delimiter(delimiter) {
 
 		}
 
+		out_stream_impl(out_stream_impl<T>&& in) : m_out_stream( std::move( in.m_out_stream)),
+			m_delimiter(std::move(in.m_delimiter)),
+			m_first(std::move(in.m_first)),
+			m_headers(std::move(in.m_headers)) {
+
+		}
+		out_stream_impl(const out_stream_impl<T>& in) :
+			m_out_stream(in.m_out_stream), 
+			m_delimiter(in.m_delimiter), 
+			m_first(in.m_first), 
+			m_headers(in.m_headers){
+		}
 		
 		procReturn Start() {
 			m_headers.clear();
@@ -141,28 +153,35 @@ namespace ArggLib {
 		template <typename NEXT_T, typename... ARGS>
 		procReturn operator()(NEXT_T&& next, ARGS&&... args) {
 
-			_Fill(m_out_stream, m_delimiter, args...);
+			_Fill(*m_out_stream, m_delimiter, args...);
 			return next(std::forward<ARGS>(args)...);
 		}
 
 		template <typename NEXT_T, typename HAST_TABLE_t>
 		procReturn operator()(NEXT_T&& next, std::map<std::string, HAST_TABLE_t>&& hash_table) {
-			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, m_delimiter);
+			ArggLib_impl::out_stream_hash_tables(hash_table, *m_out_stream, m_first, m_headers, m_delimiter);
 			
 			return next(std::move(hash_table));
 		}
 		template <typename NEXT_T, typename HAST_TABLE_t>
 		procReturn operator()(NEXT_T&& next, std::map<std::string, HAST_TABLE_t>& hash_table) {
-			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, m_delimiter);
+			ArggLib_impl::out_stream_hash_tables(hash_table, *m_out_stream, m_first, m_headers, m_delimiter);
 			
 			return next(hash_table);
 		}
 
 		template <typename NEXT_T, typename HAST_TABLE_t>
 		procReturn operator()(NEXT_T&& next, const std::map<std::string, HAST_TABLE_t>& hash_table) {
-			ArggLib_impl::out_stream_hash_tables(hash_table, m_out_stream, m_first, m_headers, m_delimiter);
+			ArggLib_impl::out_stream_hash_tables(hash_table, *m_out_stream, m_first, m_headers, m_delimiter);
 			
 			return next(hash_table);
+		}
+
+
+		T* End() {
+
+
+			return  m_out_stream;
 		}
 
 	};
@@ -176,7 +195,7 @@ namespace ArggLib {
 			return proc() >> out_stream_impl0<T>(m_out_owned, delimiter_);
 		}
 
-		out_stream_impl0(std::shared_ptr<T> out_sp , cstringr delimiter ) : out_stream_impl<T>(*out_sp, delimiter), m_out_owned(out_sp) {}
+		out_stream_impl0(std::shared_ptr<T> out_sp , cstringr delimiter ) : out_stream_impl<T>(out_sp.get() , delimiter), m_out_owned(out_sp) {}
 		
 		template<typename... ARGs>
     std::shared_ptr<T> End(ARGs&&... )   {
@@ -189,8 +208,8 @@ namespace ArggLib {
 	};
 
 	template <typename T>
-	auto out_stream(T& out_stream, cstringr delimiter = "  ") -> decltype(proc() >> out_stream_impl<T>(out_stream, delimiter)) {
-		return proc()>> out_stream_impl<T>(out_stream, delimiter);
+	auto out_stream(T& out_stream, cstringr delimiter = "  ") -> decltype(proc() >> out_stream_impl<T>(&out_stream, delimiter)) {
+		return proc()>> out_stream_impl<T>(&out_stream, delimiter);
 	}
 
 

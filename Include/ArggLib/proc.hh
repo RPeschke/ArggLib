@@ -6,6 +6,7 @@
 #include "ArggLib/param.hh"
 #include "ArggLib/procReturn.hh"
 #include "ArggLib/impl_do_begin_do_end.hh"
+#include "ArggLib/type_trates.hh"
 
 namespace ArggLib {
 
@@ -60,9 +61,9 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 	class outterLamda {
 	public:
 
-		typename std::remove_reference<T1>::type t;
-		typename std::remove_reference<T2>::type n;
-		outterLamda(const T1& t_, const  T2& n_) : t(t_), n(n_) {
+		typename ArggLib::remove_cvref_t<T1> t;
+		typename ArggLib::remove_cvref_t<T2> n;
+		outterLamda( T1& t_,   T2& n_) : t(t_), n(n_) {
 
 		}
 
@@ -73,12 +74,46 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 	};
 	template<typename T1, typename T2>
-	outterLamda<T1, T2> make_outterLamda(const T1& t_, const T2& n_) {
+	outterLamda<T1, T2> make_outterLamda( T1& t_,  T2& n_) {
 		return outterLamda<T1, T2>(t_, n_);
 	}
 
 
 
+	template<typename T1, typename T2>
+	class innerLamda_ownd {
+	public:
+		innerLamda_ownd(T1&& next_, T2&& n_) : next(std::forward<T1>(next_)), n(std::forward<T2>(n_)) {
+
+		}
+
+		typename  ArggLib::remove_cvref_t<T1> next;
+		typename  ArggLib::remove_cvref_t<T2> n;
+		template<typename... ARGS>
+		auto operator()(ARGS&&... in) ->decltype (n(next, in...)) {
+			return n(next, in...);
+		}
+
+
+
+	};
+	template<typename T1, typename T2>
+	innerLamda_ownd<T1, T2> make_innerLamda_ownd(T1&& next_, T2&& n_) {
+		return innerLamda_ownd<T1, T2>(std::forward<T1>( next_ ) ,std::forward<T2>(  n_));
+	}
+	template <typename T1, typename... ARGS>
+	auto copy_first(T1&& t1,  ARGS&&... n) {
+		return  ArggLib::remove_cvref_t<T1>( std::forward<T1>(t1));
+	}
+
+	template <typename... ARGS>
+	auto deep_copy_innerLamda(ARGS&&... n) {
+		return copy_first(std::forward<ARGS>( n)...);
+	}
+	template <typename ARG>
+	auto deep_copy_innerLamda(ARG&& n) ->decltype(n.deep_copy()){
+		return n.deep_copy();
+	}
 
 	template<typename T1, typename T2>
 	class innerLamda {
@@ -87,11 +122,15 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 		}
 
-		typename std::remove_reference<T1>::type& next;
-		typename std::remove_reference<T2>::type& n;
+		typename  ArggLib::remove_reference_t<T1>& next;
+		typename  ArggLib::remove_reference_t<T2>& n;
 		template<typename... ARGS>
 		auto operator()(ARGS&&... in) ->decltype (n(next, in...)) {
 			return n(next, in...);
+		}
+
+		auto deep_copy() const {
+			return make_innerLamda_ownd(deep_copy_innerLamda(next), n);
 		}
 
 	};
@@ -99,7 +138,6 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 	innerLamda<T1, T2> make_innerLamda(T1& next_, T2& n_) {
 		return innerLamda<T1, T2>(next_, n_);
 	}
-
 
 
 	template<typename T1, typename T2>

@@ -113,14 +113,22 @@ namespace ArggLib {
 // 
 // 		}
 
-		template <typename P, typename V, typename std::enable_if < !ArggLib::is_future_type<V>::value, int > ::type = 0 >
+		template <typename P, typename V, ARGGLIB__REQUIRES ( !ArggLib::is_future_type<V>::value ) >
 		auto do_end3(P&& p, V&& v) {
-			auto ret = do_end2(success,std::forward<P>(p), std::forward<V>(v));
+
+			auto ret = do_end2(v,std::forward<P>(p), v);
 			return  ret;
 		}
-		template <typename P, typename V, typename std::enable_if < ArggLib::is_future_type<V>::value, int > ::type = 0 >
+		template <typename P, typename V, ARGGLIB__REQUIRES (ArggLib::is_future_type<V>::value) >
 		auto do_end3(P&& p, V&& v) {
-			return std::forward<V>(v);
+
+			auto ret = std::async([p,v1 = std::move(v)]() mutable {
+				auto v2 = v1.get();
+				auto ret = do_end2(v2, p, v2);
+				return  ret;
+			});
+			return ret;
+			//return std::forward<V>(v);
 		}
 
 		template <typename... T1>

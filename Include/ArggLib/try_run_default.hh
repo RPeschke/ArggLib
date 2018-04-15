@@ -53,7 +53,65 @@ namespace ArggLib {
     }
   }
 
-  __ARGGLIB_IMPL_TRY_CREATE_NEW(try_run_or_default_End, fun.End);
+
+
+  namespace ArggLib_impl {
+
+	
+
+      template <typename default_T1, typename Fun_t1, typename ARG1> 
+		struct try_run_or_default_End_try_run_or_default_impl {
+          __ARGGLIB_IMPL_TRY_VARIABLES(try_run_or_default_End, fun.End);
+	      template <typename T, typename... N> 
+		  T&& return_first(T&& t, N&&... n) { 
+		  return t; 
+		} 
+		  
+		template  <typename... N1>  
+		auto try_call_fnction2(N1&&... n) -> decltype(return_first(n...))  {        
+			return return_first(n...); 
+		} 
+
+		template <typename default_T, typename Fun_t, typename ARG> 
+		auto  try_call_fnction2(default_T&& def, Fun_t&& fun, ARG && arg) -> decltype(fun.End()) {
+			return fun.End();
+		}  
+		template <typename... N>  
+		auto try_call_fnction3(N&&... n) -> decltype(try_call_fnction2(n...)) {  
+			return try_call_fnction2(n...); 
+		} 
+        template <typename default_T, typename Fun_t, typename ARG> 
+		auto  try_call_fnction3(default_T&& def, Fun_t&& fun, ARG && arg) -> decltype(fun.End(arg)) {
+			return fun.End(arg);
+		} 
+		auto operator()() -> decltype(try_call_fnction3(m_def, m_fun, m_arg))  {   
+			return try_call_fnction3(m_def, m_fun, m_arg); 
+		} 
+		class dummy_dont_use;
+		};
+        template <typename default_T, typename Fun_t, typename ARG> 
+		auto try_run_or_default_End_make_types_try(default_T&& def, Fun_t&& fun, ARG && arg) 
+			->decltype(try_run_or_default_End_try_run_or_default_impl< default_T,   Fun_t,  ARG  >{def, fun, arg }) { 
+			return try_run_or_default_End_try_run_or_default_impl<default_T,  Fun_t,  ARG  >{def, fun, arg }; 
+		
+		}  class dummy_dont_use;
+
+  } 
+
+    template <typename default_T, typename Fun_t, typename ARG> auto try_run_or_default_End(default_T&& def, Fun_t&& fun, ARG && arg)
+		->decltype( try_call_fnction4(ArggLib_impl::try_run_or_default_End_make_types_try(def, fun, arg))) {
+      auto x13 = ArggLib_impl::try_run_or_default_End_make_types_try(def, fun, arg);
+    return try_call_fnction4(x13); 
+} class dummy_dont_use;
+
+
+
+
+
+
+
+
+  //__ARGGLIB_IMPL_TRY_CREATE_NEW(try_run_or_default_End, fun.End);
   __ARGGLIB_IMPL_TRY_CREATE_NEW(try_run_or_default_functor, fun);
 
 }
