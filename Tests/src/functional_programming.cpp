@@ -161,12 +161,48 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test21211) {
 
 	std::vector<double> vec = { 1,2,4,5 };
 
-	auto x =  vec | contains(1);
-	auto x1 = vec | contains_any({ 10,20 });
-	auto x2 = vec | contains_all({ 1,20 });
-	auto x3 = vec | contains_if([](cautor x) { return x > 3; });
 
-	auto x4 = vec | contains_if([](cautor x) { return x > 30; });
+	{
+		auto x = vec | contains(1);
+		___ARGGLIB_TEST("auto x =  vec | contains(1);", x, true);
+	}
+	{
+		auto x = vec | contains(0);
+		___ARGGLIB_TEST("auto x =  vec | contains(0);", x, false);
+	}
+	{
+		auto x1 = vec | contains_any({ 10,20 });
+		___ARGGLIB_TEST("auto x1 = vec | contains_any({ 10,20 });", x1, false);
+	}
+	{
+		auto x1 = vec | contains_any({ 1,20 });
+		___ARGGLIB_TEST("auto x1 = vec | contains_any({ 1,20 });", x1, true);
+	}
+	{
+		auto x1 = vec | contains_any({ 1,2 });
+		___ARGGLIB_TEST("auto x1 = vec | contains_any({ 1,2 });", x1, true);
+	}
+	{
+		auto x2 = vec | contains_all({ 1,20 });
+		___ARGGLIB_TEST("auto x2 = vec | contains_all({ 1,20 });", x2, false);
+	}
+	{
+		auto x2 = vec | contains_all({ 1,2 });
+		___ARGGLIB_TEST("auto x2 = vec | contains_all({ 1,2 });", x2, true);
+	}
+	{
+		auto x2 = vec | contains_all({ 10,20 });
+		___ARGGLIB_TEST("auto x2 = vec | contains_all({ 10,20 });", x2, false);
+	}
+	{
+		auto x3 = vec | contains_if([](cautor x) { return x > 3; });
+		___ARGGLIB_TEST("auto x3 = vec | contains_if([](cautor x) { return x > 3; });", x3, true);
+	}
+	{
+		auto x3 = vec | contains_if([](cautor x) { return x > 30; });
+		___ARGGLIB_TEST("auto x3 = vec | contains_if([](cautor x) { return x > 30; });", x3, false);
+	}
+
 
 }
 
