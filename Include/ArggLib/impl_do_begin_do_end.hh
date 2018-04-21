@@ -110,7 +110,7 @@ namespace ArggLib {
 
 			return  do_end2(v, std::forward<P>(p), v);
 		}
-    
+#ifndef  __CLING__  
     namespace ArggLib_impl {
       template <typename P,typename V>
       class poorMansDotThen {
@@ -118,20 +118,20 @@ namespace ArggLib {
         ArggLib::remove_cvref_t<P> p;
         ArggLib::remove_cvref_t<V> v;
         poorMansDotThen(ArggLib::remove_cvref_t<P>  p_, ArggLib::remove_cvref_t<V> v_) :p(std::move(p_)), v(std::move(v_)) {}
-        auto operator()() {
+        auto operator()()  {
           auto v2 = v.get(); 
           return  do_end2(v2, p, v2); 
         }
       };
     }
-#ifndef __CINT__
+
 		template <typename P, typename V, ARGGLIB__REQUIRES (ArggLib::is_future_type<V>::value) >
 		auto do_end3(P&& p, V&& v) ->decltype(std::async(ArggLib_impl::poorMansDotThen<P, V>{p, std::move(v)})){
 			return std::async(ArggLib_impl::poorMansDotThen<P, V>{p, std::move(v)});
   	}
-#endif //__CINT__
+#endif // __CLING__
 		template <typename... T1>
-		auto do_end3a(T1&&... p) {
+		auto do_end3a(T1&&... p) -> decltype(do_end2(std::forward<T1>(p)...)) {
 			return  do_end2(std::forward<T1>(p)...);
 		}
 		template <typename P, typename V>
@@ -152,9 +152,9 @@ namespace ArggLib {
 
 		template <typename P, ARGGLIB__REQUIRES(_has_member_t_<P>::value)>
 		auto  unfold_end(P&& p) 
-#ifdef __CINT__  // remove as soon as c++ 14 is avalible for cling
+#ifdef  __CLING__  // remove as soon as c++ 14 is avalible for cling
       ->decltype(do_end3(p, unfold_end(p.t)))
-#endif // __CINT__            
+#endif //  __CLING__            
     {
 
 			

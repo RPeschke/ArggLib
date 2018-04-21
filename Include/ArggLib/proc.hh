@@ -110,12 +110,12 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 		return innerLamda_ownd<T1, T2>(std::forward<T1>( next_ ) ,std::forward<T2>(  n_));
 	}
 	template <typename T1, typename... ARGS>
-	auto copy_first(T1&& t1,  ARGS&&... n) {
+	auto copy_first(T1&& t1,  ARGS&&... n) ->decltype(ArggLib::remove_cvref_t<T1>(std::forward<T1>(t1))) {
 		return  ArggLib::remove_cvref_t<T1>( std::forward<T1>(t1));
 	}
 
 	template <typename... ARGS>
-	auto deep_copy_innerLamda(ARGS&&... n) {
+	auto deep_copy_innerLamda(ARGS&&... n) ->decltype(copy_first(std::forward<ARGS>(n)...)) {
 		return copy_first(std::forward<ARGS>( n)...);
 	}
 	template <typename ARG>
@@ -137,7 +137,7 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 			return n(next, in...);
 		}
 
-		auto deep_copy() const {
+    auto deep_copy() const->decltype(make_innerLamda_ownd(deep_copy_innerLamda(next), n)) {
 			return make_innerLamda_ownd(deep_copy_innerLamda(next), n);
 		}
 
@@ -225,7 +225,7 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 
 		template <typename NEXT>
-		auto operator >> (const NEXT& n) {
+		auto operator >> (const NEXT& n) ->decltype(make_proImple(make_outterLamda(m_pro, __helper_to_proc(n)))) {
 
 			return make_proImple(make_outterLamda(m_pro, __helper_to_proc( n)));
 		}
