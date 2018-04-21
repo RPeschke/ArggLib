@@ -178,8 +178,8 @@ namespace ArggLib {
 			return next(hash_table);
 		}
 
-
-		T* End() {
+    template<typename... ARGs>
+		T* End(ARGs&&...) {
 
 
 			return  m_out_stream;
