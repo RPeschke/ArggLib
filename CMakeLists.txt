@@ -12,7 +12,14 @@ SET( ${PROJECT_NAME}_VERSION_PATCH 0 )
 SET(CMAKE_INSTALL_PREFIX "${INSTALL_PREFIX}" CACHE INTERNAL "Prefix prepended to install directories" FORCE)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 SET(ADDITIONAL_LIBRARIES C:/Users/Richard/Documents/github/vcpkg/installed/x86-windows/lib/*.lib)
-  
+
+ If(WIN32)
+add_compile_options("/std:c++latest")
+else(WIN32)
+#add_compile_options("-pthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+endif(WIN32)
+
 ADD_SUBDIRECTORY(Tests)
 
 
