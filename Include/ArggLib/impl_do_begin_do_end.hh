@@ -107,8 +107,8 @@ namespace ArggLib {
 		template <typename P, typename V, ARGGLIB__REQUIRES ( !ArggLib::is_future_type<V>::value ) >
 		auto do_end3(P&& p, V&& v) ->decltype(do_end2(v, std::forward<P>(p), v)) {
 
-			auto ret = do_end2(v,std::forward<P>(p), v);
-			return  ret;
+			//auto ret = do_end2(v,std::forward<P>(p), v);
+			return  do_end2(v, std::forward<P>(p), v);
 		}
     
     namespace ArggLib_impl {
@@ -117,10 +117,10 @@ namespace ArggLib {
       public:
         ArggLib::remove_cvref_t<P> p;
         ArggLib::remove_cvref_t<V> v;
-        poorMansDotThen(P && p_, V&& v_) :p(p_), v(v_) {}
+        poorMansDotThen(ArggLib::remove_cvref_t<P>  p_, ArggLib::remove_cvref_t<V> v_) :p(std::move(p_)), v(std::move(v_)) {}
         auto operator()() {
-          auto v2 = v1.get(); 
-          return  do_end2(v2, p, v2); 
+          //auto v2 = v1.get(); 
+          //return  do_end2(v2, p, v2); 
         }
       };
     }
@@ -128,8 +128,8 @@ namespace ArggLib {
 		template <typename P, typename V, ARGGLIB__REQUIRES (ArggLib::is_future_type<V>::value) >
 		auto do_end3(P&& p, V&& v){
       
-      auto ret = std::async(ArggLib_impl::poorMansDotThen<P, V>{p, std::move(v)});
-			return ret;
+      //auto ret = std::async(ArggLib_impl::poorMansDotThen<P, V>{p, std::move(v)});
+			return std::async(ArggLib_impl::poorMansDotThen<P, V>{p, std::move(v)});
       
 			//return std::forward<V>(v);
 		}

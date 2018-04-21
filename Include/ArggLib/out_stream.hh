@@ -72,7 +72,7 @@ namespace ArggLib {
     }
     template<typename T  >
     void print__(std::ostream& out, const std::string& delimer, const std::vector<T>& t) {
-      print__(out, delimer, t, ArggLib_impl::return_input{});
+      print__(out, delimer, t, return_input{});
     }
 
     template<typename T  >

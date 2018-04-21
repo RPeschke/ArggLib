@@ -71,7 +71,7 @@ namespace ArggLib {
 
         while (std::getline(this->get_instream(), this->m_buffer)) {
 
-          auto ret = ArggLib_impl::expand_buffer_line<1>(next, 0, this->m_buffer, this->m_delimiter, std::forward<ARGS>(args)...);
+          auto ret = expand_buffer_line<1>(next, 0, this->m_buffer, this->m_delimiter, std::forward<ARGS>(args)...);
           if (ret != success) {
             return ret;
           }
@@ -130,7 +130,7 @@ namespace ArggLib {
 
         while (std::getline(this->get_instream(), this->m_buffer)) {
 
-          auto ret = ArggLib_impl::expand_buffer_line_named_variables<1>(
+          auto ret = expand_buffer_line_named_variables<1>(
             next,
             0, this->m_buffer,
             0, this->m_headers,
@@ -168,7 +168,7 @@ namespace ArggLib {
 
 
       auto delimiter(const char del) -> ArggLib::procImple<Import_CSV_impl_stream_in<T>> {
-        return proc() >> ArggLib_impl::Import_CSV_impl_stream_in<T>(del);
+        return proc() >> Import_CSV_impl_stream_in<T>(del);
       }
 			auto fileName(cstringr fileName_) ->decltype(Import_CSV(fileName_,this-> m_delimiter) ){
 				return Import_CSV(fileName_, this->m_delimiter);
@@ -185,7 +185,7 @@ namespace ArggLib {
 
 				while (std::getline(this->get_instream(), this->m_buffer)) {
 					//next(this->m_buffer);
-					auto ret =  ArggLib_impl::expand_buffer_line<1>(next, 0, this->m_buffer, this->m_delimiter);
+					auto ret =  expand_buffer_line<1>(next, 0, this->m_buffer, this->m_delimiter);
 					if (ret != success) {
 						return ret;
 					}

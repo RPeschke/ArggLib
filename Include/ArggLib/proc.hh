@@ -204,9 +204,9 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 		auto operator()(Param&&... p)->decltype(ArggLib_impl::unfold_end(m_pro)) {
 			ArggLib_impl::unfold_Start(m_pro);
 			m_pro(stop_impl(), std::forward<Param>(p)...);
-			auto ret = ArggLib_impl::unfold_end(m_pro);
+			//auto ret = ArggLib_impl::unfold_end(m_pro);
 
-			return ret;
+			return ArggLib_impl::unfold_end(m_pro);
 		}
 
 
