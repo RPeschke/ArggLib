@@ -2,23 +2,14 @@
 #define ArggLib_impl_do_begin_do_end_h__
 #include "ArggLib/has_member_helper.hh"
 #include "ArggLib/try_run_default.hh"
+#include "ArggLib/type_trates.hh"
 #include <future>
-
 #include <type_traits>
 
 
 namespace ArggLib {
 
-	template <typename T>
-	std::false_type is_future(T&&);
 
-	template <typename T>
-	std::true_type is_future(std::future<T>&&);
-	template <typename T>
-	std::true_type is_future(std::future<T>&);
-
-	template <typename T>
-	std::true_type is_future(const std::future<T>&);
 
 
 	namespace ArggLib_impl {
@@ -114,23 +105,35 @@ namespace ArggLib {
 // 		}
 
 		template <typename P, typename V, ARGGLIB__REQUIRES ( !ArggLib::is_future_type<V>::value ) >
-		auto do_end3(P&& p, V&& v) {
+		auto do_end3(P&& p, V&& v) ->decltype(do_end2(v, std::forward<P>(p), v)) {
 
 			auto ret = do_end2(v,std::forward<P>(p), v);
 			return  ret;
 		}
-		template <typename P, typename V, ARGGLIB__REQUIRES (ArggLib::is_future_type<V>::value) >
-		auto do_end3(P&& p, V&& v) {
+    
+    namespace ArggLib_impl {
+      template <typename P,typename V>
+      class poorMansDotThen {
+      public:
+        ArggLib::remove_cvref_t<P> p;
+        ArggLib::remove_cvref_t<V> v;
+        poorMansDotThen(P && p_, V&& v_) :p(p_), v(v_) {}
+        auto operator()() {
+          auto v2 = v1.get(); 
+          return  do_end2(v2, p, v2); 
+        }
+      };
+    }
 
-			auto ret = std::async([p,v1 = std::move(v)]() mutable {
-				auto v2 = v1.get();
-				auto ret = do_end2(v2, p, v2);
-				return  ret;
-			});
+		template <typename P, typename V, ARGGLIB__REQUIRES (ArggLib::is_future_type<V>::value) >
+		auto do_end3(P&& p, V&& v){
+      
+      auto ret = std::async(ArggLib_impl::poorMansDotThen<P, V>{p, std::move(v)});
 			return ret;
+      
 			//return std::forward<V>(v);
 		}
-
+    
 		template <typename... T1>
 		auto do_end3a(T1&&... p) {
 			return  do_end2(std::forward<T1>(p)...);

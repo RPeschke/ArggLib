@@ -34,7 +34,7 @@ namespace ArggLib {
 	public:
 		template <typename NEXT_T, typename... ARGS>
 		procReturn operator()(NEXT_T&& next, ARGS&&... args) {
-			return next(std::forward<ARGS>(args));
+			return next(std::forward<ARGS>(args)...);
 		}
 	};
 

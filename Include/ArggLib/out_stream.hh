@@ -155,6 +155,7 @@ namespace ArggLib {
 
 			_Fill(*m_out_stream, m_delimiter, args...);
 			return next(std::forward<ARGS>(args)...);
+      //return next(args...);
 		}
 
 		template <typename NEXT_T, typename HAST_TABLE_t>

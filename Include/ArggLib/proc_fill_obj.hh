@@ -48,14 +48,14 @@ namespace ArggLib {
 	};
 
 
-	proc_fill_obj<std::string> __helper_to_proc(const char* t)  {
+	inline proc_fill_obj<std::string> __helper_to_proc(const char* t)  {
 		return proc_fill_obj<std::string>(t);
 	}
 
-	proc_fill_obj<double> __helper_to_proc(double  t) {
+  inline proc_fill_obj<double> __helper_to_proc(double  t) {
 		return proc_fill_obj<double>(t);
 	}
-	proc_fill_obj<int> __helper_to_proc(int  t) {
+  inline proc_fill_obj<int> __helper_to_proc(int  t) {
 		return proc_fill_obj<int>(t);
 	}
 

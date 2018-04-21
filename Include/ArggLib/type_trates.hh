@@ -1,6 +1,7 @@
 #ifndef type_trates_h__
 #define type_trates_h__
 #include <type_traits>
+#include <future>
 #include <utility>
 #define  ARGGLIB__REQUIRES(X) typename std::enable_if < X , int > ::type = 0
 namespace ArggLib {
@@ -40,7 +41,16 @@ namespace ArggLib {
 
 
 
+  template <typename T>
+  std::false_type is_future(T&&);
 
+  template <typename T>
+  std::true_type is_future(std::future<T>&&);
+  template <typename T>
+  std::true_type is_future(std::future<T>&);
+
+  template <typename T>
+  std::true_type is_future(const std::future<T>&);
 
 	template <typename T>
 	class is_future_type {
