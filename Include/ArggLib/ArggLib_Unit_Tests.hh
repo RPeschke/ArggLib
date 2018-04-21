@@ -10,8 +10,11 @@
 #include "ArggLib/reverse.hh"
 #include <iostream>
 #include <sstream>
+#include <chrono>
 
-#define  ARGGLIB__DEFINE_TEST(x) void x(); ArggLib::__add_to_tests<> __MAKE_UNIQUE_PRECOMPILER_NAME__(x){ []() { x(); } }; void x() 
+
+
+#define  ARGGLIB__DEFINE_TEST(x) void x(); ArggLib::__add_to_tests<> __MAKE_UNIQUE_PRECOMPILER_NAME__(x){ARGGLIB_TOSTRING(__MAKE_UNIQUE_PRECOMPILER_NAME__(x)), []() { x(); } }; void x() 
 #define ___ARGGLIB_TEST(TestName,First,Second) ArggLib::__Test_imple( __LINE__ , __FUNCTION__ ,__FILE__ , TestName, First, Second)
 
 namespace ArggLib {
@@ -21,12 +24,21 @@ namespace ArggLib {
   class __add_to_tests {
   public:
     inline	__add_to_tests() {}
-    inline	__add_to_tests(std::function<void()> f) {
-      get_fun().push_back(std::move(f));
+    inline	__add_to_tests(std::string name,  std::function<void()> f) {
+		//std::cout << name << std::endl;
+		get_fun().push_back({ std::move(name),std::move(f) });
     }
     inline	static void run_tests() {
       for (auto& e : ArggLib::reverse(get_fun())) {
-        e();
+		  std::cout << "<startTest name =\"" << e.first << "\">\n";
+		  auto t1 = std::chrono::high_resolution_clock::now();
+		  
+		 e.second();
+		auto t2 = std::chrono::high_resolution_clock::now();
+		std::cout << "    <ExecutionTime Value=\""
+			<< std::chrono::duration_cast<std::chrono::nanoseconds>(t2 - t1).count()
+			<< "\" Unit=\"nanoseconds\" />" << std::endl;
+		std::cout << "</startTest>\n";
       }
 
       std::cout << "<<<<<<<<<<   Test Finished >>>>>>>>>>>>>>\nFailed Test: " << get_error_list().size() << " of " << get_fun().size() << "\n\n" ;
@@ -36,8 +48,8 @@ namespace ArggLib {
       std::cout << "\n<<<<<<<<<<   End  >>>>>>>>>>>>>>\n";
     }
 
-    inline	static std::vector<std::function<void()>>& get_fun() {
-      static std::vector<std::function<void()>> 	g_tests;
+    inline	static std::vector<std::pair<std::string ,  std::function<void()>>>& get_fun() {
+      static std::vector<std::pair<std::string, std::function<void()>>> 	g_tests;
       return g_tests;
     }
     inline	static std::vector<std::function<void(std::ostream&)>>& get_error_list() {

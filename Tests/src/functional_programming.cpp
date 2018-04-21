@@ -161,12 +161,48 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test21211) {
 
 	std::vector<double> vec = { 1,2,4,5 };
 
-	auto x =  vec | contains(1);
-	auto x1 = vec | contains_any({ 10,20 });
-	auto x2 = vec | contains_all({ 1,20 });
-	auto x3 = vec | contains_if([](cautor x) { return x > 3; });
 
-	auto x4 = vec | contains_if([](cautor x) { return x > 30; });
+	{
+		auto x = vec | contains(1);
+		___ARGGLIB_TEST("auto x =  vec | contains(1);", x, true);
+	}
+	{
+		auto x = vec | contains(0);
+		___ARGGLIB_TEST("auto x =  vec | contains(0);", x, false);
+	}
+	{
+		auto x1 = vec | contains_any({ 10,20 });
+		___ARGGLIB_TEST("auto x1 = vec | contains_any({ 10,20 });", x1, false);
+	}
+	{
+		auto x1 = vec | contains_any({ 1,20 });
+		___ARGGLIB_TEST("auto x1 = vec | contains_any({ 1,20 });", x1, true);
+	}
+	{
+		auto x1 = vec | contains_any({ 1,2 });
+		___ARGGLIB_TEST("auto x1 = vec | contains_any({ 1,2 });", x1, true);
+	}
+	{
+		auto x2 = vec | contains_all({ 1,20 });
+		___ARGGLIB_TEST("auto x2 = vec | contains_all({ 1,20 });", x2, false);
+	}
+	{
+		auto x2 = vec | contains_all({ 1,2 });
+		___ARGGLIB_TEST("auto x2 = vec | contains_all({ 1,2 });", x2, true);
+	}
+	{
+		auto x2 = vec | contains_all({ 10,20 });
+		___ARGGLIB_TEST("auto x2 = vec | contains_all({ 10,20 });", x2, false);
+	}
+	{
+		auto x3 = vec | contains_if([](cautor x) { return x > 3; });
+		___ARGGLIB_TEST("auto x3 = vec | contains_if([](cautor x) { return x > 3; });", x3, true);
+	}
+	{
+		auto x3 = vec | contains_if([](cautor x) { return x > 30; });
+		___ARGGLIB_TEST("auto x3 = vec | contains_if([](cautor x) { return x > 30; });", x3, false);
+	}
+
 
 }
 
@@ -269,28 +305,44 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test12212) {
 	map_in["dsad3"] = 3;
 	map_in["dsad4"] = -5454;
 
-	std::stringstream out;
 
 
 
-	auto vector_out = map_in | to_vector() | sort().by_second();
+	{
+		std::stringstream out;
+		auto vector_out = map_in | to_vector() | sort().by_second();
 
-	int i = 2;
-	auto s1 = vector_out | _where_f( _x.second > i; ) |   to_string_f() | write_out(out);
-	___ARGGLIB_TEST("auto s1 = vector_out | to_string()  | write_out(out);",
-		out.str(),
-		"dsad4  -5454.000000dsad0  0.000000dsad1  2.000000\n"
-	);
+		int i = 2;
+		auto s1 = vector_out | _where_f(_x.second > i; ) | to_string_f() | write_out(out);
+		___ARGGLIB_TEST("auto s1 = vector_out | _where_f(_x.second > i; ) | to_string_f() | write_out(out);",
+			out.str(),
+			"dsad4  -5454.000000dsad0  0.000000dsad1  2.000000\n"
+		);
 
+	}
 
-	auto vec = _to_vector << 1 <= -10;
+	{
+		std::stringstream out;
+		auto vec = _to_vector << 1 <= -10;
 
-	_to_vector << 10 <= -10  | sort() | display();
+		_to_vector << 10 <= -10 | sort() | ArggLib::out_stream(out);
+		___ARGGLIB_TEST("_to_vector << 10 <= -10  | sort() | write_out(out);",
+			out.str(),
+			"-10  -9  -8  -7  -6  -5  -4  -3  -2  -1  0  1  2  3  4  5  6  7  8  9  10\n"
+		);
 
-
+	}
 	
+	{
+		std::stringstream out;
+		_to_vector << -10 << 10 | sort().descending().absulute() | ArggLib::out_stream(out);
 
-	_to_vector << -10 << 10  | sort().descending().absulute() | display();
+		___ARGGLIB_TEST("_to_vector << -10 << 10 | sort().descending().absulute() | ArggLib::out_stream(out);",
+			out.str(),
+			"-10  -9  9  -8  8  -7  7  -6  6  -5  5  -4  4  -3  3  -2  2  -1  1  0\n"
+		);
+
+	}
 }
 
 ARGGLIB__DEFINE_TEST(rtrim) {
