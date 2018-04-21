@@ -327,11 +327,11 @@ ARGGLIB__DEFINE_TEST(unfold_end) {
 
 	{
 		std::stringstream out;
-		auto x = OnEnd3([&out](auto x) { out << "Called end sucessfully 1\n"; return  std::async([] {return 1; }); }) >> OnEnd3([&out] {out << "Called end sucessfully 2\n"; return 1; });
+		auto x = OnEnd3([&out](auto x) { out << "Called end sucessfully 1\n"; return  std::async([] {return 1; }); }) >> OnEnd3([&out] {out << "Called end sucessfully 2\n"; return 2; });
 		auto i2 = ArggLib_impl::unfold_end(x.m_pro);
 
-		___ARGGLIB_TEST("test_end_unrole2", out.str(), "Called end sucessfully 1\n");
-		___ARGGLIB_TEST("test_end_unrole3", i2.get(), 1);
+		___ARGGLIB_TEST("test_end_unrole3", i2.get(), 2);
+		___ARGGLIB_TEST("test_end_unrole2", out.str(), "Called end sucessfully 1\nCalled end sucessfully 2\n");
 	}
 }
 ARGGLIB__DEFINE_TEST(where_p_test1) {
@@ -501,11 +501,52 @@ ARGGLIB__DEFINE_TEST(fill_test) {
 	}
 
 
+  {
+
+    auto x2 = for_loop() >> out_stream();
+    ArggLib_impl::unfold_Start(x2.m_pro);
+    x2.m_pro(stop_impl(), 10);
+    auto x3 =ArggLib_impl::unfold_end(x2.m_pro);
+    ___ARGGLIB_TEST("auto x2 = 10 |   for_loop() >> out_stream();", x3->str(), "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n");
+  }
+
+  {
+
+    auto x2 = for_loop() >> out_stream();
+    ArggLib_impl::unfold_Start(x2.m_pro);
+    x2.m_pro(stop_impl(), 10);
+    auto xasync = 10 | proc_async();
+
+    auto x3 = ArggLib_impl::do_end3(x2.m_pro, std::move(xasync)); 
+
+    ___ARGGLIB_TEST("auto x2 = 10 |  proc_async() >> for_loop() >> out_stream();", x3.get()->str(), "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n");
+  }
+
+  {
+
+ 
+  }
 	auto x2 = 10 |  proc_async() >> for_loop() >> out_stream();
-//	___ARGGLIB_TEST("auto x2 = 10 |  proc_async() >> for_loop() >> out_stream();", x2.get()->str(), "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n");
+	___ARGGLIB_TEST("auto x2 = 10 |  proc_async() >> for_loop() >> out_stream();", x2.get()->str(), "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n");
 	
 	
 }
 
+class Class_with_t {
+public:
+  int t;
+};
+class Class_without_t {
+public:
+  int t1;
+};
 
+ARGGLIB__DEFINE_TEST(has_t_test) {
 
+  auto x0 = _has_member_t_<Class_with_t>::value;
+  ___ARGGLIB_TEST("  auto x0 = _has_member_t_<Class_with_t>::value;", x0, 1);
+  auto x =std::enable_if<_has_member_t_<Class_with_t>::value ,int>::type (100);
+  ___ARGGLIB_TEST("auto x =std::enable_if<_has_member_t_<Class_with_t>::value ,int>::type (100);", x, 100);
+  auto x1 = _has_member_t_<Class_without_t>::value;
+  ___ARGGLIB_TEST("auto x1 = _has_member_t_<Class_without_t>::value;", x1, 0);
+}

@@ -124,16 +124,12 @@ namespace ArggLib {
         }
       };
     }
-
+#ifndef __CINT__
 		template <typename P, typename V, ARGGLIB__REQUIRES (ArggLib::is_future_type<V>::value) >
-		auto do_end3(P&& p, V&& v){
-      
-      auto ret = std::async(ArggLib_impl::poorMansDotThen<P, V>{p, std::move(v)});
-			return ret;
-      
-			//return std::forward<V>(v);
-		}
-    
+		auto do_end3(P&& p, V&& v) ->decltype(std::async(ArggLib_impl::poorMansDotThen<P, V>{p, std::move(v)})){
+			return std::async(ArggLib_impl::poorMansDotThen<P, V>{p, std::move(v)});
+  	}
+#endif //__CINT__
 		template <typename... T1>
 		auto do_end3a(T1&&... p) {
 			return  do_end2(std::forward<T1>(p)...);
@@ -154,12 +150,16 @@ namespace ArggLib {
 			return do_end3(p...,success);;
 		}
 
-		template <typename P>
-		auto  unfold_end(P&& p) -> decltype(p.t, do_end3(p, unfold_end(p.t))) {
+		template <typename P, ARGGLIB__REQUIRES(_has_member_t_<P>::value)>
+		auto  unfold_end(P&& p) 
+#ifdef __CINT__  // remove as soon as c++ 14 is avalible for cling
+      ->decltype(do_end3(p, unfold_end(p.t)))
+#endif // __CINT__            
+    {
 
 			
-			auto ret = unfold_end(p.t);
-			return  do_end3(p, std::move(ret));
+			//auto ret = unfold_end(p.t);
+			return  do_end3(p, unfold_end(p.t));
 		}
 
 

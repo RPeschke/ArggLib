@@ -59,6 +59,18 @@ namespace ArggLib {
 	};
 
 
+  template <typename... T>
+  std::false_type __has_member_t(T&&... );
+
+  template <typename T>
+  auto __has_member_t(T&& t) -> decltype(t.t, std::true_type{});
+
+  template <typename T>
+  class _has_member_t_ {
+  public:
+    enum { value = decltype(__has_member_t(std::declval<	T>()))::value };
+  };
+
 }
 
 #endif // type_trates_h__
