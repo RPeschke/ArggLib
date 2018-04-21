@@ -74,10 +74,18 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 	};
 	template<typename T1, typename T2>
-	outterLamda<T1, T2> make_outterLamda( T1& t_,  T2& n_) {
+	outterLamda<T1, T2> make_outterLamda(const T1& t_,const  T2& n_) {
 		return outterLamda<T1, T2>(t_, n_);
 	}
+  template<typename T1, typename T2>
+  outterLamda<T1, T2> make_outterLamda( T1& t_, T2& n_) {
+    return outterLamda<T1, T2>(t_, n_);
+  }
 
+  template<typename T1, typename T2>
+  outterLamda<T1, T2> make_outterLamda(T1&& t_, T2&& n_) {
+    return outterLamda<T1, T2>(t_, n_);
+  }
 
 
 	template<typename T1, typename T2>
@@ -179,8 +187,8 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 
 	template <typename T>
-	auto __helper_to_proc(T&& t) -> decltype(t) {
-		return t;
+	auto __helper_to_proc(T&& t) -> decltype( std::forward<T>(t)) {
+		return  std::forward<T>(t);
 	}
 	class procImple_base {};
 
@@ -217,7 +225,7 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 
 		template <typename NEXT>
-		auto operator >> (const NEXT& n)-> decltype(make_proImple(make_outterLamda(m_pro, __helper_to_proc(n)))) {
+		auto operator >> (const NEXT& n) {
 
 			return make_proImple(make_outterLamda(m_pro, __helper_to_proc( n)));
 		}
@@ -226,7 +234,11 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 
 			return make_proImple(make_outterLamda(m_pro, __helper_to_proc( n)));
 		}
+    template <typename NEXT>
+    auto operator >> (NEXT&& n)-> decltype(make_proImple(make_outterLamda(m_pro, __helper_to_proc(std::move(n))))) {
 
+      return make_proImple(make_outterLamda(m_pro, __helper_to_proc(std::move(n))));
+    }
 
 		template <typename NEXT>
 		auto operator >> (procImple<NEXT>&& n) -> decltype (make_proImple(make_outterLamda(m_pro, n.m_pro))) {
