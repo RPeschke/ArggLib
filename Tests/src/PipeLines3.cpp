@@ -1,3 +1,4 @@
+/*
 #include "ArggLib/complete_lib.hh"
 
 
@@ -47,7 +48,7 @@ DEFINE_PROC1(square2, nextP, inPut) {
 
   return nextP(inPut*inPut);
 }
-auto make_loop() {
+inline auto make_loop() {
   return proc() >> loop();
 }
 class wSpace1 {
@@ -368,7 +369,7 @@ ARGGLIB__DEFINE_TEST(proc_async_test) {
 }
 
 */
-
+/*
 template <typename T1>
 struct types_of_f {
 
@@ -515,3 +516,4 @@ ARGGLIB__DEFINE_TEST(fill_test) {
 
 
 
+*/

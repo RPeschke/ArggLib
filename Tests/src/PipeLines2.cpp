@@ -1,3 +1,4 @@
+#include "ArggLib/proc_fill_obj.hh"
 #include "ArggLib/complete_lib.hh"
 
 
@@ -8,8 +9,8 @@
 #include "ArggLib/try_run_default.hh"
 #include "ArggLib/onEnd2.hh"
 
-#include "ArggLib/proc_fill_obj.hh"
-//#include "ArggLib/async_proc.hh"
+
+#include "ArggLib/async_proc.hh"
 #include "ArggLib/impl_do_begin_do_end.hh"
 
 using namespace std;
@@ -19,7 +20,7 @@ using namespace ArggLib;
 
 
 
-/*
+
 DEFINE_PROC1(loop, nextP, inPut) {
 
   for (double i = 0; i < inPut; ++i) {
@@ -47,7 +48,7 @@ DEFINE_PROC1(square2, nextP, inPut) {
 
   return nextP(inPut*inPut);
 }
-auto make_loop() {
+inline auto make_loop() {
   return proc() >> loop();
 }
 class wSpace1 {
@@ -352,8 +353,7 @@ ARGGLIB__DEFINE_TEST(where_p_test1) {
 		___ARGGLIB_TEST("where_p_test1", out2.str(), "6\n7\n8\n9\n\n");
 	}
 }
-
-
+/*
 auto proc_async_test_helper() {
 	auto x = proc_async() >> for_loop() >> out_stream() >> 0;
 	auto x2 = 1000 | x;
@@ -365,7 +365,7 @@ ARGGLIB__DEFINE_TEST(proc_async_test) {
 	___ARGGLIB_TEST("proc_async_test", x2.get(), 499500);
 
 }
-
+*/
 
 template <typename T1>
 struct types_of_f {
@@ -444,7 +444,7 @@ ARGGLIB__DEFINE_TEST(where_p_test21) {
   out.str("");
   out.clear();
   auto r2 = make_types_of_f(r);
-  auto xxx = std::is_same< std::result_of_t<decltype(x13)()>,int>::value;
+  auto xxx = std::is_same< std::result_of_t<decltype(x13)()>,int>::value ;
   ___ARGGLIB_TEST("auto xxx = std::is_same_v< std::result_of_t<decltype(x13)()>,int> ;", xxx, false);
   auto x2 = std::is_same< std::result_of_t<decltype(x13)()>, void>::value;
   ___ARGGLIB_TEST("auto x2 = std::is_same_v< std::result_of_t<decltype(x13)()>, void>;", x2, true);
@@ -496,17 +496,16 @@ ARGGLIB__DEFINE_TEST(fill_test) {
 		___ARGGLIB_TEST("auto i2 = std::enable_if_t< decltype(is_future(declval<	std::future<int> >()))::value, int>(0);", i2, 0);
 	}
 	{
-		auto x = 10 | for_loop() >> "Test" >> 1.2;
+    auto x = 10 | for_loop() >> "Test" >> 1.2;
 		___ARGGLIB_TEST("auto x = 10 | for_loop() >> \"Test\" >> 1.2;", x, 46.200000000000003);
 	}
 
 
 	auto x2 = 10 |  proc_async() >> for_loop() >> out_stream();
-	___ARGGLIB_TEST("auto x2 = 10 |  proc_async() >> for_loop() >> out_stream();", x2.get()->str(), "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n");
+//	___ARGGLIB_TEST("auto x2 = 10 |  proc_async() >> for_loop() >> out_stream();", x2.get()->str(), "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n");
 	
 	
 }
 
 
 
-*/

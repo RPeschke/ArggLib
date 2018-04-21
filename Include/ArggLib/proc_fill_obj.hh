@@ -2,7 +2,11 @@
 #define ArggLib_impl_proc_fill_obj_h___
 #include <type_traits>
 #include <iostream>
+#include <memory>
+#include <string>
 
+#include "ArggLib/procReturn.hh"
+#include "ArggLib/smart_ptr_helpers.hh"
 
 namespace ArggLib {
 
@@ -51,6 +55,10 @@ namespace ArggLib {
 	inline proc_fill_obj<std::string> __helper_to_proc(const char* t)  {
 		return proc_fill_obj<std::string>(t);
 	}
+
+  inline proc_fill_obj<std::string> __helper_to_proc(const std::string& t) {
+    return proc_fill_obj<std::string>(t);
+  }
 
   inline proc_fill_obj<double> __helper_to_proc(double  t) {
 		return proc_fill_obj<double>(t);
