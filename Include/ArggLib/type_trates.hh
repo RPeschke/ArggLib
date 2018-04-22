@@ -79,6 +79,7 @@ namespace ArggLib {
       enum { value = 0 };
     };
 
+#define __has_custom_to_proc_function(x) template <> class has_custom_to_proc_function<TH1D*> { public: enum { value = 1 }; }
 
 }
 

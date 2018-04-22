@@ -12,7 +12,7 @@
 
 #include "ArggLib/type_trates.hh"
 
-
+#include "ArggLib/deprecated/old_processor_definitions.hh"
 
 CREATE_TEST_FOR_MEMBER(has_begin, begin());
 namespace ArggLib {
