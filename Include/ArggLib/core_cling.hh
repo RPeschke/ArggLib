@@ -16,6 +16,8 @@
 #include "ArggLib/for_loop.hh"
 
 #include "ArggLib/has_member_helper.hh"
+#include "ArggLib/proc_fill_obj.hh"
+#include "ArggLib/proc.hh"
 #include "ArggLib/impl_do_begin_do_end.hh"
 #include "ArggLib/Import_CSV.hh"
 #include "ArggLib/Lagacy.hh"

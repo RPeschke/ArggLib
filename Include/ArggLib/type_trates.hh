@@ -71,6 +71,14 @@ namespace ArggLib {
     enum { value = decltype(__has_member_t(std::declval<	T>()))::value };
   };
 
+  namespace  ArggLib {
+    template <typename T>
+    class has_custom_to_proc_function {
+    public:
+      enum { value = 0 };
+    };
+  }
+
 }
 
 #endif // type_trates_h__

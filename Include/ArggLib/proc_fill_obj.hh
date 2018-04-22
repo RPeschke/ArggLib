@@ -7,6 +7,7 @@
 
 #include "ArggLib/procReturn.hh"
 #include "ArggLib/smart_ptr_helpers.hh"
+#include "ArggLib/type_trates.hh"
 
 namespace ArggLib {
 
@@ -52,13 +53,31 @@ namespace ArggLib {
 	};
 
 
-	inline proc_fill_obj<std::string> __helper_to_proc(const char* t)  {
-		return proc_fill_obj<std::string>(t);
-	}
+
+  template <>
+  class has_custom_to_proc_function<const char*>{
+  public:
+    enum { value = 1 };
+  };
+  inline proc_fill_obj<std::string> __helper_to_proc(const char* t)  {
+  return proc_fill_obj<std::string>(t);
+  }
 
   inline proc_fill_obj<std::string> __helper_to_proc(const std::string& t) {
-    return proc_fill_obj<std::string>(t);
+  return proc_fill_obj<std::string>(t);
   }
+  
+  template <>
+  class has_custom_to_proc_function<double> {
+  public:
+    enum { value = 1 };
+  };
+  template <>
+  class has_custom_to_proc_function<int> {
+  public:
+    enum { value = 1 };
+  };
+
 
   inline proc_fill_obj<double> __helper_to_proc(double  t) {
 		return proc_fill_obj<double>(t);
@@ -66,7 +85,7 @@ namespace ArggLib {
   inline proc_fill_obj<int> __helper_to_proc(int  t) {
 		return proc_fill_obj<int>(t);
 	}
-
+  
 }
 
 #endif //ArggLib_impl_proc_fill_obj_h___

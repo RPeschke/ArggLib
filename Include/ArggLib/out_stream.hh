@@ -123,7 +123,7 @@ namespace ArggLib {
 		const std::string m_delimiter;
 
 		auto delimiter(cstringr delimiter_) -> ArggLib::procImple<out_stream_impl<T>> {
-			return out_stream(*m_out_stream, delimiter_);
+			return proc() >> out_stream_impl<T>(*m_out_stream, delimiter_);
 		}
 		out_stream_impl(T* out_stream, const std::string& delimiter) :m_out_stream(out_stream) , m_delimiter(delimiter) {
 

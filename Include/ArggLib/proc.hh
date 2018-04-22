@@ -2,7 +2,10 @@
 #define ArggLib_proc_h__
 
 #include <type_traits>
+#include <iostream>
 #include <utility>
+
+#include "ArggLib/ArggLib_impl/custom_processor_helper.hh"  // For the interpreter CLING it is important to have these helpers defined before the template definition where it is used
 #include "ArggLib/param.hh"
 #include "ArggLib/procReturn.hh"
 #include "ArggLib/impl_do_begin_do_end.hh"
@@ -186,10 +189,14 @@ template < typename NEXT_T,typename... BLOCKS_T>\
 	};
 
 
-	template <typename T>
+
+
+	template <typename T, ARGGLIB__REQUIRES(!has_custom_to_proc_function<T>::value ) >
 	auto __helper_to_proc(T&& t) -> decltype( std::forward<T>(t)) {
 		return  std::forward<T>(t);
 	}
+
+
 	class procImple_base {};
 
 	template <typename PROCESSOR_T>
