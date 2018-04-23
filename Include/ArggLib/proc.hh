@@ -215,6 +215,11 @@ namespace ArggLib {
 		}
 
 		template <typename NEXT>
+		auto operator >> ( procImple<NEXT>& n) -> decltype (make_proImple(make_outterLamda(m_pro, n.m_pro))) {
+
+			return make_proImple(make_outterLamda(m_pro, n.m_pro));
+		}
+		template <typename NEXT>
 		auto operator+(const NEXT& n)-> decltype (make_proImple(make_plus(m_pro, n))) {
 			return make_proImple(make_plus(m_pro, n));
 		}
