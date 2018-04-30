@@ -46,6 +46,8 @@
 #include "ArggLib/try_run_default.hh"
 #include "ArggLib/onEnd2.hh"
 
+#include "ArggLib/root/Draw_root_objects.hh"
+
 
 
 
