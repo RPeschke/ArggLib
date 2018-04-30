@@ -1,24 +1,24 @@
-#ifndef RQSignals_h__
-#define RQSignals_h__
+#ifndef ArggLib_RQSignals_h__
+#define ArggLib_RQSignals_h__
 #include <string>
 #include <memory>
-
+#include "TString.h"
 
 
 template <typename T>
-auto _RQ_signals(std::shared_ptr<T>& obj) {
+auto _RQ_signals(std::shared_ptr<T>& obj) ->decltype(_RQ_signals(obj.get())) {
   return _RQ_signals(obj.get());
 }
 template <typename T>
-auto _RQ_signals(std::unique_ptr<T>& obj) {
+auto _RQ_signals(std::unique_ptr<T>& obj) ->decltype(_RQ_signals(obj.get()) ){
   return _RQ_signals(obj.get());
 }
 template <typename T>
-auto _RQ_slots(std::shared_ptr<T>& obj) {
+auto _RQ_slots(std::shared_ptr<T>& obj)  ->decltype(_RQ_slots(obj.get()) ){
   return _RQ_slots(obj.get());
 }
 template <typename T>
-auto _RQ_slots(std::unique_ptr<T>& obj) {
+auto _RQ_slots(std::unique_ptr<T>& obj) -> decltype(_RQ_slots(obj.get()) ){
   return _RQ_slots(obj.get());
 }
 
@@ -139,4 +139,4 @@ void operator >> (const RQ_SIGNAL_TEMPLATE<T1>& signal_, const RQ_SLOT_TEMPLATE<
 
   signal_.m_object->Connect(signal_.m_name.c_str(), slot_.m_className.c_str(), slot_.m_object, slot_.m_name.c_str());
 }
-#endif // RQSignals_h__
+#endif // ArggLib_RQSignals_h__

@@ -15,6 +15,10 @@
 #include "TRandom.h"
 #include "TApplication.h"
 #include "TGraph.h"
+#include "TCanvas.h"
+#include "RQ_OBJECT.h"
+#include "ArggLib/root/TGSignals.hh"
+#include "signal_slot_test.hh"
 using namespace ArggLib;
 
 
@@ -32,10 +36,18 @@ int main() {
   //>> Draw();
   //hold_on();
   //*x | Bar();
-
+  auto  c = Snew TCanvas();
+ // TCanvas c1;
   Draw(g).bar().axis();
   ArggLib::run_tests();
+//  slot_test cl;
+  //c.Connect("Closed()", "closer", &cl, "test()");
+  
+//  auto signal = _RQ_signals(c).Closed();
 
+//  auto cl_slot = _RQ_slots(cl).test();
+ // signal >> cl_slot;
+  
   auto d = Draw("COLZ");
   app.Run();
   return 0;

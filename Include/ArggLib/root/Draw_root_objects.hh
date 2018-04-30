@@ -112,10 +112,10 @@ namespace ArggLib {
     return  ArggLib_impl::Draw_root_objects0(opt).bar().axis();
   }
 
-  auto Draw(TGraph& gr) {
+  auto Draw(TGraph& gr) ->decltype(ArggLib_impl::Draw_root_object_TGraph(&gr)) {
     return ArggLib_impl::Draw_root_object_TGraph(&gr);
   }
-  auto Draw(TGraph* gr) {
+  auto Draw(TGraph* gr) ->decltype(ArggLib_impl::Draw_root_object_TGraph(gr)) {
     return ArggLib_impl::Draw_root_object_TGraph(gr);
   }
 }
