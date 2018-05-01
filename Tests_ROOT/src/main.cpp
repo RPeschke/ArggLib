@@ -19,16 +19,23 @@
 #include "RQ_OBJECT.h"
 #include "ArggLib/root/TGSignals.hh"
 #include "signal_slot_test.hh"
+#include <TGClient.h>
+#include <TGButton.h>
+#include <TGFrame.h>
 using namespace ArggLib;
 
 
 
 
 int main() {
-	TApplication app{"test",0,0};
+  ArggLib::run_tests();
+  /*
+  TApplication app{"test",0,0};
 	TGraph g;
+  auto fStart = new TGTextButton(0, "&Start");
+  
 
-	auto m=	Modify([](auto x) { return gRandom->Gaus(30,10) ; });
+	auto m=	Modify([](int x) { return gRandom->Gaus(30,10) ; });
 	auto e = Evaluate([](auto x) {return x * x; });
   TH1D h1("h1", "h1", 100, 0, 100);
 
@@ -39,7 +46,7 @@ int main() {
   auto  c = Snew TCanvas();
  // TCanvas c1;
   Draw(g).bar().axis();
-  ArggLib::run_tests();
+
 //  slot_test cl;
   //c.Connect("Closed()", "closer", &cl, "test()");
   
@@ -50,5 +57,6 @@ int main() {
   
   auto d = Draw("COLZ");
   app.Run();
+  */
   return 0;
 }
