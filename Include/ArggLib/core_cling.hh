@@ -47,6 +47,7 @@
 #include "ArggLib/onEnd2.hh"
 
 #include "ArggLib/root/Draw_root_objects.hh"
+#include "ArggLib/root/TGSignals.hh"
 
 
 

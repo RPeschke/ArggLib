@@ -1,7 +1,10 @@
 #ifndef TGSignals_h__
 #define TGSignals_h__
-#include "RQSignals.hh"
+#ifdef USE_ROOT
 
+
+
+#include "ArggLib/root/RQSignals.hh"
 
 
 
@@ -12,14 +15,24 @@ START__DEFINE_RQ_SIGNAL_BASE_CLASS(TQObject)
 END__DEFINE_RQ_SIGNAL_CLASS(TQObject)
 
 
+#ifndef __CLING__
+START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TEveDigitSet, TQObject)
+__DEFINE_RQ_SIGNAL__(SecSelected, "SecSelected(TEveDigitSet*, Int_t)")
+END__DEFINE_RQ_SIGNAL_CLASS(TEveDigitSet)
 
-START__DEFINE_RQ_SIGNAL_BASE_CLASS(TApplication, TQObject)
+#endif // !__CLING__
+
+
+
+START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TApplication, TQObject)
     __DEFINE_RQ_SIGNAL__(HandleIdleTimer, "HandleIdleTimer()")
     __DEFINE_RQ_SIGNAL__(LineProcessed, "LineProcessed(const char*)")
     __DEFINE_RQ_SIGNAL__(Terminate, "Terminate(Int_t)")
     __DEFINE_RQ_SIGNAL__(KeyPressed, "KeyPressed(Int_t)")
     __DEFINE_RQ_SIGNAL__(ReturnPressed, "ReturnPressed(char*)")
 END__DEFINE_RQ_SIGNAL_CLASS(TApplication)
+
+
 
 
 START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TPad, TQObject)
@@ -33,6 +46,9 @@ START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TPad, TQObject)
     __DEFINE_RQ_SIGNAL__(RecordPave, "RecordPave(const TObject*)")
 END__DEFINE_RQ_SIGNAL_CLASS(TPad)
 
+
+
+
 START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TCanvas, TPad)
   __DEFINE_RQ_SIGNAL__(Picked,"Picked(TPad*,TObject*,Int_t)")
   __DEFINE_RQ_SIGNAL__( ProcessedEvent, "ProcessedEvent(Int_t,Int_t,Int_t,TObject*)") 
@@ -40,11 +56,6 @@ START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TCanvas, TPad)
   __DEFINE_RQ_SIGNAL__(Cleared, "Cleared(TVirtualPad*)")
   __DEFINE_RQ_SIGNAL__(Closed, "Closed()")
 END__DEFINE_RQ_SIGNAL_CLASS(TCanvas)
-
-
-START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TEveDigitSet, TQObject)
-  __DEFINE_RQ_SIGNAL__(SecSelected, "SecSelected(TEveDigitSet*, Int_t)")
-END__DEFINE_RQ_SIGNAL_CLASS(TEveDigitSet)
 
 
 START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TGButton, TPad)
@@ -296,7 +307,7 @@ START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TGMdiMainFrame, TGCanvas)
   __DEFINE_RQ_SIGNAL__(FrameClosed, "FrameClosed(Int_t)")
   __DEFINE_RQ_SIGNAL__(FrameMaximized, "FrameMaximized(Int_t)")
   __DEFINE_RQ_SIGNAL__(FrameMinimized, "FrameMinimized(Int_t)") 
-  __DEFINE_RQ_SIGNAL__(FrameRestored, "FrameRestored(Int_t)",)
+  __DEFINE_RQ_SIGNAL__(FrameRestored, "FrameRestored(Int_t)")
   __DEFINE_RQ_SIGNAL__(FramesArranged, "FramesArranged(Int_t)")
   __DEFINE_RQ_SIGNAL__(SetCurrent, "SetCurrent(TGMdiFrame*)")
 END__DEFINE_RQ_SIGNAL_CLASS(TGMdiMainFrame)
@@ -311,7 +322,7 @@ START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TGPopupMenu, TGFrame)
   __DEFINE_RQ_SIGNAL__(PoppedDown, "PoppedDown()")
   __DEFINE_RQ_SIGNAL__(Highlighted, "Highlighted(Int_t)")
   __DEFINE_RQ_SIGNAL__(Activated, "Activated(Int_t)")
-END__DEFINE_RQ_SIGNAL_CLASS(TGMdiMainFrame)
+END__DEFINE_RQ_SIGNAL_CLASS(TGPopupMenu)
 
 
 
@@ -485,7 +496,7 @@ START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TProof, TQObject)
   __DEFINE_RQ_SIGNAL__(StopProcess,"StopProcess(Bool_t)")
   __DEFINE_RQ_SIGNAL__(CloseWindow, "CloseWindow()")
   __DEFINE_RQ_SIGNAL__(LogMessage,"LogMessage(const char*,Bool_t)")
-  __DEFINE_RQ_SIGNAL__(Progress_Long64_t,_Long64_t,"Progress(Long64_t,Long64_t)")
+  __DEFINE_RQ_SIGNAL__(Progress_Long64_t_Long64_t,"Progress(Long64_t,Long64_t)")
   __DEFINE_RQ_SIGNAL__(Progress_Long64_t_Long64_t_Long64_t_Float_t_Float_t_Float_t_Float_t, "Progress(Long64_t,Long64_t,Long64_t,Float_t,Float_t,Float_t,Float_t)")
   __DEFINE_RQ_SIGNAL__(ResetProgressDialog, "ResetProgressDialog(const char*,Int_t,Long64_t,Long64_t)")
   __DEFINE_RQ_SIGNAL__(StartupMessage, "StartupMessage(const char*,Bool_t,Int_t,Int_t)")
@@ -553,7 +564,8 @@ START__DEFINE_RQ_SIGNAL_DERIVED_CLASS(TTimer, TSysEvtHandler)
   __DEFINE_RQ_SIGNAL__(Timeout ,"Timeout()")
 END__DEFINE_RQ_SIGNAL_CLASS(TTimer)
 
+//*/
 
-
+#endif //  USE_ROOT
 
 #endif // TGSignals_h__

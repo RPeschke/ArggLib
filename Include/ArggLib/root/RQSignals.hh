@@ -1,5 +1,7 @@
 #ifndef ArggLib_RQSignals_h__
 #define ArggLib_RQSignals_h__
+
+
 #include <string>
 #include <memory>
 #include "TString.h"
@@ -24,7 +26,7 @@ auto _RQ_slots(std::unique_ptr<T>& obj) -> decltype(_RQ_slots(obj.get()) ){
 
 #define  __DEFINE_RQ_SIGNAL__(funName,SignalString) /*emits SignalString*/ \
 RQ_SIGNAL_TEMPLATE<T>  funName() { \
-return RQ_SIGNAL_TEMPLATE<T>(m_object, SignalString, cname.Data()); \
+return RQ_SIGNAL_TEMPLATE<T>(this->m_object, SignalString, this->cname.Data()); \
   }
 
 #define  __DEFINE_RQ_SIGNAL__CONSTRUCTOR(derivedname,baseName) derivedname<T>(T* obj, const char* ClassName) :baseName<T>(obj, ClassName) 
@@ -139,4 +141,7 @@ void operator >> (const RQ_SIGNAL_TEMPLATE<T1>& signal_, const RQ_SLOT_TEMPLATE<
 
   signal_.m_object->Connect(signal_.m_name.c_str(), slot_.m_className.c_str(), slot_.m_object, slot_.m_name.c_str());
 }
+
+
+
 #endif // ArggLib_RQSignals_h__

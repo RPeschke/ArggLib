@@ -1,8 +1,8 @@
 #ifndef ArggLib_signal_slot_test
 #define ArggLib_signal_slot_test
+#include "ArggLib/root/RQSignals.hh"
 #include "RQ_OBJECT.h"
 #include <iostream>
-#include "C:/ArggsComputerEcke/ArggLib/Include/ArggLib/root/RQSignals.hh"
 class signal_test {
   RQ_OBJECT("signal_test");
   std::ostream& m_out;
