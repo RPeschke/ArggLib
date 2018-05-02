@@ -28,8 +28,8 @@ using namespace ArggLib;
 
 
 int main() {
-  ArggLib::run_tests();
-  /*
+ // ArggLib::run_tests();
+  
   TApplication app{"test",0,0};
 	TGraph g;
   auto fStart = new TGTextButton(0, "&Start");
@@ -39,13 +39,13 @@ int main() {
 	auto e = Evaluate([](auto x) {return x * x; });
   TH1D h1("h1", "h1", 100, 0, 100);
 
-  auto x = 10000 | for_loop() >> Evaluate([](auto x) {return x * x; }) >> g ;
+  10000 | for_loop() >> m  >> h1 | Draw();
   //>> Draw();
   //hold_on();
   //*x | Bar();
   auto  c = Snew TCanvas();
  // TCanvas c1;
-  Draw(g).bar().axis();
+ // Draw(g).bar().axis();
 
 //  slot_test cl;
   //c.Connect("Closed()", "closer", &cl, "test()");
@@ -57,6 +57,6 @@ int main() {
   
   auto d = Draw("COLZ");
   app.Run();
-  */
+  
   return 0;
 }

@@ -14,24 +14,39 @@ namespace ArggLib {
       return __same;
     }
 
-    
-    class Draw_root_object_TGraph {
-      TGraph* m_graph = nullptr;
+    template <typename T>
+    class Draw_root_object_base {
+    protected:
+      T m_Root_object;
       bool do_draw = true;
       std::string m_options;
-      using this_t = Draw_root_object_TGraph;
-    public:
 
       void Draw_impl() {
-        if (m_graph && do_draw) {
-          m_graph->Draw(m_options.c_str());
+        if (do_draw) {
+          m_Root_object->Draw(m_options.c_str());
           do_draw = false;
         }
       }
+    public:
+      Draw_root_object_base(T obj) :m_Root_object(obj) {}
+      void operator()() {
+        Draw_impl();
+      }
+      
+    };
+    class Draw_root_object_TGraph :public Draw_root_object_base<TGraph*> {
+
+    public:
+      Draw_root_object_TGraph & set_DrawOption(const std::string& opt) {
+        this->m_options += " " + opt;
+        return *this;
+      }
+        Draw_root_object_TGraph(TGraph* gr) :Draw_root_object_base(gr) {}
+
+
       __ROOT_DRAW_OPTION(axis, " A")
       __ROOT_DRAW_OPTION(bar, " B")
         __ROOT_DRAW_OPTION(bar_bottom, " B1")
-      Draw_root_object_TGraph(TGraph* gr) :m_graph(gr) {}
       ~Draw_root_object_TGraph(){
 
         Draw_impl();

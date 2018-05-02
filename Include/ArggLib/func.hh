@@ -58,16 +58,16 @@ namespace ArggLib {
 		fun_impl_b(T&& t) :m_function(std::forward<T>(t)) {}
 
 		template<typename... Param_T>
-		auto operator()(Param_T&&... p){
+		auto operator()(Param_T&&... p) ->decltype(m_function(p...) ){
 			return m_function(p...);
 		}
-		auto* operator->()
+		T* operator->() 
 		{
 
 			return  &m_function;
 		}
 
-		T& operator * ()
+		T& operator * () 
 		{
 			return m_function;
 		}
@@ -77,23 +77,23 @@ namespace ArggLib {
 
 
 
-		auto operator<<= (const _run& t)  {
+		auto operator<<= (const _run& t) ->decltype(m_function()) {
 			return m_function();
 		}
-		auto operator<<= (_run& t)  {
+		auto operator<<= (_run& t) ->decltype(m_function()) {
 			return m_function();
 		}
-		auto operator<<= (_run&& t)  {
+		auto operator<<= (_run&& t) ->decltype(m_function()) {
 			return m_function();
 		}
 
-		auto operator<= (const _run& t) {
+		auto operator<= (const _run& t) ->decltype(m_function()) {
 			return m_function();
 		}
-		auto operator<= (_run& t)  {
+		auto operator<= (_run& t) ->decltype(m_function()) {
 			return m_function();
 		}
-		auto operator<= (_run&& t){
+		auto operator<= (_run&& t)->decltype(m_function()){
 			return m_function();
 		}
 
