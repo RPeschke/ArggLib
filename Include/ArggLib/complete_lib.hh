@@ -50,4 +50,10 @@
 #include "ArggLib/where_f.hh"
 #include "ArggLib/write_host.hh"
 
+
+#include "ArggLib/root/Draw_root_objects.hh"
+
+#include "ArggLib/root/Fill_root_objects.hh"
+
+
 #endif // complete_lib_h__

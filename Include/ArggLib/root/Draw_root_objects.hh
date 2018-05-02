@@ -1,7 +1,7 @@
 #ifndef ArggLib_Draw_root_objects
 #define ArggLib_Draw_root_objects
 #ifdef USE_ROOT
-
+#include "ArggLib/proc.hh"
 #include "ArggLib/type_trates.hh"
 #include "TGraph.h"
 
@@ -116,21 +116,21 @@ namespace ArggLib {
     _same = 0;
   }
   template <typename T>
-  auto operator|(T&& t, const  ArggLib_impl::Draw_root_objects0& dr) -> decltype(dr(std::forward<T>(t))) {
+  inline auto operator|(T&& t, const  ArggLib_impl::Draw_root_objects0& dr) -> decltype(dr(std::forward<T>(t))) {
     return dr(std::forward<T>(t));
   }
 
-  auto Draw(std::string opt = "") ->decltype(ArggLib_impl::Draw_root_objects0(opt)) {
+  inline auto Draw(std::string opt = "") ->decltype( ArggLib_impl::Draw_root_objects0(opt)) {
     return  ArggLib_impl::Draw_root_objects0(opt);
   }
-  auto Bar(std::string opt = "") ->decltype(ArggLib_impl::Draw_root_objects0(opt)) {
-    return  ArggLib_impl::Draw_root_objects0(opt).bar().axis();
+  inline auto Bar(std::string opt = "") ->decltype( ArggLib_impl::Draw_root_objects0(opt)) {
+    return   ArggLib_impl::Draw_root_objects0(opt).bar().axis();
   }
 
-  auto Draw(TGraph& gr) ->decltype(ArggLib_impl::Draw_root_object_TGraph(&gr)) {
+  inline auto Draw(TGraph& gr) ->decltype(ArggLib_impl::Draw_root_object_TGraph(&gr)) {
     return ArggLib_impl::Draw_root_object_TGraph(&gr);
   }
-  auto Draw(TGraph* gr) ->decltype(ArggLib_impl::Draw_root_object_TGraph(gr)) {
+  inline auto Draw(TGraph* gr) ->decltype(ArggLib_impl::Draw_root_object_TGraph(gr)) {
     return ArggLib_impl::Draw_root_object_TGraph(gr);
   }
 }

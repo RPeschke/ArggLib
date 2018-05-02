@@ -61,7 +61,7 @@ namespace ArggLib {
 		auto operator()(Param_T&&... p) ->decltype(m_function(p...) ){
 			return m_function(p...);
 		}
-		T* operator->() 
+		auto* operator->() 
 		{
 
 			return  &m_function;
@@ -77,23 +77,23 @@ namespace ArggLib {
 
 
 
-		auto operator<<= (const _run& t) ->decltype(m_function()) {
+		auto operator<<= (const _run& t) {
 			return m_function();
 		}
-		auto operator<<= (_run& t) ->decltype(m_function()) {
+		auto operator<<= (_run& t) {
 			return m_function();
 		}
-		auto operator<<= (_run&& t) ->decltype(m_function()) {
+		auto operator<<= (_run&& t) {
 			return m_function();
 		}
 
-		auto operator<= (const _run& t) ->decltype(m_function()) {
+		auto operator<= (const _run& t)  {
 			return m_function();
 		}
-		auto operator<= (_run& t) ->decltype(m_function()) {
+		auto operator<= (_run& t) {
 			return m_function();
 		}
-		auto operator<= (_run&& t)->decltype(m_function()){
+		auto operator<= (_run&& t){
 			return m_function();
 		}
 
