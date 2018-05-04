@@ -5,7 +5,8 @@
 #include "ArggLib/type_trates.hh"
 #include "TGraph.h"
 
-#define __ROOT_DRAW_OPTION(name,key)     auto name() ->decltype(*this) { m_options += key ; return *this; }
+#define __ROOT_DRAW_OPTION(name,key)          auto name() ->decltype(*this) { m_options += key ; return *this; }
+#define __ROOT_DRAW_OPTION_MARKER(name,key)   auto name() ->decltype(*this) { this->current_marker(); this->m_Root_object->SetMarkerStyle(key);  return *this; }
 namespace ArggLib {
 
   namespace ArggLib_impl {
@@ -14,39 +15,97 @@ namespace ArggLib {
       return __same;
     }
 
-    template <typename T>
+	template <typename T>
+	std::string draw_hold_off(T* t, std::string options) {
+		return options;
+	}
+	template <typename T>
+	std::string draw_hold_on(T* t, std::string options) {
+		return options;
+	}
+
+	inline std::string draw_hold_off(TGraph* t, std::string options) {
+		options += " A";
+		return options;
+	}
+
+	inline std::string draw_hold_on(TGraph* t, std::string options) {
+		std::replace(options.begin(), options.end(), 'A', ' ');
+		return options;
+	}
+    template <typename T,typename derived_t>
     class Draw_root_object_base {
     protected:
+	  enum { force_hold_on, force_holding_off, use_global } m_hold = use_global;
       T m_Root_object;
       bool do_draw = true;
       std::string m_options;
 
       void Draw_impl() {
         if (do_draw) {
-          m_Root_object->Draw(m_options.c_str());
+			std::string local_options;
+			if (m_hold == force_hold_on|| m_hold == use_global && Draw_on_same()) {
+				local_options = draw_hold_on(m_Root_object, m_options);
+			}
+			else if (m_hold == force_holding_off || m_hold == use_global && !Draw_on_same()) {
+				local_options = draw_hold_off(m_Root_object, m_options);
+			}
+
+          m_Root_object->Draw(local_options.c_str());
           do_draw = false;
         }
       }
     public:
       Draw_root_object_base(T obj) :m_Root_object(obj) {}
-      void operator()() {
+	  derived_t operator()() {
+		do_draw = true;
         Draw_impl();
+		return *(static_cast<derived_t*>(this));
       }
       
     };
-    class Draw_root_object_TGraph :public Draw_root_object_base<TGraph*> {
-
-    public:
+    class Draw_root_object_TGraph :public Draw_root_object_base<TGraph*, Draw_root_object_TGraph> {
+	
+	public:
       Draw_root_object_TGraph & set_DrawOption(const std::string& opt) {
         this->m_options += " " + opt;
         return *this;
       }
-        Draw_root_object_TGraph(TGraph* gr) :Draw_root_object_base(gr) {}
+      Draw_root_object_TGraph(TGraph* gr) :Draw_root_object_base(gr) {}
 
 
+	  auto hold_on() ->decltype(*this) {
+		  this->m_hold = force_hold_on;
+		  return *this;
+	  }
+	  auto hold_off() ->decltype(*this) {
+		  this->m_hold = force_holding_off;
+		  return *this;
+	  }
       __ROOT_DRAW_OPTION(axis, " A")
       __ROOT_DRAW_OPTION(bar, " B")
-        __ROOT_DRAW_OPTION(bar_bottom, " B1")
+      __ROOT_DRAW_OPTION(bar_bottom, " B1")
+	  __ROOT_DRAW_OPTION(current_marker, " P")
+
+	  __ROOT_DRAW_OPTION_MARKER(dot,        kDot)
+	  __ROOT_DRAW_OPTION_MARKER(plus,       kPlus)
+      __ROOT_DRAW_OPTION_MARKER(star,       kStar)
+      __ROOT_DRAW_OPTION_MARKER(Circle,     kCircle)
+      __ROOT_DRAW_OPTION_MARKER(Multiply,   kMultiply)
+      __ROOT_DRAW_OPTION_MARKER(small_dot,  kFullDotSmall)
+      __ROOT_DRAW_OPTION_MARKER(medium_dot, kFullDotMedium)
+      __ROOT_DRAW_OPTION_MARKER(large_scalable_dot, kFullDotLarge)
+      __ROOT_DRAW_OPTION_MARKER(full_circle, kFullCircle)
+      __ROOT_DRAW_OPTION_MARKER(full_square, kFullSquare)
+      __ROOT_DRAW_OPTION_MARKER(Full_Triangle_Up, kFullTriangleUp)
+      __ROOT_DRAW_OPTION_MARKER(Full_Triangle_Down, kFullTriangleDown)
+      __ROOT_DRAW_OPTION_MARKER(open_circle, kOpenCircle)
+      __ROOT_DRAW_OPTION_MARKER(open_square, kOpenSquare)
+      __ROOT_DRAW_OPTION_MARKER(open_triangle_up, kOpenTriangleUp)
+      __ROOT_DRAW_OPTION_MARKER(open_diamond, kOpenDiamond)
+      __ROOT_DRAW_OPTION_MARKER(open_cross, kOpenCross)
+      __ROOT_DRAW_OPTION_MARKER(open_star, kOpenStar)
+      __ROOT_DRAW_OPTION_MARKER(full_star, kFullStar)
       ~Draw_root_object_TGraph(){
 
         Draw_impl();

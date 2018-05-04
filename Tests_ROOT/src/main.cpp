@@ -28,8 +28,9 @@ using namespace ArggLib;
 
 
 int main() {
- // ArggLib::run_tests();
   
+  ArggLib::run_tests();
+  return 1;
   TApplication app{"test",0,0};
 	TGraph g;
   auto fStart = new TGTextButton(0, "&Start");
