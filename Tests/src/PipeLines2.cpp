@@ -396,6 +396,10 @@ ARGGLIB__DEFINE_TEST(where_p_test21) {
 		___ARGGLIB_TEST("out_stream()->delimiter", x123->str(), "0 del 0 del 0\n0 del 0 del 1\n0 del 0 del 2\n0 del 0 del 3\n0 del 0 del 4\n0 del 0 del 5\n0 del 0 del 6\n0 del 0 del 7\n0 del 0 del 8\n0 del 0 del 9\n");
 	}
 	{
+		std::ofstream out("fileNames.txt");
+		out << "fileNames\ntest.csv\ntest2.csv\ntest3.csv\ntest4.csv\ntest5.csv\n";
+	}
+	{
 		auto x123 = "fileNames.txt" | Import_CSV() >> out_stream();
 		___ARGGLIB_TEST("Import_CSV() >> out_stream()", x123->str(), "test.csv\ntest2.csv\ntest3.csv\ntest4.csv\ntest5.csv\n");
 	}
