@@ -12,6 +12,7 @@
 
 #include "ArggLib/async_proc.hh"
 #include "ArggLib/impl_do_begin_do_end.hh"
+#include "ArggLib/sub.hh"
 
 using namespace std;
 
@@ -553,4 +554,42 @@ ARGGLIB__DEFINE_TEST(has_t_test) {
   ___ARGGLIB_TEST("auto x =std::enable_if<_has_member_t_<Class_with_t>::value ,int>::type (100);", x, 100);
   auto x1 = _has_member_t_<Class_without_t>::value;
   ___ARGGLIB_TEST("auto x1 = _has_member_t_<Class_without_t>::value;", x1, 0);
+}
+
+ARGGLIB__DEFINE_TEST(test_sub_process) {
+	{
+
+		std::stringstream out;
+		auto sp = sub(
+			for_loop() >> out_stream(out) >> 0
+
+		) >> out_stream(out) >>0;
+		auto ret = 10 | sp;
+		___ARGGLIB_TEST("sub() 1a", ret, 45);
+		___ARGGLIB_TEST("sub() 1b", out.str(), "0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n45\n");
+	}
+
+	{
+		std::stringstream out;
+		auto sp = for_loop() >> sub(
+			for_loop() >> out_stream(out) >> 0
+
+		) >> out_stream(out) >> 0;
+		auto ret = 10 | sp;
+		___ARGGLIB_TEST("sub() 2a", ret, 330);
+		___ARGGLIB_TEST("sub() 2b", out.str(), "0\n0\n0\n0\n1\n1\n0\n1\n2\n4\n0\n1\n2\n3\n10\n0\n1\n2\n3\n4\n20\n0\n1\n2\n3\n4\n5\n35\n0\n1\n2\n3\n4\n5\n6\n56\n0\n1\n2\n3\n4\n5\n6\n7\n84\n0\n1\n2\n3\n4\n5\n6\n7\n8\n120\n");
+	}
+
+	{
+		std::stringstream out;
+		auto sp = sub( 
+				for_loop() 
+					>> sub(
+						for_loop() >> 0
+						) >> 0
+					) >> out_stream(out) >> 0;
+		auto ret = 10 | sp;
+		___ARGGLIB_TEST("sub() 3a", ret, 330);
+		___ARGGLIB_TEST("sub() 3b", out.str(),  "330\n");
+	}
 }
