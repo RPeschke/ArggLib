@@ -582,12 +582,11 @@ ARGGLIB__DEFINE_TEST(test_sub_process) {
 
 	{
 		std::stringstream out;
-		auto sp = sub( 
-				for_loop() 
-					>> sub(
-						for_loop() >> 0
-						) >> 0
-					) >> out_stream(out) >> 0;
+		auto sp = sub( for_loop() 
+						>> sub( for_loop() >> 0) 
+						>> 0 ) 
+				>> out_stream(out) 
+				>> 0;
 		auto ret = 10 | sp;
 		___ARGGLIB_TEST("sub() 3a", ret, 330);
 		___ARGGLIB_TEST("sub() 3b", out.str(),  "330\n");
