@@ -322,7 +322,7 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test12542212) {
 	
 	{
 		std::stringstream out;
-		_to_vector << -10 << 10 | sort().descending().absulute() | ArggLib::out_stream(out);
+		_to_vector << -10 << 10 | sort().descending().absolute() | ArggLib::out_stream(out);
 
 		___ARGGLIB_TEST("_to_vector << -10 << 10 | sort().descending().absulute() | ArggLib::out_stream(out);",
 			out.str(),

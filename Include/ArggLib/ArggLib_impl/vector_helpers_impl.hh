@@ -145,7 +145,7 @@ namespace ArggLib {
 			auto by_property(T get_proberty) {
 				return  sort(m_comp, get_proberty, m_abs);
 			}
-			auto absulute() const {
+			auto absolute() const {
 				return  sort(m_comp, m_get_proberty, [](cautor e) { return std::abs(e); });
 			}
 			auto by_first() const {
