@@ -7,7 +7,7 @@
 #include "ArggLib/ArggLib_Unit_Tests.hh"
 #include "ArggLib/cautor.hh"
 //#include "ArggLib/constexpr_if.hh"
-#include "ArggLib/contains.hh"
+#include "ArggLib/contains_f.hh"
 #include "ArggLib/convert2HashTable.hh"
 #include "ArggLib/Drop.hh"
 #include "ArggLib/Evaluate.hh"
