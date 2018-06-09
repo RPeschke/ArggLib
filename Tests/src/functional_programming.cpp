@@ -1,3 +1,4 @@
+
 #include "ArggLib/complete_lib.hh"
 
 #include <vector>
@@ -35,40 +36,22 @@ ARGGLIB__DEFINE_TEST(func_test1) {
     return e*e;
   };
 
-  //   auto ttt = (fun() << square_ << 7 <<= _run());
-  //    auto p=param() << 1 << 1;
+
   auto f = fun() << square_ << 7;
   auto xx = param() | f;
   auto xxx = param() | fun() << square_ << 8;
-//  auto xxx1 = param() | fun() << square_ << 8 > fun() << get_ints3 << 1 << _X << 1;
+
 
   auto f1 = fun() << square_;
 
   auto in_ = param();
-  //  decltype(_____try_if_arg_has_return_type(__is_not_param(in_)), f1(in_)) x2;
+
   auto i = 7 | f1;
 
-  // __is_not_param(1);
+
 
   auto p = param();
   decltype(__is_not_param(param()), 1) x1;
-  //    auto f = fun() << make_vec() << 1 << (fun() << square_ << 7)() <<1
-  //               >  sum_all() 
-  //               > disp;
-  //    f();
-  //    
-  //   fun() << get_ints3 << 1 << 49 << 1
-  //               > fun() << sum_all() << _X() << 10> disp <<= _run();
-
-   // auto rr = r <<= _run();
-
-   // auto ff1 = ff<< 0 << 1;
-    //ff1();
-  //   auto f1 = f << 0 << 1;
-     //f1();
-  //   param() << 0 << 10 | fun() > get_ints3 > sum_all() > disp;+++++
-
-
 
 
 
@@ -90,7 +73,7 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test) {
 
   auto vector_out = map_in | to_vector() | ArggLib_sort_by(second);
   std::stringstream out;
-  //map_in | ArggLib::out_stream(out);
+
   vector_out | ArggLib::for_loop() >> ArggLib::out_stream(out);
   ___ARGGLIB_TEST("Function pipe operator",
     out.str(),
@@ -219,7 +202,7 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test12) {
 
 	auto vector_out = map_in | to_vector() | ArggLib_sort_by(second);
 	std::stringstream out;
-	//map_in | ArggLib::out_stream(out);
+
 	vector_out | ArggLib::for_loop() >> ArggLib::out_stream(out);
 	___ARGGLIB_TEST("Function pipe operator",
 		out.str(),
@@ -296,7 +279,7 @@ ARGGLIB__DEFINE_TEST(func_test_pipe_test122) {
 
 
 
-ARGGLIB__DEFINE_TEST(func_test_pipe_test12212) {
+ARGGLIB__DEFINE_TEST(func_test_pipe_test12542212) {
 
 
 	std::map<std::string, double> map_in;
@@ -352,3 +335,4 @@ ARGGLIB__DEFINE_TEST(rtrim) {
   ArggLib::rtrim(s);
   ___ARGGLIB_TEST("rtrim", s, "asdad");
 }
+
