@@ -38,6 +38,7 @@ ARGGLIB__DEFINE_TEST(func_test1) {
 
 
   auto f = fun() << square_ << 7;
+  f();
   auto xx = param() | f;
   auto xxx = param() | fun() << square_ << 8;
 
@@ -54,9 +55,12 @@ ARGGLIB__DEFINE_TEST(func_test1) {
   decltype(__is_not_param(param()), 1) x1;
 
 
+  auto add_ = [](auto&& e,auto && e1) {
+	  return e + e1;
+  };
 
-
-
+  auto f2 = fun() << add_ << _X <<3;
+  std::cout << f2(1) << std::endl;
 
 }
 
