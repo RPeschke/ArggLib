@@ -11,6 +11,7 @@ namespace ArggLib {
 	template <typename T>
 	class reactive_variable :public reactive_obj_base{
 	public:
+		using type = T;
 		reactive_variable(T value) : m_value(std::move(value)){
 
 		}
@@ -29,6 +30,14 @@ namespace ArggLib {
 			m_value = val;
 			notify();
 		}
+
+		template <typename T1>
+		void operator<<=(T1&& t) {
+			m_value = std::forward<T>(t);
+			notify();
+			return *this;
+		}
+
 		reactive_variable<T>& operator=(T value) {
 
 			m_value = std::move(value);

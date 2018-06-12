@@ -8,6 +8,7 @@ namespace ArggLib {
 	template <typename T>
 	class reactive_signals : public reactive_obj_base{
 	public:
+		using type = T;
 		reactive_signals(T val, reactive_backend* backend) : reactive_obj_base(backend), last(val), current(val), next(val)   {
 			
 			register_processor(reactive_processor_on_begin([this]() mutable { this->update(); }));
@@ -30,6 +31,12 @@ namespace ArggLib {
 		void set(const T& val) {
 			next = val;
 			notify();
+		}
+		template <typename T1>
+		void operator<<=(T1&& t) {
+			next = std::forward<T>(t);
+			notify();
+			return *this;
 		}
 		reactive_signals<T>& operator=(T value) {
 

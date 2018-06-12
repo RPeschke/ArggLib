@@ -27,13 +27,13 @@ namespace ArggLib {
 				m_notify.clear();
 				lock.unlock();
 				for (auto& e : l_notify) {
-					e.begin();
+					e->begin();
 				}
 				for (auto& e : l_notify) {
-					e.process();
+					e->process();
 				}
 				for (auto& e : l_notify) {
-					e.end();
+					e->end();
 				}
 			}
 
@@ -43,21 +43,21 @@ namespace ArggLib {
 			{
 
 				std::unique_lock<std::mutex> lock(m);
-				if (!contains(m_notify, f))
+				if (!contains(&f))
 				{
-					m_notify.push_back(f);
+					m_notify.push_back(&f);
 				}
 			}
 			cond_var.notify_one();
 		}
-		void append(const std::vector<reactive_processor_impl_c> &  app) {
+		void append( std::vector<reactive_processor_impl_c> &  app) {
 			{
 
 				std::unique_lock<std::mutex> lock(m);
-				for (auto f : app) {
-					if (!contains(m_notify, f))
+				for(int i =0; i< app.size(); ++i){
+					if (!contains( &app[i]))
 					{
-						m_notify.push_back(f);
+						m_notify.push_back(&app[i]);
 					}
 				}
 			}
@@ -65,51 +65,58 @@ namespace ArggLib {
 
 		}
 
-		// 		void append_ref(const std::vector<reactive_processor_impl_c&> & app) {
-		// 			{
-		// 
-		// 				std::unique_lock<std::mutex> lock(m);
-		// 				for (auto f : app) {
-		// 					m_notify.push_back(f);
-		// 				}
-		// 			}
-		// 			cond_var.notify_one();
-		// 
-		// 		}
-		void stop() {
-			m_running = stopping;
+		void append_ptr(const std::vector<reactive_processor_impl_c*> & app) {
+			{
+			std::unique_lock<std::mutex> lock(m);
+			for (auto f : app) {
+				
+				if (!contains(f))
+				{
+					m_notify.push_back(f);
+				}
+			}
+			}
+		cond_var.notify_one();
 
-			m_worker.join();
-
-		}
-		void force_stop() {
-			m_running = force_stopping;
-
-			m_worker.join();
-
-		}
-	private:
-		enum state {
-			running,
-			stopping,
-			force_stopping,
-			stopped
-		};
-#ifndef  WIN32 
-		state m_running = running;
-#else
-		std::atomic<state> m_running = running;
-#endif
-		std::condition_variable cond_var;
-		std::mutex m;
-		std::thread m_worker;
-		std::vector<reactive_processor_impl_c> m_notify;
-	};
-
-	reactive_backend& get_reactive_backend() {
-		static reactive_backend g_reactive_backend;
-		return g_reactive_backend;
 	}
+	void stop() {
+		m_running = stopping;
+
+		m_worker.join();
+
+	}
+	void force_stop() {
+		m_running = force_stopping;
+
+		m_worker.join();
+
+	}
+private:
+	enum state {
+		running,
+		stopping,
+		force_stopping,
+		stopped
+	};
+#ifndef  WIN32 
+	state m_running = running;
+#else
+	std::atomic<state> m_running = running;
+#endif
+	std::condition_variable cond_var;
+	std::mutex m;
+	std::thread m_worker;
+	std::vector<reactive_processor_impl_c*> m_notify;
+	private:
+		bool contains(reactive_processor_impl_c* f) {
+			return std::find_if(m_notify.begin(), m_notify.end(), [&](reactive_processor_impl_c* e) { return e->ID() == f->ID(); }) != m_notify.end();
+		}
+};
+
+reactive_backend& get_reactive_backend() {
+	static reactive_backend g_reactive_backend;
+	return g_reactive_backend;
+}
 
 }
 

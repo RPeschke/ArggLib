@@ -15,6 +15,7 @@ namespace ArggLib {
 		reactive_fun_t m_end = []() {};
 		int m_ID;
 	public:
+		reactive_processor_impl_c() {};
 		reactive_processor_impl_c(reactive_fun_t begin_f, reactive_fun_t process_f, reactive_fun_t end_f,int ID) : 
 			m_begin(std::move(begin_f)), 
 			m_process(std::move(process_f)), 
