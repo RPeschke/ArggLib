@@ -176,8 +176,10 @@ ARGGLIB__DEFINE_TEST(reactive_programming_7_entities) {
 	myEntety2 e1(out, &r);
 	myEntety2 e2(out, &r);
 
-	e1.m_in.set_input(&x);
-	e2.m_in.set_input(&e1.m_out_signal.m_out);
+
+	x >> e1.m_in;
+	e1.m_out_signal >> e2.m_in;
+
 
 
 	x = 2;

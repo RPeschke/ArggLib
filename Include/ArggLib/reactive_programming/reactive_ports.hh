@@ -7,35 +7,16 @@
 
 
 namespace ArggLib {
-
-
-	template<typename reactive_signals_T>
-	class active_in_port {
-	public:
-		active_in_port() :m_base(get_current_reactive_entity_base()) {
-
-		}
-		void set_input(reactive_signals_T* input) {
-			
-			m_input = input;
-			input->register_processor_ptr(&m_base->m_process);
-		}
-		auto value() const {
-			return m_input->value();
-		}
-		reactive_entity_base* m_base = nullptr;
-		const reactive_signals_T* m_input = nullptr;
-	};
 	template<typename reactive_signals_T>
 	class passive_in_port {
 	public:
 		passive_in_port() :m_base(get_current_reactive_entity_base()) {
 
 		}
-		void set_input(reactive_signals_T* input) {
+		virtual void set_input(reactive_signals_T* input) {
 
 			m_input = input;
-			
+
 		}
 		auto value() const {
 			return m_input->value();
@@ -43,6 +24,18 @@ namespace ArggLib {
 		reactive_entity_base* m_base = nullptr;
 		const reactive_signals_T* m_input = nullptr;
 	};
+
+	template<typename reactive_signals_T>
+	class active_in_port : public passive_in_port<reactive_signals_T> {
+	public:
+
+		virtual void set_input(reactive_signals_T* input) override {
+			passive_in_port<reactive_signals_T>::set_input(input);
+			input->register_processor_ptr(&m_base->m_process);
+		}
+
+	};
+
 
 	template<typename reactive_signals_T>
 	class out_port {
@@ -66,6 +59,25 @@ namespace ArggLib {
 		reactive_entity_base* m_base = nullptr;
 		reactive_signals_T m_out;
 	};
+
+	template <typename T1, typename T2>
+	out_port< T1> & operator>>(out_port< T1> & out, passive_in_port<T2>& in) {
+		in.set_input(&out.m_out);
+		return out;
+	}
+
+	template <typename T1, typename T2>
+	reactive_variable<T1>& operator>>(reactive_variable<T1> & out, passive_in_port<T2>& in) {
+		in.set_input(&m_out);
+		return out;
+	}
+	template <typename T1, typename T2>
+	reactive_signals<T1>& operator>>(reactive_signals<T1> & out, passive_in_port<T2>& in) {
+		in.set_input(&out);
+		return out;
+	}
+
+
 }
 
 
