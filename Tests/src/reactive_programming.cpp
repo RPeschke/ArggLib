@@ -153,9 +153,9 @@ ARGGLIB__DEFINE_TEST(reactive_programming_6_entities) {
 	);
 }
 
-class myEntety2 :public reactive_entity_base {
+class myEntity2 :public reactive_entity_base {
 public:
-	myEntety2(ostream& out, reactive_backend* backend) :reactive_entity_base([this]() { this->operator()(); }, backend), m_out(out) {}
+	myEntity2(ostream& out, reactive_backend* backend) :reactive_entity_base([this]() { this->operator()(); }, backend), m_out(out) {}
 	active_in_port<reactive_signals<int>> m_in;
 	out_port<reactive_signals<int>> m_out_signal = 0;
 	ostream& m_out;
@@ -173,8 +173,8 @@ ARGGLIB__DEFINE_TEST(reactive_programming_7_entities) {
 	reactive_signals<int> y(1, &r);
 
 
-	myEntety2 e1(out, &r);
-	myEntety2 e2(out, &r);
+	myEntity2 e1(out, &r);
+	myEntity2 e2(out, &r);
 
 
 	x >> e1.m_in;
