@@ -4,12 +4,15 @@
 
 #include "ArggLib/reactive_programming/reactive_signals.hh"
 #include "ArggLib/reactive_programming/reactive_entity_base.hh"
-
+#include "ArggLib/reactive_programming/reactive_variable.hh"
 
 namespace ArggLib {
 	template<typename reactive_signals_T>
 	class passive_in_port {
 	public:
+		reactive_entity_base * m_base = nullptr;
+		const reactive_signals_T* m_input = nullptr;
+
 		passive_in_port() :m_base(get_current_reactive_entity_base()) {
 
 		}
@@ -18,11 +21,10 @@ namespace ArggLib {
 			m_input = input;
 
 		}
-		auto value() const {
-			return m_input->value();
+		auto value() const ->decltype(m_input->value()){
+			return this->m_input->value();
 		}
-		reactive_entity_base* m_base = nullptr;
-		const reactive_signals_T* m_input = nullptr;
+
 	};
 
 	template<typename reactive_signals_T>
@@ -31,7 +33,7 @@ namespace ArggLib {
 
 		virtual void set_input(reactive_signals_T* input) override {
 			passive_in_port<reactive_signals_T>::set_input(input);
-			input->register_processor_ptr(&m_base->m_process);
+			input->register_processor_ptr(&this->m_base->m_process);
 		}
 
 	};
@@ -40,13 +42,16 @@ namespace ArggLib {
 	template<typename reactive_signals_T>
 	class out_port {
 	public:
+		reactive_entity_base * m_base = nullptr;
+		reactive_signals_T m_out;
+
 		template <typename T>
 		out_port(T&& t) :m_base(get_current_reactive_entity_base()), m_out(std::forward<T>(t),get_current_reactive_entity_base()->m_backend) {
 
 		}
 
-		auto value() const {
-			return m_out->value();
+		auto value() const ->decltype(m_out.value()) {
+			return m_out.value();
 		}
 		template <typename T>
 		void set(T&& t) {
@@ -56,8 +61,7 @@ namespace ArggLib {
 		void operator<<=(T&& t) {
 			m_out.set(std::forward<T>(t));
 		}
-		reactive_entity_base* m_base = nullptr;
-		reactive_signals_T m_out;
+
 	};
 
 	template <typename T1, typename T2>
@@ -68,7 +72,7 @@ namespace ArggLib {
 
 	template <typename T1, typename T2>
 	reactive_variable<T1>& operator>>(reactive_variable<T1> & out, passive_in_port<T2>& in) {
-		in.set_input(&m_out);
+		in.set_input(&out);
 		return out;
 	}
 	template <typename T1, typename T2>

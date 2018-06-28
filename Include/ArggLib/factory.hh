@@ -28,7 +28,7 @@ namespace ArggLib {
     using u_pointer = std::unique_ptr < baseClassType > ;
 
     typedef baseClassType* (*factoryfunc_raw)(Parameter_ref);
-#ifdef WIN32
+#if defined( WIN32) && !defined(__CLING__)
     using map_t = std::map <typename MainType,typename  Class_Factory<baseClassType>::factoryfunc_raw > ;
 #else
     using map_t = std::map < MainType, Class_Factory<baseClassType>::factoryfunc_raw >;

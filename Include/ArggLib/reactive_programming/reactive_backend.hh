@@ -39,13 +39,13 @@ namespace ArggLib {
 
 			m_running = stopped;
 		}
-		void push_back(reactive_processor_impl_c& f) {
+		void push_back(reactive_processor_impl_c* f) {
 			{
 
 				std::unique_lock<std::mutex> lock(m);
-				if (!contains(&f))
+				if (!contains(f))
 				{
-					m_notify.push_back(&f);
+					m_notify.push_back(f);
 				}
 			}
 			cond_var.notify_one();

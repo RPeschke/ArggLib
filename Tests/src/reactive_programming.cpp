@@ -6,6 +6,8 @@
 #include "ArggLib/reactive_programming/reactive_signals.hh"
 #include "ArggLib/reactive_programming/reactive_entity_base.hh"
 #include "ArggLib/reactive_programming/reactive_ports.hh"
+#include "../include/reactive_test1.hh"
+
 
 using namespace  ArggLib;
 using namespace std;
@@ -14,7 +16,7 @@ ARGGLIB__DEFINE_TEST(reactive_programming_1) {
 	std::stringstream out;
 	reactive_backend r;
 	auto p1 = reactive_processor_1([&out]() { out << "hallo welt\n";  });
-	r.push_back(p1);
+	r.push_back(&p1);
 
 
 	std::vector<reactive_processor_impl_c> p2({
@@ -39,11 +41,11 @@ ARGGLIB__DEFINE_TEST(reactive_programming_2_recursion) {
 
 	auto p2 = reactive_processor_1([&r, &out,&p1]() { out << "<level_1>\n";
 
-	r.push_back(p1);
+	r.push_back(&p1);
 	out << "</level_1>\n";
 	});
 
-	r.push_back(p2);
+	r.push_back(&p2);
 
 
 
@@ -157,39 +159,10 @@ ARGGLIB__DEFINE_TEST(reactive_programming_6_entities) {
 	);
 }
 
-class myEntity2 :public reactive_entity_base {
-public:
-	myEntity2(ostream& out, reactive_backend* backend) :reactive_entity_base([this]() { this->operator()(); }, backend), m_out(out) {}
-	active_in_port<reactive_signals<int>> m_in;
-	out_port<reactive_signals<int>> m_out_signal = 0;
-	ostream& m_out;
-	void operator()() {
-		m_out << "<active_in_port>" << m_in.value() << "</active_in_port>\n";
-		m_out_signal <<= m_in.value() * 2;
-	}
-};
 
 ARGGLIB__DEFINE_TEST(reactive_programming_7_entities) {
-	std::stringstream out;
-	reactive_backend r;
-
-	reactive_signals<int> x(1, &r);
-	reactive_signals<int> y(1, &r);
-
-
-	myEntity2 e1(out, &r);
-	myEntity2 e2(out, &r);
-
-
-	x >> e1.m_in;
-	e1.m_out_signal >> e2.m_in;
-
-
-
-	x = 2;
-
-	r.stop();
-	___ARGGLIB_TEST("reactive_programming_7_entities", out.str(),
+	auto out = test_entity2();
+	___ARGGLIB_TEST("reactive_programming_7_entities", out,
 		 "<active_in_port>2</active_in_port>\n<active_in_port>4</active_in_port>\n"
 	);
 }

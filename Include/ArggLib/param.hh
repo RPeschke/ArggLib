@@ -4,7 +4,9 @@
 #include <numeric>
 #include <tuple>
 
-#if(_MSC_VER >1910)
+
+
+#if(_MSC_VER >1910 && !defined(__CLING__))
 #define ___ArggLib_Apply(Fun, par) std::apply(Fun, par)
 
 #else
