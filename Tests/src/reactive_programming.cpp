@@ -94,19 +94,23 @@ ARGGLIB__DEFINE_TEST(reactive_programming_4_signals) {
 	}, x);
 
 	reactive_processor([&out, &x, &y]() {
-		if (y > 17) {
-			return;
-		}
 		out << "<y>\n" << y << "\n</y>\n";
 		x = y.value() * 2;
 		out << "<x>\n" << x << "\n</x>\n";
 
 	}, y);
+
+	reactive_processor([&y,&r]() {
+		if (y > 9) {
+			r.set_force_stop();
+		}
+	}, y);
+
 	x = 2;
 	//std::cout << y << std::endl;
-	r.stop();
+	r.join();
 	___ARGGLIB_TEST("reactive_programming_2_recursion", out.str(),
-		"<x>\n2\n</x>\n<y>\n1\n</y>\n<y>\n4\n</y>\n<x>\n2\n</x>\n<x>\n8\n</x>\n<y>\n4\n</y>\n<y>\n16\n</y>\n<x>\n8\n</x>\n<x>\n32\n</x>\n<y>\n16\n</y>\n"
+		"<x>\n2\n</x>\n<y>\n1\n</y>\n<y>\n4\n</y>\n<x>\n2\n</x>\n<x>\n8\n</x>\n<y>\n4\n</y>\n<y>\n16\n</y>\n<x>\n8\n</x>\n"
 	);
 }
 

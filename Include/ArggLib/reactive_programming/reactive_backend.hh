@@ -85,6 +85,13 @@ namespace ArggLib {
 		m_worker.join();
 
 	}
+	void join() {
+		m_worker.join();
+	}
+	void set_force_stop() {
+		m_running = force_stopping;
+	}
+
 	void force_stop() {
 		m_running = force_stopping;
 
