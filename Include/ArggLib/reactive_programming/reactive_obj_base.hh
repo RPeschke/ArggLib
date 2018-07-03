@@ -1,6 +1,9 @@
 #ifndef reactive_obj_base_h__
 #define reactive_obj_base_h__
 #include "ArggLib/contains.hh"
+#include "ArggLib/reactive_programming/reactive_backend_base.hh"
+
+
 namespace ArggLib {
 
 	class reactive_obj_base {
@@ -9,7 +12,7 @@ namespace ArggLib {
 		reactive_obj_base() : m_backend(&get_reactive_backend()) {
 
 		}
-		reactive_obj_base( reactive_backend* backend): m_backend(backend) {
+		reactive_obj_base(reactive_backend_base* backend): m_backend(backend) {
 
 		}
 		reactive_obj_base& operator=(const reactive_obj_base& value) = delete;
@@ -46,7 +49,7 @@ namespace ArggLib {
 		}
 		std::vector<reactive_processor_impl_c> m_notify;
 		std::vector<reactive_processor_impl_c*> m_notify_ptr;
-		reactive_backend *m_backend;
+		reactive_backend_base *m_backend;
 	};
 }
 #endif // reactive_obj_base_h__

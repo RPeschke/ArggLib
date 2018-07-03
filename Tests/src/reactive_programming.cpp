@@ -161,7 +161,8 @@ ARGGLIB__DEFINE_TEST(reactive_programming_6_entities) {
 
 
 ARGGLIB__DEFINE_TEST(reactive_programming_7_entities) {
-	auto out = test_entity2();
+	reactive_backend r;
+	auto out = test_entity2(r);
 	___ARGGLIB_TEST("reactive_programming_7_entities", out,
 		 "<active_in_port>2</active_in_port>\n<active_in_port>4</active_in_port>\n"
 	);

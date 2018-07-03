@@ -9,7 +9,7 @@
 namespace ArggLib {
 	class myEntety2 :public reactive_entity_base {
 	public:
-		myEntety2(std::ostream& out, reactive_backend* backend) :reactive_entity_base([this]() { this->operator()(); }, backend), m_out(out) {}
+		myEntety2(std::ostream& out, reactive_backend_base* backend) :reactive_entity_base([this]() { this->operator()(); }, backend), m_out(out) {}
 		active_in_port<reactive_signals<int>> m_in;
 		out_port<reactive_signals<int>> m_out_signal = 0;
 		std::ostream& m_out;
@@ -20,10 +20,10 @@ namespace ArggLib {
 	};
 
 
-	inline std::string test_entity2() {
+	inline std::string test_entity2(reactive_backend_base& r) {
 
 		std::stringstream out;
-		reactive_backend r;
+		
 
 		reactive_signals<int> x(1, &r);
 		reactive_signals<int> y(1, &r);

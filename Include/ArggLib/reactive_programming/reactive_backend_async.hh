@@ -1,5 +1,8 @@
-#ifndef reactive_backend_h__
-#define reactive_backend_h__
+#ifndef reactive_backend_async_h__
+#define reactive_backend_async_h__
+
+
+
 
 #include "ArggLib/reactive_programming/reactive_processor.hh"
 #include "ArggLib/reactive_programming/reactive_backend_base.hh"
@@ -13,9 +16,9 @@
 namespace ArggLib {
 
 
-	class reactive_backend :public reactive_backend_base {
+	class reactive_backend_async :public reactive_backend_base {
 	public:
-		reactive_backend() :reactive_backend_base([this]() mutable {return this->run(); }) {
+		reactive_backend_async() :reactive_backend_base([this]() mutable {return this->run(); }) {
 
 		}
 		void run() {
@@ -27,27 +30,36 @@ namespace ArggLib {
 				auto l_notify = m_notify;
 				m_notify.clear();
 				lock.unlock();
+				m_futures.clear();
 				for (auto& e : l_notify) {
-					e->begin();
+					m_futures.emplace_back(std::async([&e]() { e->begin();  }));
 				}
+				m_futures.clear();
 				for (auto& e : l_notify) {
-					e->process();
+					m_futures.emplace_back(std::async([&e]() { e->process();  }));
 				}
-				for (auto& e : l_notify) {
-					e->end();
-				}
-			}
 
+				m_futures.clear();
+
+				for (auto& e : l_notify) {
+					m_futures.emplace_back(std::async([&e]() { e->end(); }));
+				}
+				m_futures.clear();
+			}
+			
 			m_running = stopped;
 		}
+
+		std::vector<std::future<void>> m_futures;
 	
 };
 
-inline reactive_backend& get_reactive_backend() {
-	static reactive_backend g_reactive_backend;
+inline reactive_backend_async& get_reactive_backend_async() {
+	static reactive_backend_async g_reactive_backend;
 	return g_reactive_backend;
 }
 
 }
 
-#endif // reactive_backend_h__
+
+#endif // reactive_backend_async_h__

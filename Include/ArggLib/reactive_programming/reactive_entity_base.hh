@@ -1,7 +1,7 @@
 #ifndef reactive_entity_base_h__
 #define reactive_entity_base_h__
-#include "reactive_processor.hh"
-#include "reactive_backend.hh"
+#include "ArggLib/reactive_programming/reactive_processor.hh"
+#include "ArggLib/reactive_programming/reactive_backend.hh"
 
 
 
@@ -37,11 +37,17 @@ namespace ArggLib {
 		reactive_entity_base(reactive_fun_t f) : m_process([]() {}, std::move(f), []() {}, get_unique_id()),m_backend(&get_reactive_backend()) {
 			set_current_reactive_entity_base(this);
 		}
-		reactive_entity_base(reactive_fun_t f, reactive_backend * backend) : m_process([]() {}, std::move(f), []() {}, get_unique_id()), m_backend(backend) {
+		reactive_entity_base(reactive_fun_t f, reactive_backend_base * backend) : m_process([]() {}, std::move(f), []() {}, get_unique_id()), m_backend(backend) {
 			set_current_reactive_entity_base(this);
 		}
+		reactive_backend_base& get_backend() {
+			return *m_backend;
+		}
+		void stop_backend() {
+			m_backend->set_force_stop();
+		}
 		reactive_processor_impl_c m_process;
-		reactive_backend * m_backend;
+		reactive_backend_base * m_backend;
 	};
 
 

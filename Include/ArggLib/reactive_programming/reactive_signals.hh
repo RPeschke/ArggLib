@@ -9,7 +9,7 @@ namespace ArggLib {
 	class reactive_signals : public reactive_obj_base{
 	public:
 		using type = T;
-		reactive_signals(T val, reactive_backend* backend) : reactive_obj_base(backend), last(val), current(val), next(val)   {
+		reactive_signals(T val, reactive_backend_base* backend) : reactive_obj_base(backend), last(val), current(val), next(val)   {
 			
 			register_processor(reactive_processor_on_begin([this]() mutable { this->update(); }));
 		}

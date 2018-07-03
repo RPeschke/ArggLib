@@ -22,7 +22,12 @@ namespace ArggLib {
 			m_end(std::move(end_f)) ,
 			m_ID(ID)
 		{}
-
+		reactive_processor_impl_c& set_begin(reactive_fun_t begin_f) {
+			m_begin = std::move(begin_f);
+		}
+		reactive_processor_impl_c& set_end(reactive_fun_t end_f) {
+			m_end = std::move(end_f);
+		}
 		void begin() {
 			m_begin();
 		}
