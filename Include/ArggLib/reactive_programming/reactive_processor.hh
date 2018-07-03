@@ -3,7 +3,7 @@
 #include <functional>
 
 namespace ArggLib {
-	int get_unique_id() {
+	inline int get_unique_id() {
 		static int i = 0;
 		return i++;
 	}
@@ -40,19 +40,19 @@ namespace ArggLib {
 	inline bool operator==(const reactive_processor_impl_c& lhs, const reactive_processor_impl_c& rhs) {
 		return lhs.ID() == rhs.ID();
 	}
-	reactive_processor_impl_c reactive_processor_1(reactive_fun_t process_f) {
-		return reactive_processor_impl_c([]() {}, process_f, []() {}, get_unique_id());
+	inline reactive_processor_impl_c reactive_processor_1(reactive_fun_t process_f) {
+		return reactive_processor_impl_c([]() {}, std::move(process_f), []() {}, get_unique_id());
 	}
 
-	reactive_processor_impl_c reactive_processor_2(reactive_fun_t process_f,int ID) {
-		return reactive_processor_impl_c([]() {}, process_f, []() {}, ID);
+	inline reactive_processor_impl_c reactive_processor_2(reactive_fun_t process_f,int ID) {
+		return reactive_processor_impl_c([]() {}, std::move(process_f), []() {}, ID);
 	}
 
-	reactive_processor_impl_c reactive_processor_on_begin(reactive_fun_t begin_f, int ID) {
-		return reactive_processor_impl_c(begin_f, []() {} , []() {}, ID);
+	inline reactive_processor_impl_c reactive_processor_on_begin(reactive_fun_t begin_f, int ID) {
+		return reactive_processor_impl_c(std::move(begin_f), []() {} , []() {}, ID);
 	}
-	reactive_processor_impl_c reactive_processor_on_begin(reactive_fun_t begin_f) {
-		return reactive_processor_impl_c(begin_f, []() {}, []() {}, get_unique_id());
+	inline reactive_processor_impl_c reactive_processor_on_begin(reactive_fun_t begin_f) {
+		return reactive_processor_impl_c(std::move(begin_f), []() {}, []() {}, get_unique_id());
 	}
 	template <typename Func_t, typename T>
 	void reactive_processor_impl(int ID,const Func_t& f, T& t) {

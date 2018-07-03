@@ -120,7 +120,7 @@ private:
 		}
 };
 
-reactive_backend& get_reactive_backend() {
+inline reactive_backend& get_reactive_backend() {
 	static reactive_backend g_reactive_backend;
 	return g_reactive_backend;
 }
