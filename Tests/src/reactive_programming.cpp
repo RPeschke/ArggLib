@@ -15,6 +15,7 @@ ARGGLIB__DEFINE_TEST(reactive_programming_1) {
 
 	std::stringstream out;
 	reactive_backend r;
+	r.init();
 	auto p1 = reactive_processor_1([&out]() { out << "hallo welt\n";  });
 	r.push_back(&p1);
 
@@ -37,14 +38,13 @@ ARGGLIB__DEFINE_TEST(reactive_programming_2_recursion) {
 
 	std::stringstream out;
 	reactive_backend r;
+	r.init();
 	auto p1 = reactive_processor_1([&out]() { out << "<level_2/>\n";  });
 
 	auto p2 = reactive_processor_1([&r, &out,&p1]() { out << "<level_1>\n";
-
 	r.push_back(&p1);
 	out << "</level_1>\n";
 	});
-
 	r.push_back(&p2);
 
 
@@ -57,6 +57,7 @@ ARGGLIB__DEFINE_TEST(reactive_programming_2_recursion) {
 ARGGLIB__DEFINE_TEST(reactive_programming_3) {
 	std::stringstream out;
 	reactive_backend r; 
+	r.init();
 	reactive_variable<int> x(1,&r);
 	reactive_variable<int> y(1, &r);
 	reactive_variable<int> z(1, &r);
@@ -84,7 +85,7 @@ ARGGLIB__DEFINE_TEST(reactive_programming_3) {
 ARGGLIB__DEFINE_TEST(reactive_programming_4_signals) {
 	std::stringstream out;
 	reactive_backend r;
-
+	r.init();
 	reactive_signals<int> x(1,&r);
 	reactive_signals<int> y(1, &r);
 
@@ -124,6 +125,7 @@ ARGGLIB__DEFINE_TEST(reactive_programming_5_signals) {
 
 
 	reactive_entity_base r;
+
 	set_current_reactive_entity_base(&r);
 
 	auto r1 = get_current_reactive_entity_base();
@@ -133,7 +135,7 @@ ARGGLIB__DEFINE_TEST(reactive_programming_5_signals) {
 
 class myEntety :public reactive_entity_base {
 public:
-	myEntety(ostream& out, reactive_backend* backend) :reactive_entity_base([this]() { this->operator()(); }, backend),m_out(out) {}
+	myEntety(ostream& out, reactive_backend* backend) :reactive_entity_base([this]() { this->operator()(); return react_proc_return::success; }, backend), m_out(out) {}
 	active_in_port<reactive_signals<int>> m_in;
 	ostream& m_out;
 	void operator()() {
@@ -144,7 +146,7 @@ public:
 ARGGLIB__DEFINE_TEST(reactive_programming_6_entities) {
 	std::stringstream out;
 	reactive_backend r;
-
+	r.init();
 	reactive_signals<int> x(1, &r);
 	reactive_signals<int> y(1, &r);
 
@@ -162,8 +164,46 @@ ARGGLIB__DEFINE_TEST(reactive_programming_6_entities) {
 
 ARGGLIB__DEFINE_TEST(reactive_programming_7_entities) {
 	reactive_backend r;
+	r.init();
 	auto out = test_entity2(r);
 	___ARGGLIB_TEST("reactive_programming_7_entities", out,
 		 "<active_in_port>2</active_in_port>\n<active_in_port>4</active_in_port>\n"
+	);
+}
+
+
+ARGGLIB__DEFINE_TEST(reactive_programming_8_signals) {
+	std::stringstream out;
+	reactive_backend r;
+	r.init();
+	reactive_signals<int> x(1, &r);
+	reactive_signals<int> y(1, &r);
+
+	reactive_processor([&out, &x, &y]() {
+		out << "<x>\n" << x << "\n</x>\n";
+		y = x.value() * 2;
+		out << "<y>\n" << y << "\n</y>\n";
+
+	}, x);
+
+	reactive_processor([&out, &x, &y]() {
+		out << "<y>\n" << y << "\n</y>\n";
+		x = y.value() * 2;
+		out << "<x>\n" << x << "\n</x>\n";
+
+	}, y);
+
+	reactive_processor(reactive_fun_t([&y]() {
+		if (y > 9) {
+			return react_proc_return::stop;
+		}
+		return react_proc_return::success;
+	}), y);
+
+	x = 2;
+	//std::cout << y << std::endl;
+	r.join();
+	___ARGGLIB_TEST("reactive_programming_8_signals", out.str(),
+		"<x>\n2\n</x>\n<y>\n1\n</y>\n<y>\n4\n</y>\n<x>\n2\n</x>\n<x>\n8\n</x>\n<y>\n4\n</y>\n<y>\n16\n</y>\n<x>\n8\n</x>\n"
 	);
 }

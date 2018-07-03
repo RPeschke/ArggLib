@@ -19,22 +19,20 @@ namespace ArggLib {
 
 		}
 		void run() {
+			wait_for_init();
 
-			while ((m_running == running || !m_notify.empty()) && m_running != force_stopping) {
+			while (check_status()) {
 
-				std::unique_lock<std::mutex> lock(m);
-				if (m_notify.empty()) cond_var.wait(lock);
-				auto l_notify = m_notify;
-				m_notify.clear();
-				lock.unlock();
-				for (auto& e : l_notify) {
-					e->begin();
+	
+				for (auto& e : m_notify_local) {
+					handle_return_value(e->begin());
 				}
-				for (auto& e : l_notify) {
-					e->process();
+				for (auto& e : m_notify_local) {
+					handle_return_value(e->process());
+
 				}
-				for (auto& e : l_notify) {
-					e->end();
+				for (auto& e : m_notify_local) {
+					handle_return_value(e->end());
 				}
 			}
 

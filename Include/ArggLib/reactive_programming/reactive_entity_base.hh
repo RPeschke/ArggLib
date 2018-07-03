@@ -34,10 +34,10 @@ namespace ArggLib {
 		reactive_entity_base() {
 			set_current_reactive_entity_base(this);
 		}
-		reactive_entity_base(reactive_fun_t f) : m_process([]() {}, std::move(f), []() {}, get_unique_id()),m_backend(&get_reactive_backend()) {
+		reactive_entity_base(reactive_fun_t f) : m_process(std::move(f), get_unique_id()),m_backend(&get_reactive_backend()) {
 			set_current_reactive_entity_base(this);
 		}
-		reactive_entity_base(reactive_fun_t f, reactive_backend_base * backend) : m_process([]() {}, std::move(f), []() {}, get_unique_id()), m_backend(backend) {
+		reactive_entity_base(reactive_fun_t f, reactive_backend_base * backend) : m_process(std::move(f), get_unique_id()), m_backend(backend) {
 			set_current_reactive_entity_base(this);
 		}
 		reactive_backend_base& get_backend() {

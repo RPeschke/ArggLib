@@ -22,36 +22,37 @@ namespace ArggLib {
 
 		}
 		void run() {
+			wait_for_init();
+			while (check_status()) {
 
-			while ((m_running == running || !m_notify.empty()) && m_running != force_stopping) {
 
-				std::unique_lock<std::mutex> lock(m);
-				if (m_notify.empty()) cond_var.wait(lock);
-				auto l_notify = m_notify;
-				m_notify.clear();
-				lock.unlock();
 				m_futures.clear();
-				for (auto& e : l_notify) {
-					m_futures.emplace_back(std::async([&e]() { e->begin();  }));
+				for (auto& e : m_notify_local) {
+					m_futures.emplace_back(std::async([&e]() { return e->begin();  }));
 				}
-				m_futures.clear();
-				for (auto& e : l_notify) {
-					m_futures.emplace_back(std::async([&e]() { e->process();  }));
+				handle_return_futures();
+				for (auto& e : m_notify_local) {
+					m_futures.emplace_back(std::async([&e]() { return e->process();  }));
 				}
+				handle_return_futures();
 
-				m_futures.clear();
-
-				for (auto& e : l_notify) {
-					m_futures.emplace_back(std::async([&e]() { e->end(); }));
+				for (auto& e : m_notify_local) {
+					m_futures.emplace_back(std::async([&e]() {return e->end(); }));
 				}
-				m_futures.clear();
+				handle_return_futures();
 			}
 			
 			m_running = stopped;
 		}
 
-		std::vector<std::future<void>> m_futures;
-	
+		std::vector<std::future<react_proc_return>> m_futures;
+	private:
+		void handle_return_futures() {
+			for (auto&& e : m_futures) {
+				handle_return_value(e.get());
+			}
+			m_futures.clear();
+		}
 };
 
 inline reactive_backend_async& get_reactive_backend_async() {

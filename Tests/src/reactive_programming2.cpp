@@ -16,6 +16,7 @@ ARGGLIB__DEFINE_TEST(b_reactive_programming_1) {
 
 	std::stringstream out;
 	reactive_backend r;
+	r.init();
 	reactive_signals<int> x(1, &r);
 	reactive_signals<int> y(1, &r);
 	std::atomic<int> i =0;
@@ -41,7 +42,7 @@ ARGGLIB__DEFINE_TEST(b_reactive_programming_2) {
 
 	std::stringstream out;
 	reactive_backend r;
-
+	r.init();
 
 
 	r.force_stop(); // just checking if this statement doesn't produce deadlock 
@@ -110,16 +111,15 @@ std::string compare_single_threaded_with_multi_threaded(reactive_backend_base& r
 }
 ARGGLIB__DEFINE_TEST(b_reactive_programming_3) {
 	reactive_backend_async r;
-
+	r.init();
 	auto str = compare_single_threaded_with_multi_threaded(r);
 	___ARGGLIB_TEST("b_reactive_programming_3", str, "<process3>\n</process3>\n<process2>\n<process1>\n</process1>\n</process2>\n");
 
 }
 
 ARGGLIB__DEFINE_TEST(b_reactive_programming_4) {
-
 	reactive_backend  r;
-
+	r.init();
 	auto str = compare_single_threaded_with_multi_threaded(r);
 	___ARGGLIB_TEST("b_reactive_programming_4", str, "<process3>\n</process3>\n<process2>\n</process2>\n<process1>\n</process1>\n");
 
@@ -127,6 +127,7 @@ ARGGLIB__DEFINE_TEST(b_reactive_programming_4) {
 
 ARGGLIB__DEFINE_TEST(b_reactive_programming_4_entities) {
 	reactive_backend_async r;
+	r.init();
 	auto out = test_entity2(r);
 	___ARGGLIB_TEST("b_reactive_programming_4_entities", out,
 		"<active_in_port>2</active_in_port>\n<active_in_port>4</active_in_port>\n"
