@@ -64,7 +64,7 @@ namespace ArggLib {
 	void reactive_processor_impl(int ID, const Func_t& f, T& t, ARGS_t&... args) {
 		
 		t.register_processor(reactive_processor_2(f,ID));
-		reactive_processor_impl(ID, args...);
+		reactive_processor_impl(ID, f, args...);
 	 }
 
 	template <typename Func_t,  typename... ARGS_t>
