@@ -294,3 +294,44 @@ MACRO (GENERATE_ROOT_TEST_SCRIPT SCRIPT_FULL_NAME)
   EXEC_PROGRAM(/bin/chmod ARGS "u+x  ${new_path}/${shell_script_name}")
 
 ENDMACRO (GENERATE_ROOT_TEST_SCRIPT)
+
+
+FUNCTION(PREPEND var prefix)
+   SET(listVar "")
+   FOREACH(f ${ARGN})
+      LIST(APPEND listVar "${prefix}${f}")
+   ENDFOREACH(f)
+   SET(${var} "${listVar}" PARENT_SCOPE)
+ENDFUNCTION()
+
+
+function(root_dict_counter outCounter)
+	GET_PROPERTY(VAR GLOBAL PROPERTY root_dict_counter_var)
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
+	set(VAR "1")
+else()
+
+	MATH(EXPR VAR "${VAR}+1")
+endif()
+	set(${outCounter}  ${VAR} PARENT_SCOPE)
+	SET_PROPERTY(GLOBAL PROPERTY root_dict_counter_var ${VAR})
+endfunction()
+
+
+function(ADD_GEN_ROOT_DICT TargetName headers_input LINKDEF_FILE MY_INCLUDE_DIRECTORIES)
+#PREPEND(MY_INCLUDE_DIRECTORIES " -I" ${MY_INCLUDE_DIRECTORIES})
+PREPEND(headers_input  "${CMAKE_CURRENT_SOURCE_DIR}/" ${headers_input})
+PREPEND(LINKDEF_FILE   "${CMAKE_CURRENT_SOURCE_DIR}/" ${LINKDEF_FILE})
+root_dict_counter(c1)
+set(Make_Dict_name "${TargetName}_dict_${c1}")
+
+
+set(dict_file  ${CMAKE_CURRENT_BINARY_DIR}/${Make_Dict_name}.cxx)
+file(WRITE ${dict_file} "" )
+add_custom_target(${Make_Dict_name}
+ ${ROOT_CINT_EXECUTABLE} -f ${dict_file} -c -p -I${ROOT_INCLUDE_DIR} ${MY_INCLUDE_DIRECTORIES} ${headers_input} ${LINKDEF_FILE} 
+)
+add_dependencies(${TargetName} ${Make_Dict_name})
+target_sources(${TargetName} PRIVATE  ${dict_file})
+
+endfunction()

@@ -14,12 +14,14 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
 
 If(WIN32)
-SET(ADDITIONAL_LIBRARIES C:/Users/Richard/Documents/github/vcpkg/installed/x86-windows/lib/*.lib)
 add_compile_options("/std:c++latest")
 else(WIN32)
 #add_compile_options("-pthread")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif(WIN32)
+
+add_library(ArggLib INTERFACE)
+target_include_directories(ArggLib INTERFACE  ${PROJECT_SOURCE_DIR}/Include/)
 
 ADD_SUBDIRECTORY(Tests)
 
