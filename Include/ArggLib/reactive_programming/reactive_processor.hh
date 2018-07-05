@@ -21,6 +21,15 @@ namespace ArggLib {
 				return react_proc_return::success;
 			}
 		};
+
+		template <typename T, typename std::enable_if<std::is_same<typename std::result_of<T()>::type, void>::value, int>::type = 0>
+		auto to_reactive_fun_t(T&& t) {
+			return [t]() mutable {t(); return react_proc_return::success; };
+		}
+		template <typename T, typename std::enable_if<std::is_same<typename std::result_of<T()>::type, react_proc_return>::value, int>::type = 0>
+		auto to_reactive_fun_t(T&& t)  {
+			return std::forward<T>(t);
+		}
 	}
 
 	class reactive_processor_impl_c {
@@ -29,22 +38,33 @@ namespace ArggLib {
 		reactive_fun_t m_end = ArggLib_impl::reactive_fun_noop();
 		int m_ID;
 	public:
-		reactive_processor_impl_c() {};
-		reactive_processor_impl_c(reactive_fun_t begin_f, reactive_fun_t process_f, reactive_fun_t end_f,int ID) : 
-			m_begin(std::move(begin_f)), 
-			m_process(std::move(process_f)), 
-			m_end(std::move(end_f)) ,
+		reactive_processor_impl_c() { m_ID = get_unique_id(); };
+		template <typename F1, typename F2 ,typename F3>
+		reactive_processor_impl_c(F1&& begin_f, F2&& process_f, F3&& end_f,int ID) : 
+			m_begin( ArggLib_impl::to_reactive_fun_t( std::forward<F1>(begin_f))), 
+			m_process(ArggLib_impl::to_reactive_fun_t(std::forward<F2>(process_f))),
+			m_end(ArggLib_impl::to_reactive_fun_t(std::forward<F2>(end_f))),
 			m_ID(ID)
 		{}
-		reactive_processor_impl_c(reactive_fun_t process_f, int ID) :
-			m_process(std::move(process_f)),
+		template <typename F2>
+		reactive_processor_impl_c(F2&& process_f, int ID) :
+			m_process(ArggLib_impl::to_reactive_fun_t(std::forward<F2>(process_f))),
 			m_ID(ID)
 		{}
-		reactive_processor_impl_c& set_begin(reactive_fun_t begin_f) {
-			m_begin = std::move(begin_f);
+		template <typename F>
+		reactive_processor_impl_c& set_begin(F&& begin_f) {
+			m_begin = ArggLib_impl::to_reactive_fun_t(std::forward<F>(begin_f));
+			return *this;
 		}
+		template <typename F>
+		reactive_processor_impl_c& set_process(F&& process_f) {
+			m_process= ArggLib_impl::to_reactive_fun_t(std::forward<F>(process_f));
+			return *this;
+		}
+		template <typename F>
 		reactive_processor_impl_c& set_end(reactive_fun_t end_f) {
-			m_end = std::move(end_f);
+			m_end = ArggLib_impl::to_reactive_fun_t(std::forward<F>(end_f));
+			return *this;
 		}
 		react_proc_return begin() {
 			return m_begin();
@@ -63,61 +83,41 @@ namespace ArggLib {
 	inline bool operator==(const reactive_processor_impl_c& lhs, const reactive_processor_impl_c& rhs) {
 		return lhs.ID() == rhs.ID();
 	}
-	inline reactive_processor_impl_c reactive_processor_1(reactive_fun_t process_f) {
+
+	template <typename T>
+	reactive_processor_impl_c reactive_processor_1(T&& process_f) {
 		return reactive_processor_impl_c(
-			ArggLib_impl::reactive_fun_noop(), 
-			std::move(process_f), 
-			ArggLib_impl::reactive_fun_noop() , 
+			std::forward<T>(process_f),
 			get_unique_id()
 		);
 	}
 	
-	inline reactive_processor_impl_c reactive_processor_1(reactive_fun_t_void process_f) {
+
+
+	template <typename T>
+	reactive_processor_impl_c reactive_processor_2(T&& process_f,int ID) {
 		return reactive_processor_impl_c(
+			std::forward<T>(process_f),
+			ID);
+	}
+	template <typename T>
+	reactive_processor_impl_c reactive_processor_on_begin(T&& begin_f, int ID) {
+		return reactive_processor_impl_c(
+			std::forward<T>(begin_f), 
 			ArggLib_impl::reactive_fun_noop(),
-			[process_f]() {process_f(); return react_proc_return::success; },
+			ArggLib_impl::reactive_fun_noop(),
+			ID);
+	}
+	template <typename T>
+	reactive_processor_impl_c reactive_processor_on_begin(T&& begin_f) {
+		return reactive_processor_impl_c(
+			std::forward<T>(begin_f),
+			ArggLib_impl::reactive_fun_noop(),
 			ArggLib_impl::reactive_fun_noop(),
 			get_unique_id()
 		);
 	}
 
-	inline reactive_processor_impl_c reactive_processor_2(reactive_fun_t process_f,int ID) {
-		return reactive_processor_impl_c(
-			ArggLib_impl::reactive_fun_noop(),
-			std::move(process_f),
-			ArggLib_impl::reactive_fun_noop(),
-			ID);
-	}
-	inline reactive_processor_impl_c reactive_processor_2(reactive_fun_t_void process_f, int ID) {
-		return reactive_processor_impl_c(
-			ArggLib_impl::reactive_fun_noop(),
-			[process_f]() { process_f(); return react_proc_return::success; },
-			ArggLib_impl::reactive_fun_noop(),
-			ID);
-	}
-	inline reactive_processor_impl_c reactive_processor_on_begin(reactive_fun_t begin_f, int ID) {
-		return reactive_processor_impl_c(
-			std::move(begin_f), 
-			ArggLib_impl::reactive_fun_noop(),
-			ArggLib_impl::reactive_fun_noop(),
-			ID);
-	}
-	inline reactive_processor_impl_c reactive_processor_on_begin(reactive_fun_t begin_f) {
-		return reactive_processor_impl_c(
-			std::move(begin_f),
-			ArggLib_impl::reactive_fun_noop(),
-			ArggLib_impl::reactive_fun_noop(),
-			get_unique_id()
-		);
-	}
-	inline reactive_processor_impl_c reactive_processor_on_begin(reactive_fun_t_void begin_f) {
-		return reactive_processor_impl_c(
-			[begin_f]() {begin_f(); return react_proc_return::success; },
-			ArggLib_impl::reactive_fun_noop(),
-			ArggLib_impl::reactive_fun_noop(),
-			get_unique_id()
-		);
-	}
 	template <typename Func_t, typename T>
 	void reactive_processor_impl(int ID,const Func_t& f, T& t) {
 
