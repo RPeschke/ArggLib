@@ -42,7 +42,7 @@ namespace ArggLib {
 				handle_return_futures();
 			}
 			
-			m_running = stopped;
+			set_stopped();
 		}
 
 		std::vector<std::future<react_proc_return>> m_futures;

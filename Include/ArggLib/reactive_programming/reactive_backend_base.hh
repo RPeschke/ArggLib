@@ -110,11 +110,14 @@ namespace ArggLib {
 		m_worker.join();
 	}
 	bool set_force_stop() {
+		if (has_finished) {
+			return true;
+		}
 		if (m_running == stopped) {
 			return true;
 		}
 
-		if (m_running != force_stopping1 || m_running != force_stopping) {
+		if (m_running != force_stopping1 || m_running != force_stopping ) {
 			m_running = force_stopping;
 		}
 		cond_var.notify_one();
@@ -152,7 +155,11 @@ protected:
 #else
 	std::atomic<state> m_running = starting0;
 #endif
-	
+	void set_stopped() {
+		has_finished = true;
+		m_running = stopped;
+	}
+	bool has_finished = false;
 	std::condition_variable cond_var;
 	std::mutex m;
 	std::mutex m_init_lock;

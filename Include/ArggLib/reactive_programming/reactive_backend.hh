@@ -36,7 +36,7 @@ namespace ArggLib {
 				}
 			}
 
-			m_running = stopped;
+			set_stopped();
 		}
 	
 };
