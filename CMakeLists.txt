@@ -23,6 +23,18 @@ endif(WIN32)
 add_library(ArggLib INTERFACE)
 target_include_directories(ArggLib INTERFACE  ${PROJECT_SOURCE_DIR}/Include/)
 
+file(GLOB_RECURSE INCS "Include/*.h" "Include/*.hh" "Include/*.hpp")
+if(MSVC)
+    add_custom_target(ArggLib.headers SOURCES ${INCS})
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${INCS})
+endif()
+
+
+
+
+
+
+
 ADD_SUBDIRECTORY(Tests)
 
 ADD_SUBDIRECTORY(Tests_ROOT)
