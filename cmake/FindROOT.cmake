@@ -48,7 +48,7 @@ IF (WIN32)
     set(ROOT_INCLUDE_DIR ${ROOTSYS}/include)
     set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)
     SET(ROOT_BINARY_DIR ${ROOTSYS}/bin)
-    set(ROOT_LIBRARIES -LIBPATH:${ROOT_LIBRARY_DIR} libGpad.lib libHist.lib libGraf.lib libGraf3d.lib libTree.lib libRint.lib libPostscript.lib libMathCore.lib libRIO.lib libNet.lib libThread.lib libCore.lib libCint.lib libGui.lib libGuiBld.lib)
+    set(ROOT_LIBRARIES ${ROOT_LIBRARY_DIR}/*.lib )
     FIND_PROGRAM(ROOT_CINT_EXECUTABLE
       NAMES rootcint
       PATHS ${ROOT_BINARY_DIR}
@@ -165,6 +165,13 @@ ELSE(WIN32)
   ENDIF (ROOT_FOUND)
 ENDIF(WIN32)
 
+
+IF(ROOT_FOUND AND NOT TARGET CERN_ROOT)
+	add_library (CERN_ROOT INTERFACE)
+	target_include_directories(CERN_ROOT INTERFACE  ${ROOT_INCLUDE_DIR})
+	TARGET_LINK_LIBRARIES(CERN_ROOT INTERFACE ${ROOT_LIBRARIES} )
+	target_compile_definitions(CERN_ROOT INTERFACE USE_ROOT)
+ENDIF(ROOT_FOUND AND NOT TARGET CERN_ROOT)
 
 
   ###########################################
@@ -299,7 +306,7 @@ ENDMACRO (GENERATE_ROOT_TEST_SCRIPT)
 FUNCTION(PREPEND var prefix)
    SET(listVar "")
    FOREACH(f ${ARGN})
-      LIST(APPEND listVar "${prefix}${f}")
+      LIST(APPEND listVar "${prefix}/${f}")
    ENDFOREACH(f)
    SET(${var} "${listVar}" PARENT_SCOPE)
 ENDFUNCTION()
@@ -317,21 +324,153 @@ endif()
 	SET_PROPERTY(GLOBAL PROPERTY root_dict_counter_var ${VAR})
 endfunction()
 
+function(ADD_GEN_ROOT_DICT1 Make_Dict_name dict_file headers_input LINKDEF_FILE)
+add_custom_target(${Make_Dict_name}
+ ${ROOT_CINT_EXECUTABLE} -f ${dict_file} -c -p -I${ROOT_INCLUDE_DIR} ${ARGN}  ${headers_input} ${LINKDEF_FILE} 
+)
+set(incs ${ARGN})
+message(${incs})
+
+endfunction()
+
 
 function(ADD_GEN_ROOT_DICT TargetName headers_input LINKDEF_FILE MY_INCLUDE_DIRECTORIES)
+message("'${MY_INCLUDE_DIRECTORIES}'")
 #PREPEND(MY_INCLUDE_DIRECTORIES " -I" ${MY_INCLUDE_DIRECTORIES})
-PREPEND(headers_input  "${CMAKE_CURRENT_SOURCE_DIR}/" ${headers_input})
-PREPEND(LINKDEF_FILE   "${CMAKE_CURRENT_SOURCE_DIR}/" ${LINKDEF_FILE})
 root_dict_counter(c1)
 set(Make_Dict_name "${TargetName}_dict_${c1}")
 
 
 set(dict_file  ${CMAKE_CURRENT_BINARY_DIR}/${Make_Dict_name}.cxx)
 file(WRITE ${dict_file} "" )
-add_custom_target(${Make_Dict_name}
- ${ROOT_CINT_EXECUTABLE} -f ${dict_file} -c -p -I${ROOT_INCLUDE_DIR} ${MY_INCLUDE_DIRECTORIES} ${headers_input} ${LINKDEF_FILE} 
-)
+set(dict_file_pcm_short ${Make_Dict_name}_rdict.pcm)
+set(dict_file_pcm  ${CMAKE_CURRENT_BINARY_DIR}/${dict_file_pcm_short})
+file(WRITE ${dict_file_pcm} "" )
+
+#set(incImpl "")
+foreach(tarInc ${MY_INCLUDE_DIRECTORIES})
+list(APPEND  incImpl "-I${tarInc}")
+#set(incImpl "${incImpl} -I${tarInc}")
+endforeach(tarInc)
+message(${incImpl})
+
+#add_custom_target(${Make_Dict_name}
+# ${ROOT_CINT_EXECUTABLE} -f ${dict_file} -c -p -I${ROOT_INCLUDE_DIR} "${incImpl}" ${headers_input} ${LINKDEF_FILE} 
+#)
+ADD_GEN_ROOT_DICT1(${Make_Dict_name} ${dict_file}   ${headers_input} ${LINKDEF_FILE} ${incImpl})
 add_dependencies(${TargetName} ${Make_Dict_name})
 target_sources(${TargetName} PRIVATE  ${dict_file})
+source_group(dictionary FILES  ${dict_file} )
+#MESSAGE(STATUS "<PROJECT_SOURCE_DIR> ${PROJECT_SOURCE_DIR}</PROJECT_SOURCE_DIR>")
+
+if (CMAKE_SYSTEM_NAME MATCHES Linux)
+	add_custom_command(TARGET ${TargetName} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy "${dict_file_pcm}" "${PROJECT_SOURCE_DIR}/lib/${dict_file_pcm_short}" 
+	)
+else (CMAKE_SYSTEM_NAME MATCHES Linux) #windows
+	add_custom_command(TARGET ${TargetName} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy "${dict_file_pcm}" "${PROJECT_SOURCE_DIR}/bin/${dict_file_pcm_short}"
+	)
+endif (CMAKE_SYSTEM_NAME MATCHES Linux)
+endfunction()
+
+
+
+function(ADD_GEN_ROOT_DICT_PREPEND TargetName headers_input LINKDEF_FILE MY_INCLUDE_DIRECTORIES)
+PREPEND(headers_input  "${CMAKE_CURRENT_SOURCE_DIR}/" ${headers_input})
+PREPEND(LINKDEF_FILE   "${CMAKE_CURRENT_SOURCE_DIR}/" ${LINKDEF_FILE})
+
+ADD_GEN_ROOT_DICT(${TargetName} "${headers_input}" ${LINKDEF_FILE} ${MY_INCLUDE_DIRECTORIES} )
+endfunction()
+
+
+function(ADD_GEN_ROOT_DICT_AUTO TargetName MY_INCLUDE_DIRECTORIES)
+#PREPEND(MY_INCLUDE_DIRECTORIES " -I" ${MY_INCLUDE_DIRECTORIES})
+
+
+file(GLOB_RECURSE headers_input "*.hpp")
+file(GLOB_RECURSE LINKDEF_FILE "*LinkDef.hh")
+
+ADD_GEN_ROOT_DICT(${TargetName} "${headers_input}" "${LINKDEF_FILE}" "${MY_INCLUDE_DIRECTORIES}")
+
+endfunction()
+
+FUNCTION(FIND_ROOT_OBJECTS header_input patter closingPattern outputVar)
+set(linkDef_content "")
+foreach(loop_var ${headers_input})
+	FILE(READ "${loop_var}" contents)
+	FOREACH(line ${contents})
+		STRING(FIND "${line}" ${patter} matchres)
+		If( NOT(${matchres}  EQUAL -1))
+			string(SUBSTRING ${line} ${matchres} 600 substr)
+			STRING(FIND "${substr}" " " matchres)
+			string(SUBSTRING ${substr} ${matchres}  600 substr)
+			STRING(FIND "${substr}" "${closingPattern}" matchres)
+			string(SUBSTRING ${substr} 1  ${matchres} substr)
+			STRING( REPLACE "${closingPattern}" " " substr ${substr})
+			list(APPEND  linkDef_content ${substr})
+		ENDIF()
+
+	endforeach(line)
+	
+    
+endforeach(loop_var)
+set(${outputVar} ${linkDef_content} PARENT_SCOPE)
+ENDFUNCTION()
+
+
+function(ADD_GEN_ROOT_DICT_AUTO_LINK TargetName MY_INCLUDE_DIRECTORIES)
+message("'${MY_INCLUDE_DIRECTORIES}'")
+#PREPEND(MY_INCLUDE_DIRECTORIES " -I" ${MY_INCLUDE_DIRECTORIES})
+
+
+file(GLOB_RECURSE headers_input "*.hpp")
+
+FIND_ROOT_OBJECTS("${headers_input}" "ROOTCLASS" "{" ROOTCLASSES )
+
+	
+
+
+FIND_ROOT_OBJECTS("${headers_input}" "ROOTFUNCTION" "\(" ROOTFUNCTIONs )
+
+
+FIND_ROOT_OBJECTS("${headers_input}" "ROOTFUNCTION operator" ";" ROOToperators1 )
+
+
+FIND_ROOT_OBJECTS("${headers_input}" "ROOTFUNCTION  operator" ";" ROOToperators2 )
+
+FIND_ROOT_OBJECTS("${headers_input}" "ROOTFUNCTION   operator" ";" ROOToperators3 )
+
+
+set(LINKDEF_FILE "${CMAKE_CURRENT_BINARY_DIR}/autoLinkDef.hh")
+file(WRITE ${LINKDEF_FILE} "#ifdef __CINT__ \n" )
+
+foreach(VAR ${ROOTCLASSES})
+	file(APPEND  ${LINKDEF_FILE} "#pragma link C++ class  ${VAR}; \n" )
+endforeach(VAR)
+
+foreach(VAR ${ROOTFUNCTIONs})
+	STRING(FIND "${VAR}" "operator" matchres)
+	if(${matchres} EQUAL -1)
+		file(APPEND  ${LINKDEF_FILE} "#pragma link C++ function  ${VAR}; \n" )
+	endif()
+endforeach(VAR)
+
+foreach(VAR ${ROOToperators1})
+	file(APPEND  ${LINKDEF_FILE} "#pragma link C++ function  ${VAR}; \n" )
+endforeach(VAR)
+foreach(VAR ${ROOToperators2})
+	file(APPEND  ${LINKDEF_FILE} "#pragma link C++ function  ${VAR}; \n" )
+endforeach(VAR)
+foreach(VAR ${ROOToperators3})
+	file(APPEND  ${LINKDEF_FILE} "#pragma link C++ function  ${VAR}; \n" )
+endforeach(VAR)
+
+file(APPEND  ${LINKDEF_FILE} "#endif //__CINT__ \n" )
+#file(GLOB_RECURSE LINKDEF_FILE "*LinkDef.hh")
+
+
+
+ADD_GEN_ROOT_DICT(${TargetName} "${headers_input}" "${LINKDEF_FILE}" "${MY_INCLUDE_DIRECTORIES}" )
 
 endfunction()

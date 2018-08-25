@@ -1,5 +1,5 @@
 #include "ArggLib/root/TGSignals.hh"
-#include "signal_slot_test.hh"
+#include "signal_slot_test.hpp"
 #include "ArggLib/complete_lib.hh"
 
 #include <iostream>

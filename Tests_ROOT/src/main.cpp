@@ -18,7 +18,7 @@
 #include "TCanvas.h"
 #include "RQ_OBJECT.h"
 #include "ArggLib/root/TGSignals.hh"
-#include "signal_slot_test.hh"
+#include "signal_slot_test.hpp"
 #include <TGClient.h>
 #include <TGButton.h>
 #include <TGFrame.h>

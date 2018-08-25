@@ -58,5 +58,6 @@ __DEFINE_RQ_SLOT__(recieve_signal, "recieve_signal()")
 __DEFINE_RQ_SLOT__(recieve_signal_int, "recieve_signal_int(Int_t)")
 __DEFINE_RQ_SLOT__(recieve_signal_char_star, "recieve_signal_char_star(const char*)")
 END__DEFINE_RQ_SLOTS_CLASS(slot_test)
-
+#pragma link C++ class slot_test;
+#pragma link C++ class signal_test;
 #endif //ArggLib_signal_slot_test
