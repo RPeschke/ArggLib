@@ -17,6 +17,7 @@ procReturn operator()(Next_T& __next, PROGARGS&&... __progargs)
 
 #define processNext(...) __next(__VA_ARGS__)
 #define processNextAppend(...) __next(__progargs..., __VA_ARGS__)
+#define processNextPrepend(...) __next(__VA_ARGS__, __progargs...)
 
 #define processNextAndReturn(...) return __next(__VA_ARGS__)
 
