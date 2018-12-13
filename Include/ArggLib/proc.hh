@@ -11,6 +11,21 @@
 #include "ArggLib/impl_do_begin_do_end.hh"
 #include "ArggLib/type_trates.hh"
 
+#define  ProcessFunction   template <typename Next_T, typename... PROGARGS> \
+procReturn operator()(Next_T& __next, PROGARGS&&... __progargs)
+
+
+#define processNext(...) __next(__VA_ARGS__)
+#define processNextAppend(...) __next(std::forward<PROGARGS>(__progargs)..., __VA_ARGS__)
+
+#define processNextAndReturn(...) return __next(__VA_ARGS__)
+
+#define processNextAndReturnOnError(...) do {  \
+auto ret___ =  __next(__VA_ARGS__); \
+if(ret___ != procReturn::success) return ret___; \
+} while (false)
+
+
 namespace ArggLib {
   
 
