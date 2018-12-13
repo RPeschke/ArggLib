@@ -16,7 +16,7 @@ procReturn operator()(Next_T& __next, PROGARGS&&... __progargs)
 
 
 #define processNext(...) __next(__VA_ARGS__)
-#define processNextAppend(...) __next(std::forward<PROGARGS>(__progargs)..., __VA_ARGS__)
+#define processNextAppend(...) __next(__progargs..., __VA_ARGS__)
 
 #define processNextAndReturn(...) return __next(__VA_ARGS__)
 
@@ -25,6 +25,7 @@ auto ret___ =  __next(__VA_ARGS__); \
 if(ret___ != procReturn::success) return ret___; \
 } while (false)
 
+#define ProcLambdaArgs auto& __next, auto&&... __progargs
 
 namespace ArggLib {
   
