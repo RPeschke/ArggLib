@@ -28,7 +28,7 @@ if(ret___ != procReturn::success) return ret___; \
 
 
 #define procLambdaArgsConst auto __next, const auto&... __progargs
-#define procLambdaConst[&](procLambdaArgsConst)
+#define procLambdaConst [&](procLambdaArgsConst)
 #define procLambdaArgs auto __next, auto&... __progargs
 #define procLambda [&](procLambdaArgs) 
 
