@@ -26,8 +26,13 @@ auto ret___ =  __next(__VA_ARGS__); \
 if(ret___ != procReturn::success) return ret___; \
 } while (false)
 
-#define procLambdaArgs auto __next, const auto&... __progargs
+
+#define procLambdaArgsConst auto __next, const auto&... __progargs
+#define procLambdaConst[&](procLambdaArgsConst)
+#define procLambdaArgs auto __next, auto&... __progargs
 #define procLambda [&](procLambdaArgs) 
+
+
 #define procGetArgN(Index) ArggLib_args_detail::getArgByNo<Index>::get(__progargs...)
 #define procGetArgT(TYPE) ArggLib_args_detail::getArgByType<TYPE>::get(__progargs...)
 #define procGetArgNT(Index,TYPE)  ArggLib_args_detail::getArgByNoT<TYPE,Index>::get(__progargs...)
@@ -38,7 +43,7 @@ namespace ArggLib_args_detail {
   class getArgByNo {
   public:
     template<typename T, typename... ARGGS >
-    static auto get(T&& t, ARGGS&&... args) {
+    static auto get(T&& t, ARGGS&&... args) ->decltype (getArgByNo<N - 1>::get(std::forward< ARGGS>(args)...)) {
       return getArgByNo<N - 1>::get(std::forward< ARGGS>(args)...);
     }
   };
@@ -46,7 +51,7 @@ namespace ArggLib_args_detail {
   class getArgByNo<0> {
   public:
     template<typename T, typename... ARGGS >
-    static  auto get(T&& t, ARGGS&&... args) {
+    static  auto get(T&& t, ARGGS&&... args) ->decltype (std::forward<T>(t)){
       return std::forward<T>(t);
     }
   };
@@ -55,11 +60,11 @@ namespace ArggLib_args_detail {
   class getArgByType {
   public:
     template<typename T, typename... ARGGS, std::enable_if_t<std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
-    static auto get(T&& t, ARGGS&&... args) {
+    static auto get(T&& t, ARGGS&&... args) -> decltype(std::forward<T>(t)) {
       return std::forward<T>(t);
     }
     template<typename T, typename... ARGGS, std::enable_if_t<!std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
-    static auto get(T&& t, ARGGS&&... args) {
+    static auto get(T&& t, ARGGS&&... args) -> decltype(getArgByType<Tin>::get(std::forward< ARGGS>(args)...))  {
       return getArgByType<Tin>::get(std::forward< ARGGS>(args)...);
     }
   };
@@ -68,11 +73,11 @@ namespace ArggLib_args_detail {
   class getArgByNoT {
   public:
     template<typename T, typename... ARGGS, std::enable_if_t<std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
-    static auto get(T&& t, ARGGS&&... args) {
+    static auto get(T&& t, ARGGS&&... args)->decltype(getArgByNoT<Tin, N - 1>::get(std::forward< ARGGS>(args)...)) {
       return getArgByNoT<Tin, N-1>::get(std::forward< ARGGS>(args)...);
     }
     template<typename T, typename... ARGGS, std::enable_if_t<!std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
-    static auto get(T&& t, ARGGS&&... args) {
+    static auto get(T&& t, ARGGS&&... args) -> decltype(getArgByNoT<Tin, N>::get(std::forward< ARGGS>(args)...) ){
       return getArgByNoT<Tin,N>::get(std::forward< ARGGS>(args)...);
     }
   };
@@ -80,11 +85,11 @@ namespace ArggLib_args_detail {
   class getArgByNoT<Tin,0> {
   public:
     template<typename T, typename... ARGGS, std::enable_if_t<std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
-    static auto get(T&& t, ARGGS&&... args) {
+    static auto get(T&& t, ARGGS&&... args) ->decltype(std::forward<T>(t)) {
       return std::forward<T>(t);
     }
     template<typename T, typename... ARGGS, std::enable_if_t<!std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
-    static auto get(T&& t, ARGGS&&... args) {
+    static auto get(T&& t, ARGGS&&... args) ->decltype(getArgByNoT<Tin, 0>::get(std::forward< ARGGS>(args)...)){
       return getArgByNoT<Tin, 0>::get(std::forward< ARGGS>(args)...);
     }
   };
