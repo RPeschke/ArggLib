@@ -4,9 +4,10 @@
 #ifdef __CLING__
 
 #define  CPP11ARTEFACT(x) x
+#define  __constexpr__
 #else
 #define  CPP11ARTEFACT(x) 
-
+#define  __constexpr__ constexpr
 #endif // __CLING__
 
 

@@ -10,6 +10,7 @@
 #include "ArggLib/procReturn.hh"
 #include "ArggLib/impl_do_begin_do_end.hh"
 #include "ArggLib/type_trates.hh"
+#include "ArggLib/cpp11artefacts.hh"
 
 #define  ProcessFunction   template <typename Next_T, typename... PROGARGS> \
 procReturn operator()(Next_T& __next, PROGARGS&&... __progargs)
@@ -100,12 +101,12 @@ namespace ArggLib {
 
 
 	template<typename T1, typename T2>
-	class outterLamda {
+	class outerLamda {
 	public:
 
 		typename ArggLib::remove_cvref_t<T1> t;
 		typename ArggLib::remove_cvref_t<T2> n;
-		outterLamda( T1& t_,   T2& n_) : t(t_), n(n_) {
+		outerLamda( T1& t_,   T2& n_) : t(t_), n(n_) {
 
 		}
 
@@ -116,17 +117,17 @@ namespace ArggLib {
 
 	};
 	template<typename T1, typename T2>
-	outterLamda<T1, T2> make_outterLamda(const T1& t_,const  T2& n_) {
-		return outterLamda<T1, T2>(t_, n_);
+	outerLamda<T1, T2> make_outerLamda(const T1& t_,const  T2& n_) {
+		return outerLamda<T1, T2>(t_, n_);
 	}
   template<typename T1, typename T2>
-  outterLamda<T1, T2> make_outterLamda( T1& t_, T2& n_) {
-    return outterLamda<T1, T2>(t_, n_);
+  outerLamda<T1, T2> make_outerLamda( T1& t_, T2& n_) {
+    return outerLamda<T1, T2>(t_, n_);
   }
 
   template<typename T1, typename T2>
-  outterLamda<T1, T2> make_outterLamda(T1&& t_, T2&& n_) {
-    return outterLamda<T1, T2>(t_, n_);
+  outerLamda<T1, T2> make_outerLamda(T1&& t_, T2&& n_) {
+    return outerLamda<T1, T2>(t_, n_);
   }
 
 
@@ -273,36 +274,36 @@ namespace ArggLib {
 
 
 		template <typename NEXT>
-		auto operator >> (const NEXT& n) ->decltype(make_proImple(make_outterLamda(m_pro, __helper_to_proc(n)))) {
+		auto operator >> (const NEXT& n) ->decltype(make_proImple(make_outerLamda(m_pro, __helper_to_proc(n)))) {
 
-			return make_proImple(make_outterLamda(m_pro, __helper_to_proc( n)));
+			return make_proImple(make_outerLamda(m_pro, __helper_to_proc( n)));
 		}
 		template <typename NEXT>
-		auto operator >> (NEXT& n)-> decltype(make_proImple(make_outterLamda(m_pro, __helper_to_proc( n)))) {
+		auto operator >> (NEXT& n)-> decltype(make_proImple(make_outerLamda(m_pro, __helper_to_proc( n)))) {
 
-			return make_proImple(make_outterLamda(m_pro, __helper_to_proc( n)));
+			return make_proImple(make_outerLamda(m_pro, __helper_to_proc( n)));
 		}
     template <typename NEXT>
-    auto operator >> (NEXT&& n)-> decltype(make_proImple(make_outterLamda(m_pro, __helper_to_proc(std::move(n))))) {
+    auto operator >> (NEXT&& n)-> decltype(make_proImple(make_outerLamda(m_pro, __helper_to_proc(std::move(n))))) {
 
-      return make_proImple(make_outterLamda(m_pro, __helper_to_proc(std::move(n))));
+      return make_proImple(make_outerLamda(m_pro, __helper_to_proc(std::move(n))));
     }
 
 		template <typename NEXT>
-		auto operator >> (procImple<NEXT>&& n) -> decltype (make_proImple(make_outterLamda(m_pro, n.m_pro))) {
+		auto operator >> (procImple<NEXT>&& n) -> decltype (make_proImple(make_outerLamda(m_pro, n.m_pro))) {
 
-			return make_proImple(make_outterLamda(m_pro, n.m_pro));
+			return make_proImple(make_outerLamda(m_pro, n.m_pro));
 		}
 		template <typename NEXT>
-		auto operator >> (const procImple<NEXT>& n) -> decltype (make_proImple(make_outterLamda(m_pro, n.m_pro))) {
+		auto operator >> (const procImple<NEXT>& n) -> decltype (make_proImple(make_outerLamda(m_pro, n.m_pro))) {
 
-			return make_proImple(make_outterLamda(m_pro, n.m_pro));
+			return make_proImple(make_outerLamda(m_pro, n.m_pro));
 		}
 
 		template <typename NEXT>
-		auto operator >> ( procImple<NEXT>& n) -> decltype (make_proImple(make_outterLamda(m_pro, n.m_pro))) {
+		auto operator >> ( procImple<NEXT>& n) -> decltype (make_proImple(make_outerLamda(m_pro, n.m_pro))) {
 
-			return make_proImple(make_outterLamda(m_pro, n.m_pro));
+			return make_proImple(make_outerLamda(m_pro, n.m_pro));
 		}
 		template <typename NEXT>
 		auto operator+(const NEXT& n)-> decltype (make_proImple(make_plus(m_pro, n))) {
@@ -383,7 +384,7 @@ namespace ArggLib {
 			return make_proImple(t);
 		}
 		template <typename T>
-		auto operator >> (procImple<T>&& t) ->decltype (make_proImple(std::forward<T>(t.m_pro))) {
+    __constexpr__ auto operator >> (procImple<T>&& t) ->decltype (make_proImple(std::forward<T>(t.m_pro))) {
 			return make_proImple(std::forward<T>(t.m_pro));
 		}
 		template <typename T>
