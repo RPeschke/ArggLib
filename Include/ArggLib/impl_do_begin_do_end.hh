@@ -22,6 +22,7 @@ namespace ArggLib {
 		CREATE_TEST_FOR_MEMBER(has_t, t);
 		CREATE_TEST_FOR_MEMBER(has_n, n);
 
+    
 
     template <typename... N>
     auto do_end0a_check_for_return(N&&... n) ->decltype(success){
@@ -144,10 +145,15 @@ namespace ArggLib {
 			do_end2(p, v);
 		}
 		*/
+    inline const procReturn& getDefaultReturn(){
+      static const procReturn defaultReturn = success;
+      return defaultReturn;
+    }
+
 		template <typename... P>
-		auto unfold_end(P&&... p) -> decltype(do_end3(p..., success)) {
-			
-			return do_end3(p...,success);;
+		auto unfold_end(P&&... p) -> decltype(do_end3(p..., getDefaultReturn())) {
+
+			return do_end3(p..., getDefaultReturn());;
 		}
 
 		template <typename P, ARGGLIB__REQUIRES(_has_member_t_<P>::value)>

@@ -60,8 +60,8 @@ std::string compare_single_threaded_with_multi_threaded(reactive_backend_base& r
 	reactive_signals<int> y(1, &r);
 	reactive_signals<int> z(1, &r);
 
-	std::atomic<int> i = 0;
-	reactive_processor([&out, &out1, &x, &y, &i]() {
+	
+	reactive_processor([&out, &out1, &x, &y]() {
 		
 		out << "<process1>\n";
 		for (int i = 1; i < y; ++i)
@@ -76,7 +76,7 @@ std::string compare_single_threaded_with_multi_threaded(reactive_backend_base& r
 		out << "</process1>\n";
 	}, y);
 
-	reactive_processor([&out, &out2, &x, &y, &i]() {
+	reactive_processor([&out, &out2, &x, &y]() {
 		
 		out << "<process2>\n";
 		for (int i = 1; i < x; ++i)
