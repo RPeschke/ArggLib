@@ -60,11 +60,11 @@ namespace ArggLib_args_detail {
   template <typename Tin>
   class getArgByType {
   public:
-    template<typename T, typename... ARGGS, std::enable_if_t<std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
+    template<typename T, typename... ARGGS, std::enable_if_t<std::is_same<Tin, ArggLib::remove_cvref_t<T>>::value, int> = 1>
     static auto get(T&& t, ARGGS&&... args) -> decltype(std::forward<T>(t)) {
       return std::forward<T>(t);
     }
-    template<typename T, typename... ARGGS, std::enable_if_t<!std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
+    template<typename T, typename... ARGGS, std::enable_if_t<!std::is_same<Tin, ArggLib::remove_cvref_t<T>>::value, int> = 1>
     static auto get(T&& t, ARGGS&&... args) -> decltype(getArgByType<Tin>::get(std::forward< ARGGS>(args)...))  {
       return getArgByType<Tin>::get(std::forward< ARGGS>(args)...);
     }
@@ -73,11 +73,11 @@ namespace ArggLib_args_detail {
   template <typename  Tin, int N>
   class getArgByNoT {
   public:
-    template<typename T, typename... ARGGS, std::enable_if_t<std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
+    template<typename T, typename... ARGGS, std::enable_if_t<std::is_same<Tin, ArggLib::remove_cvref_t<T>>::value, int> = 1>
     static auto get(T&& t, ARGGS&&... args)->decltype(getArgByNoT<Tin, N - 1>::get(std::forward< ARGGS>(args)...)) {
       return getArgByNoT<Tin, N-1>::get(std::forward< ARGGS>(args)...);
     }
-    template<typename T, typename... ARGGS, std::enable_if_t<!std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
+    template<typename T, typename... ARGGS, std::enable_if_t<!std::is_same<Tin, ArggLib::remove_cvref_t<T>>::value, int> = 1>
     static auto get(T&& t, ARGGS&&... args) -> decltype(getArgByNoT<Tin, N>::get(std::forward< ARGGS>(args)...) ){
       return getArgByNoT<Tin,N>::get(std::forward< ARGGS>(args)...);
     }
@@ -85,11 +85,11 @@ namespace ArggLib_args_detail {
   template <typename  Tin>
   class getArgByNoT<Tin,0> {
   public:
-    template<typename T, typename... ARGGS, std::enable_if_t<std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
+    template<typename T, typename... ARGGS, std::enable_if_t<std::is_same<Tin, ArggLib::remove_cvref_t<T>>::value, int> = 1>
     static auto get(T&& t, ARGGS&&... args) ->decltype(std::forward<T>(t)) {
       return std::forward<T>(t);
     }
-    template<typename T, typename... ARGGS, std::enable_if_t<!std::is_same_v<Tin, ArggLib::remove_cvref_t<T>>, int> = 1>
+    template<typename T, typename... ARGGS, std::enable_if_t<!std::is_same<Tin, ArggLib::remove_cvref_t<T>>::value, int> = 1>
     static auto get(T&& t, ARGGS&&... args) ->decltype(getArgByNoT<Tin, 0>::get(std::forward< ARGGS>(args)...)){
       return getArgByNoT<Tin, 0>::get(std::forward< ARGGS>(args)...);
     }
