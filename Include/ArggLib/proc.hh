@@ -10,7 +10,6 @@
 #include "ArggLib/procReturn.hh"
 #include "ArggLib/impl_do_begin_do_end.hh"
 #include "ArggLib/type_trates.hh"
-#include "ArggLib/cpp11artefacts.hh"
 
 #define  ProcessFunction   template <typename Next_T, typename... PROGARGS> \
 procReturn operator()(Next_T& __next, PROGARGS&&... __progargs)
@@ -60,12 +59,12 @@ namespace ArggLib_args_detail {
   template <typename Tin>
   class getArgByType {
   public:
-    template<typename T, typename... ARGGS, std::enable_if_t<std::is_same<Tin, ArggLib::remove_cvref_t<T>>::value, int> = 1>
-    static auto get(T&& t, ARGGS&&... args) -> decltype(std::forward<T>(t)) {
+    template<typename T, typename... ARGGS, std::enable_if_t<ArggLib::is_same_remove_cvref<Tin,T>::value, int> = 1>
+    static Tin get(T&& t, ARGGS&&... args)  {
       return std::forward<T>(t);
     }
-    template<typename T, typename... ARGGS, std::enable_if_t<!std::is_same<Tin, ArggLib::remove_cvref_t<T>>::value, int> = 1>
-    static auto get(T&& t, ARGGS&&... args) -> decltype(getArgByType<Tin>::get(std::forward< ARGGS>(args)...))  {
+    template<typename T, typename... ARGGS, std::enable_if_t<!ArggLib::is_same_remove_cvref<Tin, T>::value, int> = 1>
+    static Tin get(T&& t, ARGGS&&... args)  {
       return getArgByType<Tin>::get(std::forward< ARGGS>(args)...);
     }
   };

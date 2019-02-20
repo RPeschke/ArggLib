@@ -38,7 +38,14 @@ namespace ArggLib {
 	template< class T >
 	using remove_cvref_t = typename remove_cvref<T>::type;
 
+	template< class T1, class T2 >
+	struct is_same_remove_cvref {
+		enum {
+			value = std::is_same< ArggLib::remove_cvref_t<T1>, ArggLib::remove_cvref_t<T2>>::value
+		};
+		
 
+	};
 
 
   template <typename T>
