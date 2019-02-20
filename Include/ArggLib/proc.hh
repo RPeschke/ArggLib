@@ -383,7 +383,7 @@ namespace ArggLib {
 			return make_proImple(t);
 		}
 		template <typename T>
-    __constexpr__ auto operator >> (procImple<T>&& t) ->decltype (make_proImple(std::forward<T>(t.m_pro))) {
+         auto operator >> (procImple<T>&& t) ->decltype (make_proImple(std::forward<T>(t.m_pro))) {
 			return make_proImple(std::forward<T>(t.m_pro));
 		}
 		template <typename T>
